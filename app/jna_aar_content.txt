@@ -1,0 +1,11 @@
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/AndroidManifest.xml
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/R.txt
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/classes.jar
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/arm64-v8a/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/armeabi-v7a/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/armeabi/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/mips/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/mips64/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/x86/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/jni/x86_64/libjnidispatch.so
+/Users/zoebrooklyn/AndroidStudioProjects/xbible/app/build/tmp/.cache/expanded/zip_d9dc60734bc17f396d3f11ceb0f5a733/res/values/values.xml
