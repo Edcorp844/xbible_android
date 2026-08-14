@@ -6,17 +6,20 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,10 +27,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.itemsIndexed as gridItemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,15 +41,23 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.HorizontalFloatingToolbar
@@ -52,13 +65,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconButtonDefaults.filledIconButtonColors
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.TonalToggleButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -76,12 +95,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.xbible.ui.components.PageView
 import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.StudyTab
+import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.SwordModule
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -100,7 +121,13 @@ fun StudyScreen(
     val activeTabIndex by engineViewModel.activeTabIndex.collectAsState()
     var showTabsPreview by remember { mutableStateOf(false) }
     var showModuleSelection by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    var showReferencePicker by remember { mutableStateOf(false) }
+    val moduleSheetState = rememberModalBottomSheetState()
+    val referenceSheetState = rememberModalBottomSheetState()
+    
+    val currentBooks by engineViewModel.currentBooksFlow.collectAsState()
+    val currentBookIndex by engineViewModel.currentBookIndexFlow.collectAsState()
+    val currentChapterIndex by engineViewModel.currentChapterIndexFlow.collectAsState()
     
     val hasNext by engineViewModel.hasNext.collectAsState()
     val hasPrevious by engineViewModel.hasPrevious.collectAsState()
@@ -153,26 +180,49 @@ fun StudyScreen(
                 TopAppBar(
                     title = {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.wrapContentWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             SplitButtonLayout(
                                 leadingButton = {
                                     SplitButtonDefaults.ElevatedLeadingButton(
                                         onClick = { showModuleSelection = true }
                                     ) {
-                                        Text(text = currentModule?.name ?: "Select Bible")
+                                        Text(
+                                            text = currentModule?.name ?: "Select Bible",
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
                                     }
                                 },
                                 trailingButton = {
-                                    var checked by remember { mutableStateOf(false) }
                                     SplitButtonDefaults.ElevatedTrailingButton(
-                                        checked = checked,
-                                        onCheckedChange = { checked = it }
+                                        checked = showReferencePicker,
+                                        onCheckedChange = {
+                                            showReferencePicker = it
+                                        }
                                     ) {
                                         Text(text = currentReference ?: "Study")
                                     }
                                 }
                             )
+                        }
+                    },
+                    actions = {
+                        IconToggleButton(checked = false, onCheckedChange = { }) {
+                            Icon(
+                                Icons.Outlined.Search,
+                                contentDescription = "Search"
+                            )
+
+                        }
+                        IconToggleButton(checked = false, onCheckedChange = { }) {
+                            Icon(
+                                Icons.Outlined.MoreVert,
+                                contentDescription = "More"
+                            )
+
                         }
                     }
                 )
@@ -196,12 +246,9 @@ fun StudyScreen(
                             }
 
                             Box(contentAlignment = Alignment.Center) {
-                                FilledIconButton(
+                                FilledTonalButton(
                                     onClick = { showTabsPreview = true },
-                                    colors = filledIconButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                    ),
+
                                     shape = IconButtonDefaults.filledShape
                                 ) {
                                     Icon(Icons.Default.Layers, contentDescription = "Tabs")
@@ -278,7 +325,7 @@ fun StudyScreen(
         if (showModuleSelection) {
             ModalBottomSheet(
                 onDismissRequest = { showModuleSelection = false },
-                sheetState = sheetState,
+                sheetState = moduleSheetState,
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface
             ) {
@@ -288,6 +335,29 @@ fun StudyScreen(
                     onModuleSelected = {
                         engineViewModel.selectModule(it)
                         showModuleSelection = false
+                    }
+                )
+            }
+        }
+
+        // Reference Picker Bottom Sheet
+        if (showReferencePicker) {
+            ModalBottomSheet(
+                onDismissRequest = { showReferencePicker = false },
+                sheetState = referenceSheetState,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ) {
+                ReferencePickerContent(
+                    books = currentBooks,
+                    selectedBookIndex = currentBookIndex,
+                    selectedChapterIndex = currentChapterIndex,
+                    onChapterSelected = { chapterNumber ->
+                        engineViewModel.selectChapter(chapterNumber)
+                        showReferencePicker = false
+                    },
+                    onBookSelected = { index ->
+                        engineViewModel.selectBook(index)
                     }
                 )
             }
@@ -317,6 +387,187 @@ fun StudyScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ReferencePickerContent(
+    books: List<ModuleBook>,
+    selectedBookIndex: Int,
+    selectedChapterIndex: Int,
+    onBookSelected: (Int) -> Unit,
+    onChapterSelected: (Int) -> Unit
+) {
+    var selectedTab by remember { mutableIntStateOf(0) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.6f)
+            .padding(bottom = 32.dp)
+    ) {
+        ButtonGroup(
+            overflowIndicator = { menuState ->
+                IconButton(onClick = { menuState.show() }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "More")
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+        ) {
+            customItem(
+                buttonGroupContent = {
+                    OutlinedToggleButton(
+                        checked = selectedTab == 0,
+                        onCheckedChange = { if (it) selectedTab = 0 },
+                        shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    ) {
+                        Text("Books")
+                    }
+                },
+                menuContent = { menuState ->
+                    DropdownMenuItem(
+                        text = { Text("Books") },
+                        onClick = {
+                            selectedTab = 0
+                            menuState.dismiss()
+                        }
+                    )
+                }
+            )
+            customItem(
+                buttonGroupContent = {
+                    OutlinedToggleButton(
+                        checked = selectedTab == 1,
+                        onCheckedChange = { if (it) selectedTab = 1 },
+                        shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    ) {
+                        Text("Chapters")
+                    }
+                },
+                menuContent = { menuState ->
+                    DropdownMenuItem(
+                        text = { Text("Chapters") },
+                        onClick = {
+                            selectedTab = 1
+                            menuState.dismiss()
+                        }
+                    )
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Box(modifier = Modifier.weight(1f)) {
+            if (selectedTab == 0) {
+                // Books Grid
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    gridItemsIndexed(books) { index, book ->
+                        val isSelected = index == selectedBookIndex
+                        Surface(
+                            modifier = Modifier
+                                .aspectRatio(2f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    onBookSelected(index)
+                                    selectedTab = 1
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isSelected) MaterialTheme.colorScheme.secondary
+                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = book.name,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = if (isSelected) MaterialTheme.colorScheme.onSecondary
+                                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Chapters Grid
+                if (selectedBookIndex in books.indices) {
+                    val book = books[selectedBookIndex]
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(5),
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        gridItemsIndexed(book.chapters) { index, chapter ->
+                            val isSelected = index == selectedChapterIndex
+                            Surface(
+                                modifier = Modifier
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable { onChapterSelected(chapter.number) },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) MaterialTheme.colorScheme.secondary
+                                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = chapter.number.toString(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if (isSelected) MaterialTheme.colorScheme.onSecondary
+                                        else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Select a book first")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SettingsGroup(
+    title: String,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        if (title.isNotEmpty()) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 12.dp, bottom = 8.dp)
+            )
+        }
+        Surface(
+            shape = RoundedCornerShape(28.dp),
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surfaceContainer
+        ) {
+            Column(content = content)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ModuleSelectionContent(
     installedBibles: List<SwordModule>,
@@ -343,62 +594,47 @@ fun ModuleSelectionContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             groupedByLanguage.keys.sorted().forEach { langCode ->
-                item {
-                    Text(
-                        text = langCode.uppercase(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-                
                 val modules = groupedByLanguage[langCode] ?: emptyList()
-                items(modules.size) { index ->
-                    val module = modules[index]
-                    val isSelected = currentModule?.name == module.name
-                    
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .clickable { onModuleSelected(module) },
-                        shape = RoundedCornerShape(24.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = module.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                                )
-                                if (module.description.isNotEmpty()) {
+                item {
+                    SettingsGroup(title = langCode.uppercase()) {
+                        modules.forEachIndexed { index, module ->
+                            val isSelected = currentModule?.name == module.name
+                            
+                            ListItem(
+                                modifier = Modifier.clickable { onModuleSelected(module) },
+                                colors = ListItemDefaults.colors(
+                                    containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                                    else Color.Transparent
+                                ),
+                                headlineContent = {
                                     Text(
-                                        text = module.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                        text = module.name,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
                                     )
-                                }
-                            }
-                            if (isSelected) {
-                                Icon(
-                                    imageVector = Icons.Default.Layers,
-                                    contentDescription = "Selected",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
+                                },
+                                supportingContent = if (module.description.isNotEmpty()) {
+                                    {
+                                        Text(
+                                            text = module.description,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                } else null,
+                                trailingContent = if (isSelected) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Layers,
+                                            contentDescription = "Selected",
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                } else null
+                            )
+
                         }
                     }
                 }
@@ -456,7 +692,7 @@ fun TabsPreview(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                itemsIndexed(tabs) { index, tab ->
+                gridItemsIndexed(tabs) { index, tab ->
                     TabThumbnail(
                         tab = tab,
                         isActive = index == activeTabIndex,
@@ -499,7 +735,7 @@ fun TabThumbnail(
             containerColor = if (isActive) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.surface
         ),
         border = if (isActive) {
-            androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
         } else null
     ) {
         Box(modifier = Modifier.fillMaxSize()) {

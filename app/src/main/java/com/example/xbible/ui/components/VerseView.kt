@@ -41,7 +41,7 @@ fun VerseView(
         // Flow layout simulation for words inside a verse
         @OptIn(ExperimentalLayoutApi::class)
         FlowRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {

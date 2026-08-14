@@ -1,6 +1,7 @@
 package com.example.xbible.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,16 +12,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,10 +35,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -78,7 +85,7 @@ fun StoreScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            MediumTopAppBar(
+            TopAppBar(
                 title = { 
                     Column {
                         Text("Store")
@@ -158,7 +165,7 @@ fun StoreScreen(
                 ) {
                     languages.keys.sorted().forEach { langCode ->
                         val modules = languages[langCode] ?: emptyList()
-                        val isExpanded = expandedLanguages.contains(langCode)
+                        val isExpanded = true//expandedLanguages.contains(langCode)
                         
                         item {
                             LanguageHeader(
@@ -264,47 +271,61 @@ fun LanguageHeader(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CategoryTabBar(
     categories: List<String>,
     selectedCategory: String,
     onCategorySelected: (String) -> Unit
 ) {
-    LazyRow(
+    if (categories.isEmpty()) return
+
+    val scrollState = rememberScrollState()
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .horizontalScroll(scrollState)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        items(categories) { category ->
-            CategoryTabItem(
-                title = category,
-                isSelected = category == selectedCategory,
-                onClick = { onCategorySelected(category) }
-            )
+        ButtonGroup(
+            modifier = Modifier.wrapContentWidth(),
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+            overflowIndicator = { menuState ->
+                IconButton(onClick = { menuState.show() }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "More Categories")
+                }
+            }
+        ) {
+            categories.forEachIndexed { index, category ->
+                customItem(
+                    buttonGroupContent = {
+                        val shapes = when {
+                            categories.size == 1 -> ToggleButtonDefaults.shapes()
+                            index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                            index == categories.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                        }
+                        OutlinedToggleButton(
+                            checked = selectedCategory == category,
+                            onCheckedChange = { if (it) onCategorySelected(category) },
+                            shapes = shapes
+                        ) {
+                            Text(category)
+                        }
+                    },
+                    menuContent = { menuState ->
+                        DropdownMenuItem(
+                            text = { Text(category) },
+                            onClick = {
+                                onCategorySelected(category)
+                                menuState.dismiss()
+                            }
+                        )
+                    }
+                )
+            }
         }
     }
 }
 
-@Composable
-fun CategoryTabItem(
-    title: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .clickable { onClick() },
-        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(20.dp)
-    ) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.labelLarge,
-            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}

@@ -62,7 +62,16 @@ class EngineViewModel @JvmOverloads constructor(
     private val _hasPrevious = MutableStateFlow(false)
     val hasPrevious: StateFlow<Boolean> = _hasPrevious.asStateFlow()
 
-    private var currentBooks: List<uniffi.xbible_engine.ModuleBook> = emptyList()
+    private val _currentBooks = MutableStateFlow<List<ModuleBook>>(emptyList())
+    val currentBooksFlow: StateFlow<List<ModuleBook>> = _currentBooks.asStateFlow()
+
+    private val _currentBookIndex = MutableStateFlow(-1)
+    val currentBookIndexFlow: StateFlow<Int> = _currentBookIndex.asStateFlow()
+
+    private val _currentChapterIndex = MutableStateFlow(-1)
+    val currentChapterIndexFlow: StateFlow<Int> = _currentChapterIndex.asStateFlow()
+
+    private var currentBooks: List<ModuleBook> = emptyList()
     private var currentBookIndex: Int = -1
     private var currentChapterIndex: Int = -1
 
@@ -119,8 +128,11 @@ class EngineViewModel @JvmOverloads constructor(
         _currentChapterContent.value = tab.content
         
         currentBooks = tab.books
+        _currentBooks.value = tab.books
         currentBookIndex = tab.bookIndex
+        _currentBookIndex.value = tab.bookIndex
         currentChapterIndex = tab.chapterIndex
+        _currentChapterIndex.value = tab.chapterIndex
         
         if (tab.content.isEmpty() && tab.module != null && tab.reference != null) {
             loadChapter(tab.module.name, tab.reference)
@@ -229,6 +241,9 @@ class EngineViewModel @JvmOverloads constructor(
             return
         }
 
+        _currentBookIndex.value = currentBookIndex
+        _currentChapterIndex.value = currentChapterIndex
+
         val nextBook = currentBooks[currentBookIndex]
         val nextChapter = nextBook.chapters[currentChapterIndex]
         val reference = "${nextBook.name} ${nextChapter.number}"
@@ -251,6 +266,9 @@ class EngineViewModel @JvmOverloads constructor(
         } else {
             return
         }
+
+        _currentBookIndex.value = currentBookIndex
+        _currentChapterIndex.value = currentChapterIndex
 
         val prevBook = currentBooks[currentBookIndex]
         val prevChapter = prevBook.chapters[currentChapterIndex]
@@ -282,12 +300,15 @@ class EngineViewModel @JvmOverloads constructor(
             _currentModule.value = module
             val books = withContext(Dispatchers.IO) { repository.getBooks(module.name) }
             currentBooks = books
+            _currentBooks.value = books
             if (books.isNotEmpty()) {
                 currentBookIndex = 0
+                _currentBookIndex.value = 0
                 val firstBook = books.first()
                 val chapters = firstBook.chapters
                 if (chapters.isNotEmpty()) {
                     currentChapterIndex = 0
+                    _currentChapterIndex.value = 0
                     val chapter = chapters[0]
                     val reference = "${firstBook.name} ${chapter.number}"
                     _currentReference.value = reference
@@ -296,6 +317,31 @@ class EngineViewModel @JvmOverloads constructor(
             }
             updateNavigationStatus()
             updateCurrentTabInList()
+        }
+    }
+
+    fun selectBook(index: Int) {
+        if (index in currentBooks.indices) {
+            currentBookIndex = index
+            _currentBookIndex.value = index
+            // We don't load yet, user needs to pick a chapter
+        }
+    }
+
+    fun selectChapter(chapterNumber: Int) {
+        val module = _currentModule.value ?: return
+        if (currentBookIndex in currentBooks.indices) {
+            val book = currentBooks[currentBookIndex]
+            val chapterIndex = book.chapters.indexOfFirst { it.number == chapterNumber }
+            if (chapterIndex != -1) {
+                currentChapterIndex = chapterIndex
+                _currentChapterIndex.value = chapterIndex
+                val reference = "${book.name} $chapterNumber"
+                _currentReference.value = reference
+                loadChapter(module.name, reference)
+                updateNavigationStatus()
+                updateCurrentTabInList()
+            }
         }
     }
 
