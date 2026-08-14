@@ -28,7 +28,8 @@ fun WordView(
     modifier: Modifier = Modifier,
     config: WordConfig = WordConfig(),
     onWordClick: (() -> Unit)? = null,
-    onStrongsClick: ((String) -> Unit)? = null
+    onStrongsClick: ((String) -> Unit)? = null,
+    isTitle: Boolean = false
 ) {
     Column(
         modifier = modifier.wrapContentWidth(),
@@ -40,8 +41,8 @@ fun WordView(
 
         Text(
             text = word.text,
-            fontSize = config.fontSize.sp,
-            fontFamily = FontFamily.Serif,
+            fontSize = if (isTitle) config.fontSize.sp * 1.5 else config.fontSize.sp,
+            fontFamily = config.fontFamily,
             fontWeight = if (word.isBoldText) FontWeight.Bold else FontWeight.Normal,
             fontStyle = if (word.isItalic) FontStyle.Italic else FontStyle.Normal,
             color = textColor,

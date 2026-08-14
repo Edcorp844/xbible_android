@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedToggleButton
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +26,7 @@ import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -107,9 +109,13 @@ fun CategoryTabBar(
                             index == categories.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                             else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                         }
-                        OutlinedToggleButton(
+                        ElevatedToggleButton(
                             checked = selectedCategory == category,
                             onCheckedChange = { if (it) onCategorySelected(category) },
+                            colors = ToggleButtonDefaults.toggleButtonColors(
+                                checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            ),
                             shapes = shapes
                         ) {
                             Text(category)

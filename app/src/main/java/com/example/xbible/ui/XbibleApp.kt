@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -27,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.xbible.ui.icons.handyman
 import com.example.xbible.ui.screens.LibraryScreen
 import com.example.xbible.ui.screens.StoreScreen
 import com.example.xbible.ui.screens.StudyScreen
@@ -97,7 +99,7 @@ enum class AppDestinations(
     val icon: ImageVector
 ) {
     STUDY("Study", Icons.AutoMirrored.Outlined.MenuBook),
-    STORE("Store", Icons.Outlined.Storefront),
-    TOOLS("Tools", Icons.Outlined.Build),
+    STORE("Store", Icons.Outlined.ShoppingBag),
+    TOOLS("Tools", handyman),
     LIBRARY("Library", Icons.AutoMirrored.Outlined.LibraryBooks),
 }

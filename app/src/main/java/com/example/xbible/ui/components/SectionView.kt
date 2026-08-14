@@ -38,7 +38,8 @@ fun SectionView(
                     WordView(
                         word = item,
                         config = titleTheme,
-                        onWordClick = { onWordClick?.invoke(item) }
+                        onWordClick = { onWordClick?.invoke(item) },
+                        isTitle = true
                     )
                 }
             }
@@ -49,7 +50,8 @@ fun SectionView(
             VerseView(
                 verse = verse,
                 onWordClick = onWordClick,
-                onStrongsClick = onStrongsClick
+                onStrongsClick = onStrongsClick,
+                textDirection = section.textDirection
             )
         }
     }

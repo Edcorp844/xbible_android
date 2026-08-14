@@ -180,6 +180,7 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
                 is TaskState.Completed -> {
                     _installationStates.value += (moduleName to InstallationStatus.Installed)
                     activeTaskIds.remove(moduleName)
+                    repository.refreshModules()
                     break
                 }
                 is TaskState.Failed -> {

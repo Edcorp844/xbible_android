@@ -100,6 +100,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.xbible.ui.components.PageView
+import com.example.xbible.ui.icons.tab_group
 import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.StudyTab
 import uniffi.xbible_engine.ModuleBook
@@ -247,7 +248,7 @@ fun StudyScreen(
 
                                     shape = IconButtonDefaults.filledShape
                                 ) {
-                                    Icon(Icons.Default.Layers, contentDescription = "Tabs")
+                                    Icon(tab_group, contentDescription = "Tabs")
                                 }
                                 if (tabs.size > 1) {
                                     Surface(

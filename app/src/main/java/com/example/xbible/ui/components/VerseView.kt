@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import uniffi.xbible_engine.TextDirection
 import uniffi.xbible_engine.Verse
 import uniffi.xbible_engine.Word
 
@@ -22,7 +23,8 @@ fun VerseView(
     verse: Verse,
     modifier: Modifier = Modifier,
     onWordClick: ((Word) -> Unit)? = null,
-    onStrongsClick: ((String) -> Unit)? = null
+    onStrongsClick: ((String) -> Unit)? = null,
+    textDirection: TextDirection
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -30,19 +32,25 @@ fun VerseView(
         verticalAlignment = Alignment.Top
     ) {
         // Verse Number Indicator
-        Text(
-            text = "${verse.number}",
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.outline,
-            modifier = Modifier.padding(top = 2.dp)
-        )
+        if (textDirection == TextDirection.LTR) {
+            Text(
+                text = "${verse.number}",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 2.dp)
+            )
+        }
 
         // Flow layout simulation for words inside a verse
         @OptIn(ExperimentalLayoutApi::class)
         FlowRow(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = if (textDirection == TextDirection.RTL) {
+                Arrangement.spacedBy(6.dp, Alignment.End)
+            } else {
+                Arrangement.spacedBy(6.dp, Alignment.Start)
+            },
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             val commentaryTheme = WordConfig(fontSize = 18f)
@@ -51,9 +59,21 @@ fun VerseView(
                     word = word,
                     config = commentaryTheme,
                     onWordClick = { onWordClick?.invoke(word) },
-                    onStrongsClick = { strong -> onStrongsClick?.invoke(strong) }
+                    onStrongsClick = { strong -> onStrongsClick?.invoke(strong) },
+                    isTitle = false
                 )
             }
+        }
+
+        // Verse Number Indicator
+        if (textDirection == TextDirection.RTL) {
+            Text(
+                text = "${verse.number}",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 2.dp)
+            )
         }
     }
 }

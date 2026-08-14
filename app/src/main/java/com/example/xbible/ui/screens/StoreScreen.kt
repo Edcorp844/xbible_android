@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ButtonGroup
@@ -100,7 +103,7 @@ fun StoreScreen(
         topBar = {
             TopAppBar(
                 title = {
-                        Text("Store")
+                        Text("Store", style = MaterialTheme.typography.titleLarge)
                 },
                 actions = {
                     Box {
@@ -128,26 +131,42 @@ fun StoreScreen(
                             }
                         )
                         }
-                        DropdownMenu(
-                            expanded = showSourceDropdown,
-                            onDismissRequest = { showSourceDropdown = false }
-                        ) {
-                            remoteSources.forEach { source ->
-                                DropdownMenuItem(
-                                    text = { Text(source) },
-                                    onClick = {
-                                        viewModel.selectSource(source)
-                                        showSourceDropdown = false
-                                        selectedCategory = "" // Reset category selection for new source
-                                    },
-                                    trailingIcon = {
-                                        if (source == selectedSource) {
-                                            Icon(Icons.Default.Info, contentDescription = "Selected")
-                                        }
+                    DropdownMenu(
+                        expanded = showSourceDropdown,
+                        onDismissRequest = { showSourceDropdown = false },
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        remoteSources.forEach { source ->
+                            val isSelected = (source == selectedSource)
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = source,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                },
+                                onClick = {
+                                    viewModel.selectSource(source)
+                                    showSourceDropdown = false
+                                    selectedCategory = "" // Reset category selection for new source
+                                },
+                                leadingIcon = {
+                                    // M3 UX Expressive Guidelines: Use leading icons to visually confirm selected status
+                                    if (isSelected) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Check,
+                                            contentDescription = "Selected"
+                                        )
+                                    } else {
+                                        // Provides consistent spacing/alignment for unselected items
+                                        Spacer(modifier = Modifier.size(24.dp))
                                     }
-                                )
-                            }
+                                },
+                            )
                         }
+                    }
+
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background

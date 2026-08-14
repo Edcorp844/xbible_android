@@ -164,23 +164,23 @@ private fun ActionView(
             }
         }
         is InstallationStatus.Pending -> {
-            Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center) {
                 CircularWavyProgressIndicator(
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(28.dp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
                 )
             }
         }
         is InstallationStatus.Installing -> {
-            Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center) {
                 CircularWavyProgressIndicator(
                     progress = { status.progress },
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(28.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "${(status.progress * 100).toInt()}",
-                    fontSize = 8.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
