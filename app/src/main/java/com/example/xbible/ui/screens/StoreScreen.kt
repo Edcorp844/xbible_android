@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,10 +20,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
@@ -56,9 +61,12 @@ fun StoreScreen(
     val organizedModules by viewModel.organizedModules.collectAsState()
     val installationStates by viewModel.installationStates.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val remoteSources by viewModel.remoteSources.collectAsState()
+    val selectedSource by viewModel.selectedSource.collectAsState()
 
     var selectedCategory by remember { mutableStateOf("") }
     var expandedLanguages by remember { mutableStateOf(setOf<String>()) }
+    var showSourceDropdown by remember { mutableStateOf(false) }
 
     // Auto-select first category when loaded
     androidx.compose.runtime.LaunchedEffect(categories) {
@@ -68,9 +76,48 @@ fun StoreScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             MediumTopAppBar(
-                title = { Text("Store") },
+                title = { 
+                    Column {
+                        Text("Store")
+                        selectedSource?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    Box {
+                        IconButton(onClick = { showSourceDropdown = true }) {
+                            Icon(Icons.Default.Storefront, contentDescription = "Switch Store")
+                        }
+                        DropdownMenu(
+                            expanded = showSourceDropdown,
+                            onDismissRequest = { showSourceDropdown = false }
+                        ) {
+                            remoteSources.forEach { source ->
+                                DropdownMenuItem(
+                                    text = { Text(source) },
+                                    onClick = {
+                                        viewModel.selectSource(source)
+                                        showSourceDropdown = false
+                                        selectedCategory = "" // Reset category selection for new source
+                                    },
+                                    trailingIcon = {
+                                        if (source == selectedSource) {
+                                            Icon(Icons.Default.Info, contentDescription = "Selected")
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )

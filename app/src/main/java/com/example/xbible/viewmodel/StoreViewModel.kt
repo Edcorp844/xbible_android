@@ -27,6 +27,12 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = BibleRepository(application)
 
+    private val _remoteSources = MutableStateFlow<List<String>>(emptyList())
+    val remoteSources: StateFlow<List<String>> = _remoteSources.asStateFlow()
+
+    private val _selectedSource = MutableStateFlow<String?>(null)
+    val selectedSource: StateFlow<String?> = _selectedSource.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -48,29 +54,43 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
     private val activeTaskIds = mutableMapOf<String, String>()
 
     init {
-        refreshStore()
+        loadSources()
     }
 
-    fun refreshStore() {
+    private fun loadSources() {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 if (!repository.isInitialized()) {
                     repository.initialize()
                 }
-                
                 val sources = withContext(Dispatchers.IO) { repository.getRemoteSources() }
-                val allModules = mutableListOf<SwordModule>()
-                
-                sources.forEach { source ->
-                    val modules = withContext(Dispatchers.IO) { repository.fetchRemoteModules(source) }
-                    allModules.addAll(modules)
+                _remoteSources.value = sources
+                if (sources.isNotEmpty()) {
+                    selectSource(sources.first())
                 }
-                
-                _remoteModules.value = allModules
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                _errorMessage.value = "Failed to load sources: ${e.message}"
+            }
+        }
+    }
+
+    fun selectSource(source: String) {
+        if (_selectedSource.value == source) return
+        _selectedSource.value = source
+        refreshStore()
+    }
+
+    fun refreshStore() {
+        val source = _selectedSource.value ?: return
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val modules = withContext(Dispatchers.IO) { repository.fetchRemoteModules(source) }
+                _remoteModules.value = modules
                 
                 // Organize modules by category and language
-                val organized = allModules.groupBy { it.category }
+                val organized = modules.groupBy { it.category }
                     .mapValues { entry ->
                         entry.value.groupBy { it.language }
                     }

@@ -6,13 +6,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,42 +37,50 @@ import com.example.xbible.viewmodel.EngineViewModel
 @Composable
 fun XbibleApp(engineViewModel: EngineViewModel) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.STUDY) }
+    
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
+    val customNavSuiteType = with(adaptiveInfo) {
+        if (!windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
+            NavigationSuiteType.ShortNavigationBarCompact
+        } else {
+            NavigationSuiteType.WideNavigationRailCollapsed
+        }
+    }
 
     NavigationSuiteScaffold(
+        layoutType = customNavSuiteType,
         navigationSuiteItems = {
-            AppDestinations.entries.forEach {
+            AppDestinations.entries.forEach { destination ->
                 item(
                     icon = {
                         Icon(
-                            imageVector = it.icon,
-                            contentDescription = it.label
+                            imageVector = destination.icon,
+                            contentDescription = destination.label,
                         )
                     },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
+                    label = { Text(destination.label) },
+                    selected = destination == currentDestination,
+                    onClick = { currentDestination = destination }
                 )
             }
         }
     ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize()
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                MainContent(destination = currentDestination, engineViewModel = engineViewModel)
-            }
-        }
+        MainContent(
+            destination = currentDestination,
+            engineViewModel = engineViewModel,
+            onNavigate = { currentDestination = it }
+        )
     }
 }
 
 @Composable
-fun MainContent(destination: AppDestinations, engineViewModel: EngineViewModel) {
+fun MainContent(
+    destination: AppDestinations,
+    engineViewModel: EngineViewModel,
+    onNavigate: (AppDestinations) -> Unit
+) {
     when (destination) {
-        AppDestinations.STUDY -> StudyScreen(engineViewModel = engineViewModel)
+        AppDestinations.STUDY -> StudyScreen(engineViewModel = engineViewModel, onNavigateToStore = { onNavigate(AppDestinations.STORE) })
         AppDestinations.STORE -> StoreScreen()
         AppDestinations.TOOLS -> ToolsScreen()
         AppDestinations.LIBRARY -> LibraryScreen()
@@ -74,10 +89,10 @@ fun MainContent(destination: AppDestinations, engineViewModel: EngineViewModel) 
 
 enum class AppDestinations(
     val label: String,
-    val icon: ImageVector,
+    val icon: ImageVector
 ) {
-    STUDY("Study", Icons.AutoMirrored.Filled.MenuBook),
-    STORE("Store", Icons.Default.Storefront),
-    TOOLS("Tools", Icons.Default.Build),
-    LIBRARY("Library", Icons.AutoMirrored.Filled.LibraryBooks),
+    STUDY("Study", Icons.AutoMirrored.Outlined.MenuBook),
+    STORE("Store", Icons.Outlined.Storefront),
+    TOOLS("Tools", Icons.Outlined.Build),
+    LIBRARY("Library", Icons.AutoMirrored.Outlined.LibraryBooks),
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.system.Os
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.TaskStatus
@@ -48,6 +49,10 @@ class BibleRepository(private val application: Application) {
 
     fun getBibleModules(): List<SwordModule> {
         return engine?.getBibleModules() ?: emptyList()
+    }
+
+    fun getBooks(moduleName: String): List<ModuleBook> {
+        return engine?.getBooks(moduleName) ?: emptyList()
     }
 
     fun getChapterContent(moduleName: String, reference: String): List<Section> {

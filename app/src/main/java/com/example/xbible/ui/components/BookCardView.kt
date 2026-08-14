@@ -16,13 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -167,17 +166,17 @@ private fun ActionView(
         }
         is InstallationStatus.Pending -> {
             Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                LoadingIndicator(
-                    modifier = Modifier.size(20.dp),
+                CircularWavyProgressIndicator(
+                    modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
                 )
             }
         }
         is InstallationStatus.Installing -> {
             Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
-                LoadingIndicator(
+                CircularWavyProgressIndicator(
                     progress = { status.progress },
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(

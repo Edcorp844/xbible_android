@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.xbible"
-    compileSdk = 35
+    compileSdk = 37
     ndkVersion = "30.0.15729638"
 
     defaultConfig {
@@ -48,6 +48,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.adaptive)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
