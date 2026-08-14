@@ -399,7 +399,8 @@ fun ReferencePickerContent(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.6f)
-            .padding(bottom = 32.dp)
+            .padding(bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ButtonGroup(
             overflowIndicator = { menuState ->
@@ -410,7 +411,7 @@ fun ReferencePickerContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween, Alignment.CenterHorizontally)
         ) {
             customItem(
                 buttonGroupContent = {
