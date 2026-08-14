@@ -87,5 +87,9 @@ class BibleRepository(private val application: Application) {
         return engine?.isModuleInstalled(moduleName) ?: false
     }
 
+    fun uninstallModule(moduleName: String): Int {
+        return engine?.uninstallModule(moduleName) ?: -1
+    }
+
     // Add more methods here as needed to wrap XBibleEngine functionality
 }

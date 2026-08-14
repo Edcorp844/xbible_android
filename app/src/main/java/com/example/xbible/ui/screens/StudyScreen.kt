@@ -179,11 +179,7 @@ fun StudyScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Row(
-                            modifier = Modifier.wrapContentWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+
                             SplitButtonLayout(
                                 leadingButton = {
                                     SplitButtonDefaults.ElevatedLeadingButton(
@@ -207,7 +203,7 @@ fun StudyScreen(
                                     }
                                 }
                             )
-                        }
+
                     },
                     actions = {
                         IconToggleButton(checked = false, onCheckedChange = { }) {

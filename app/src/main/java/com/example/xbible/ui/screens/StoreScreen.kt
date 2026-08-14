@@ -19,11 +19,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenu
@@ -35,8 +39,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
@@ -51,10 +59,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.xbible.ui.components.BookCardView
+import com.example.xbible.ui.components.CategoryTabBar
+import com.example.xbible.ui.components.LanguageHeader
 import com.example.xbible.viewmodel.InstallationStatus
 import com.example.xbible.viewmodel.StoreViewModel
 import uniffi.xbible_engine.SwordModule
@@ -70,14 +82,15 @@ fun StoreScreen(
     val categories by viewModel.categories.collectAsState()
     val remoteSources by viewModel.remoteSources.collectAsState()
     val selectedSource by viewModel.selectedSource.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
 
     var selectedCategory by remember { mutableStateOf("") }
     var expandedLanguages by remember { mutableStateOf(setOf<String>()) }
     var showSourceDropdown by remember { mutableStateOf(false) }
 
-    // Auto-select first category when loaded
+    // Auto-select first category when loaded or list changes
     androidx.compose.runtime.LaunchedEffect(categories) {
-        if (selectedCategory.isEmpty() && categories.isNotEmpty()) {
+        if (categories.isNotEmpty() && (selectedCategory.isEmpty() || !categories.contains(selectedCategory))) {
             selectedCategory = categories.first()
         }
     }
@@ -86,22 +99,34 @@ fun StoreScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
-                title = { 
-                    Column {
+                title = {
                         Text("Store")
-                        selectedSource?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
                 },
                 actions = {
                     Box {
-                        IconButton(onClick = { showSourceDropdown = true }) {
-                            Icon(Icons.Default.Storefront, contentDescription = "Switch Store")
+                        SplitButtonLayout(
+                            leadingButton = {
+                                SplitButtonDefaults.ElevatedLeadingButton(
+                                    onClick = {  }
+                                ) {
+                                    Text(
+                                        text = selectedSource ?: "Source",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            },
+                            trailingButton = {
+                                SplitButtonDefaults.ElevatedTrailingButton(
+                                    checked = showSourceDropdown,
+                                    onCheckedChange = {
+                                        showSourceDropdown = it
+                                    }
+                                ) {
+                                   Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = "Source")
+                                }
+                            }
+                        )
                         }
                         DropdownMenu(
                             expanded = showSourceDropdown,
@@ -123,7 +148,6 @@ fun StoreScreen(
                                 )
                             }
                         }
-                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
@@ -136,6 +160,32 @@ fun StoreScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            // Search Bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { viewModel.updateSearchQuery(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text("Search Bibles, commentaries...") },
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                trailingIcon = if (searchQuery.isNotEmpty()) {
+                    {
+                        IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                        }
+                    }
+                } else null,
+                shape = CircleShape,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                ),
+                singleLine = true
+            )
+
             CategoryTabBar(
                 categories = categories,
                 selectedCategory = selectedCategory,
@@ -226,105 +276,6 @@ private fun handleModuleAction(module: SwordModule, status: InstallationStatus, 
         }
         is InstallationStatus.Pending, is InstallationStatus.Installing -> {
             viewModel.cancelInstall(module.name)
-        }
-    }
-}
-
-@Composable
-fun LanguageHeader(
-    langCode: String,
-    count: Int,
-    isExpanded: Boolean,
-    onToggle: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onToggle() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = langCode.uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Surface(
-                modifier = Modifier.padding(start = 8.dp),
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = CircleShape
-            ) {
-                Text(
-                    text = count.toString(),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-        }
-        Icon(
-            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            contentDescription = null
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun CategoryTabBar(
-    categories: List<String>,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit
-) {
-    if (categories.isEmpty()) return
-
-    val scrollState = rememberScrollState()
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        ButtonGroup(
-            modifier = Modifier.wrapContentWidth(),
-            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-            overflowIndicator = { menuState ->
-                IconButton(onClick = { menuState.show() }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More Categories")
-                }
-            }
-        ) {
-            categories.forEachIndexed { index, category ->
-                customItem(
-                    buttonGroupContent = {
-                        val shapes = when {
-                            categories.size == 1 -> ToggleButtonDefaults.shapes()
-                            index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                            index == categories.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                        }
-                        OutlinedToggleButton(
-                            checked = selectedCategory == category,
-                            onCheckedChange = { if (it) onCategorySelected(category) },
-                            shapes = shapes
-                        ) {
-                            Text(category)
-                        }
-                    },
-                    menuContent = { menuState ->
-                        DropdownMenuItem(
-                            text = { Text(category) },
-                            onClick = {
-                                onCategorySelected(category)
-                                menuState.dismiss()
-                            }
-                        )
-                    }
-                )
-            }
         }
     }
 }

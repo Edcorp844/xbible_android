@@ -51,6 +51,9 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
     private val _categories = MutableStateFlow<List<String>>(emptyList())
     val categories: StateFlow<List<String>> = _categories.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
     private val activeTaskIds = mutableMapOf<String, String>()
 
     init {
@@ -78,7 +81,13 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
     fun selectSource(source: String) {
         if (_selectedSource.value == source) return
         _selectedSource.value = source
+        _searchQuery.value = "" // Reset search when source changes
         refreshStore()
+    }
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+        filterModules()
     }
 
     fun refreshStore() {
@@ -89,13 +98,7 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
                 val modules = withContext(Dispatchers.IO) { repository.fetchRemoteModules(source) }
                 _remoteModules.value = modules
                 
-                // Organize modules by category and language
-                val organized = modules.groupBy { it.category }
-                    .mapValues { entry ->
-                        entry.value.groupBy { it.language }
-                    }
-                _organizedModules.value = organized
-                _categories.value = organized.keys.sorted()
+                filterModules()
                 
                 // Update installation states for already installed modules
                 val installedModules = withContext(Dispatchers.IO) { repository.refreshModules() }
@@ -112,6 +115,30 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
                 _isLoading.value = false
             }
         }
+    }
+
+    private fun filterModules() {
+        val query = _searchQuery.value.lowercase()
+        val modules = _remoteModules.value
+        
+        val filtered = if (query.isEmpty()) {
+            modules
+        } else {
+            modules.filter { 
+                it.name.lowercase().contains(query) || 
+                it.description.lowercase().contains(query) ||
+                it.language.lowercase().contains(query)
+            }
+        }
+
+        // Organize modules by category and language
+        val organized = filtered.groupBy { it.category }
+            .mapValues { entry ->
+                entry.value.groupBy { it.language }
+            }
+        
+        _organizedModules.value = organized
+        _categories.value = organized.keys.sorted()
     }
 
     fun install(module: SwordModule) {

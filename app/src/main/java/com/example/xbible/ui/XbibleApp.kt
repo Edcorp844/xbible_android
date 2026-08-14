@@ -83,7 +83,12 @@ fun MainContent(
         AppDestinations.STUDY -> StudyScreen(engineViewModel = engineViewModel, onNavigateToStore = { onNavigate(AppDestinations.STORE) })
         AppDestinations.STORE -> StoreScreen()
         AppDestinations.TOOLS -> ToolsScreen()
-        AppDestinations.LIBRARY -> LibraryScreen()
+        AppDestinations.LIBRARY -> LibraryScreen(
+            onOpenModule = { module ->
+                engineViewModel.selectModule(module)
+                onNavigate(AppDestinations.STUDY)
+            }
+        )
     }
 }
 

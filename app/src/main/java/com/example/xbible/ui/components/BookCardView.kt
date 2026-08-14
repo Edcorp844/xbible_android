@@ -15,11 +15,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,9 +57,9 @@ fun BookCardView(
     Column(
         modifier = modifier
             .width(160.dp)
-            .padding(8.dp),
+            .padding(4.dp),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // Physical Book Cover
         BookView(module = module)
@@ -73,16 +75,15 @@ fun BookCardView(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = module.name,
-                    fontSize = 13.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = categoryName ?: module.description,
-                    fontSize = 10.sp,
+                    text = module.description,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.secondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -143,12 +144,10 @@ private fun ActionView(
 ) {
     when (status) {
         is InstallationStatus.Idle -> {
-            OutlinedButton(
+            Button(
                 onClick = { onAction() },
                 modifier = Modifier.height(28.dp),
-                shape = RoundedCornerShape(14.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text("Get", fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
