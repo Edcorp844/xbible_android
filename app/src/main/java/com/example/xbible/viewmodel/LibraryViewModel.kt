@@ -1,6 +1,7 @@
 package com.example.xbible.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uniffi.xbible_engine.SwordModule
+
+private const val TAG = "LibraryViewModel"
 
 class LibraryViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -34,22 +37,54 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private var isRefreshing = false
+
     init {
         refreshLibrary()
     }
 
     fun refreshLibrary() {
+        if (isRefreshing) {
+            Log.d(TAG, "refreshLibrary() called while already refreshing — skipping")
+            return
+        }
+
         viewModelScope.launch {
+            isRefreshing = true
             _isLoading.value = true
+            _errorMessage.value = null
+            Log.d(TAG, "refreshLibrary() started")
+
             try {
-                val modules = withContext(Dispatchers.IO) { repository.refreshModules() }
+                if (!repository.isInitialized()) {
+                    Log.d(TAG, "Initializing repository...")
+                    repository.initialize().onFailure { e ->
+                        Log.e(TAG, "Repository initialization failed", e)
+                        throw e
+                    }
+                }
+
+                val modules = withContext(Dispatchers.IO) {
+                    repository.getInstalledModules()
+                }
+                Log.d(TAG, "Loaded ${modules.size} installed modules")
+                modules.forEach {
+                    Log.d(TAG, "  module: name=${it.name}, category=${it.category}, language=${it.language}")
+                }
+
                 _installedModules.value = modules
                 filterModules()
+
+                if (modules.isEmpty()) {
+                    Log.w(TAG, "No modules returned from repository.getInstalledModules() — check module install path / repository logic")
+                }
             } catch (e: Throwable) {
-                e.printStackTrace()
+                Log.e(TAG, "Failed to load library", e)
                 _errorMessage.value = "Failed to load library: ${e.message}"
             } finally {
                 _isLoading.value = false
+                isRefreshing = false
+                Log.d(TAG, "refreshLibrary() finished")
             }
         }
     }
@@ -62,25 +97,29 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
     private fun filterModules() {
         val query = _searchQuery.value.lowercase()
         val modules = _installedModules.value
-        
+
         val filtered = if (query.isEmpty()) {
             modules
         } else {
-            modules.filter { 
-                it.name.lowercase().contains(query) || 
-                it.description.lowercase().contains(query) ||
-                it.language.lowercase().contains(query)
+            modules.filter {
+                it.name.lowercase().contains(query) ||
+                        it.description.lowercase().contains(query) ||
+                        it.language.lowercase().contains(query)
             }
         }
+
+        Log.d(TAG, "filterModules(): query='$query' -> ${filtered.size}/${modules.size} modules match")
 
         // Organize modules by category and language
         val organized = filtered.groupBy { it.category }
             .mapValues { entry ->
                 entry.value.groupBy { it.language }
             }
-        
+
         _organizedModules.value = organized
         _categories.value = organized.keys.sorted()
+
+        Log.d(TAG, "Organized into categories: ${_categories.value}")
     }
 
     fun deleteModule(moduleName: String) {
@@ -89,10 +128,16 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
                 withContext(Dispatchers.IO) {
                     repository.uninstallModule(moduleName)
                 }
+                Log.d(TAG, "Deleted module: $moduleName")
                 refreshLibrary()
             } catch (e: Exception) {
+                Log.e(TAG, "Failed to delete module: $moduleName", e)
                 _errorMessage.value = "Failed to delete module: ${e.message}"
             }
         }
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 }

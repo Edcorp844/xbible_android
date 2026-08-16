@@ -9,6 +9,7 @@ import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.TaskStatus
 import uniffi.xbible_engine.XBibleEngine
+import uniffi.xbible_engine.initLogging
 import java.io.File
 
 /**
@@ -37,7 +38,7 @@ class BibleRepository(private val application: Application) {
 
             // Ensure expected Sword directories exist
             File(filesDir, "mods.d").mkdirs()
-
+            initLogging()
             engine = XBibleEngine()
             Result.success(Unit)
         } catch (e: Throwable) {
@@ -89,6 +90,21 @@ class BibleRepository(private val application: Application) {
 
     fun uninstallModule(moduleName: String): Int {
         return engine?.uninstallModule(moduleName) ?: -1
+    }
+
+    fun getInstalledModules(): List<SwordModule> {
+        if (engine == null) {
+            println("Engine not initialized in getInstalledModules")
+            return emptyList()
+        }
+        val categories = engine?.getAvailableCategories()
+        println("Installed categories: $categories")
+        for (category in categories.orEmpty()) {
+            println("Category: $category")
+        }
+        val modules =  engine?.refreshInstalledModules() ?: emptyList()
+        println("Installed modules size: ${modules.size}")
+        return modules
     }
 
     // Add more methods here as needed to wrap XBibleEngine functionality

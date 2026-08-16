@@ -103,8 +103,8 @@ fun CategoryTabBar(
             categories.forEachIndexed { index, category ->
                 customItem(
                     buttonGroupContent = {
-                        val shapes = when {
-                            categories.size == 1 -> ToggleButtonDefaults.shapes()
+                        val buttonShapes = when {
+                            categories.size <= 1 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                             index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                             index == categories.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                             else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
@@ -116,7 +116,7 @@ fun CategoryTabBar(
                                 checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                                 checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
                             ),
-                            shapes = shapes
+                            shapes = buttonShapes
                         ) {
                             Text(category)
                         }

@@ -314,7 +314,7 @@ internal inline fun<T, reified E: Throwable> uniffiTraitInterfaceCallWithError(
         }
     }
 }
-// Initial value and increment amount for handles.
+// Initial value and increment amount for handles. 
 // These ensure that Kotlin-generated handles always have the lowest bit set
 private const val UNIFFI_HANDLEMAP_INITIAL = 1.toLong()
 private const val UNIFFI_HANDLEMAP_DELTA = 2.toLong()
@@ -324,7 +324,7 @@ private const val UNIFFI_HANDLEMAP_DELTA = 2.toLong()
 // This is used pass an opaque 64-bit handle representing a foreign object to the Rust code.
 internal class UniffiHandleMap<T: Any> {
     private val map = ConcurrentHashMap<Long, T>()
-    // Start
+    // Start 
     private val counter = java.util.concurrent.atomic.AtomicLong(UNIFFI_HANDLEMAP_INITIAL)
 
     val size: Int
@@ -643,347 +643,363 @@ internal object IntegrityCheckingUniffiLib {
         uniffiCheckContractApiVersion(this)
         uniffiCheckApiChecksums(this)
     }
+    external fun uniffi_xbible_engine_checksum_func_init_logging(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_timelinedata_get_data(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_playback_state(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_load_audio_module(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_seek_to_time(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_skip_backward(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_skip_forward(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_stop(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_toggle_playback(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_client(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_install_module(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_artwork_extract_colors(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_artwork_image_bytes(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_modules_async(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_multiple_sources_async(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_remote_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_available_categories(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_available_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_bible_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_book_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_books(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_chapter_content(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_commentary_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_content(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_cult_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_daily_devotional_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_dictionary_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_image_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_by_category(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_size(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_lexicon_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_map_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_modules_by_language(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_module_info(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources_with_details(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_single_entry(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_source_description(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_source_url(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_module(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_module_async(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_module_installed(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_lookup_dictionary(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_lookup_strongs_number(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_search_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_set_global_options(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module_async(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_cancel_task(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_result_modules(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status(
-    ): Short
+    ): Int
+    external fun uniffi_xbible_engine_checksum_constructor_timelinedata_new(
+    ): Int
     external fun uniffi_xbible_engine_checksum_constructor_audioengine_new(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_constructor_storeapiclient_new(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_constructor_storeapiservice_new(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_constructor_artwork_new(
-    ): Short
+    ): Int
     external fun uniffi_xbible_engine_checksum_constructor_xbibleengine_new(
-    ): Short
+    ): Int
     external fun ffi_xbible_engine_uniffi_contract_version(
     ): Int
 
-
+        
 }
 
 internal object UniffiLib {
-
+    
     // The Cleaner for the whole library
     internal val CLEANER: UniffiCleaner by lazy {
         UniffiCleaner.create()
     }
-
+    
 
     init {
         Native.register(UniffiLib::class.java, findLibraryName(componentName = "xbible_engine"))
-
+        
     }
-    external fun uniffi_xbible_engine_fn_clone_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+    external fun uniffi_xbible_engine_fn_clone_timelinedata(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_free_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_free_timelinedata(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_constructor_audioengine_new(uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_constructor_timelinedata_new(uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_audioengine_find_active_node_id(`ptr`: Long,`timeMs`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_timelinedata_get_data(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_navigation_tree(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_playback_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_load_audio_module(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_peek_module_metadata(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_chapter(`ptr`: Long,`chapterId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_time(`ptr`: Long,`targetMs`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_set_repeat_mode(`ptr`: Long,`mode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_skip_backward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_skip_forward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_stop(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_toggle_playback(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Unit
-external fun uniffi_xbible_engine_fn_clone_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_clone_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_free_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_free_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_constructor_storeapiclient_new(`endpointUrl`: RustBuffer.ByValue,`authToken`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_constructor_audioengine_new(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_method_audioengine_find_active_node_id(`ptr`: Long,`timeMs`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_get_navigation_tree(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_get_playback_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_load_audio_module(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_peek_module_metadata(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_chapter(`ptr`: Long,`chapterId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_time(`ptr`: Long,`targetMs`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_audioengine_set_repeat_mode(`ptr`: Long,`mode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_audioengine_skip_backward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_audioengine_skip_forward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_audioengine_stop(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_audioengine_toggle_playback(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_clone_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_free_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_constructor_storeapiclient_new(`endpointUrl`: RustBuffer.ByValue,`authToken`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(`ptr`: Long,`module`: RustBuffer.ByValue,`targetDirPath`: RustBuffer.ByValue,`progressListener`: Long,
 ): Long
 external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(`ptr`: Long,
 ): Long
-external fun uniffi_xbible_engine_fn_clone_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_clone_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_free_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_free_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_constructor_storedownloadprogresslistener_new(`uniqueIdFilter`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_constructor_storedownloadprogresslistener_new(`uniqueIdFilter`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_storedownloadprogresslistener_on_progress(`ptr`: Long,`uniqueId`: RustBuffer.ByValue,`bytesWritten`: Long,`totalBytes`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_storedownloadprogresslistener_on_progress(`ptr`: Long,`uniqueId`: RustBuffer.ByValue,`bytesWritten`: Long,`totalBytes`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_clone_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_clone_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_free_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_free_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_constructor_storeapiservice_new(uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_constructor_storeapiservice_new(uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_storeapiservice_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_storeapiservice_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_get_cached_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_storeapiservice_get_cached_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_get_client(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_storeapiservice_get_client(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_storeapiservice_install_module(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`progressListener`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_storeapiservice_install_module(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`progressListener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_load_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_storeapiservice_load_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_clone_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_clone_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_free_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_free_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_constructor_artwork_new(`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_constructor_artwork_new(`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_artwork_extract_colors(`ptr`: Long,`count`: Int,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_artwork_extract_colors(`ptr`: Long,`count`: Int,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_artwork_image_bytes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_artwork_image_bytes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_free_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_free_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_constructor_xbibleengine_new(uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_constructor_xbibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_download_progress_details(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_download_progress_details(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_fetch_modules_async(`ptr`: Long,`sourceName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_fetch_modules_async(`ptr`: Long,`sourceName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_fetch_multiple_sources_async(`ptr`: Long,`sources`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_fetch_multiple_sources_async(`ptr`: Long,`sources`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_fetch_remote_modules(`ptr`: Long,`sourceName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_fetch_remote_modules(`ptr`: Long,`sourceName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_available_categories(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_available_categories(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_available_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_available_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_bible_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_bible_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_book_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_book_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_books(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_books(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_chapter_content(`ptr`: Long,`moduleName`: RustBuffer.ByValue,`reference`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_chapter_content(`ptr`: Long,`moduleName`: RustBuffer.ByValue,`reference`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_commentary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_commentary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_content(`ptr`: Long,`moduleName`: RustBuffer.ByValue,`reference`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_content(`ptr`: Long,`moduleName`: RustBuffer.ByValue,`reference`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_cult_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_cult_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_daily_devotional_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_daily_devotional_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_dictionary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_dictionary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_download_progress(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_download_progress(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Double
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_essay_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_essay_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_glossary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_glossary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_image_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_image_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_installed_modules_by_category(`ptr`: Long,`category`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_installed_modules_by_category(`ptr`: Long,`category`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_installed_modules_size(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_installed_modules_size(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_lexicon_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_lexicon_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_map_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_map_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_modules_by_language(`ptr`: Long,`languageCode`: RustBuffer.ByValue,`sourceName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_modules_by_language(`ptr`: Long,`languageCode`: RustBuffer.ByValue,`sourceName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_remote_module_info(`ptr`: Long,`sourceName`: RustBuffer.ByValue,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_remote_module_info(`ptr`: Long,`sourceName`: RustBuffer.ByValue,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_remote_sources(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_remote_sources(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_remote_sources_with_details(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_remote_sources_with_details(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_single_entry(`ptr`: Long,`swordModule`: RustBuffer.ByValue,`reference`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_single_entry(`ptr`: Long,`swordModule`: RustBuffer.ByValue,`reference`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_source_description(`ptr`: Long,`source`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_source_description(`ptr`: Long,`source`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_source_url(`ptr`: Long,`source`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_source_url(`ptr`: Long,`source`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_install_module(`ptr`: Long,`source`: RustBuffer.ByValue,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_install_module(`ptr`: Long,`source`: RustBuffer.ByValue,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Int
-external fun uniffi_xbible_engine_fn_method_xbibleengine_install_module_async(`ptr`: Long,`source`: RustBuffer.ByValue,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_install_module_async(`ptr`: Long,`source`: RustBuffer.ByValue,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_is_module_installed(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_is_module_installed(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_xbible_engine_fn_method_xbibleengine_lookup_dictionary(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_lookup_dictionary(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_lookup_strongs_number(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_lookup_strongs_number(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_refresh_installed_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_refresh_installed_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_search_modules(`ptr`: Long,`sourceName`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_search_modules(`ptr`: Long,`sourceName`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_set_global_options(`ptr`: Long,`options`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_set_global_options(`ptr`: Long,`options`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_method_xbibleengine_uninstall_module(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_uninstall_module(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Int
-external fun uniffi_xbible_engine_fn_method_xbibleengine_uninstall_module_async(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_uninstall_module_async(`ptr`: Long,`moduleName`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_cancel_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_cancel_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_result_modules(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_result_modules(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_status(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_status(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun ffi_xbible_engine_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun ffi_xbible_engine_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus,
-): RustBuffer.ByValue
-external fun ffi_xbible_engine_rustbuffer_free(`buf`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus,
+external fun uniffi_xbible_engine_fn_func_init_logging(uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun ffi_xbible_engine_rustbuffer_reserve(`buf`: RustBuffer.ByValue,`additional`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun ffi_xbible_engine_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun ffi_xbible_engine_rustbuffer_free(`buf`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun ffi_xbible_engine_rustbuffer_reserve(`buf`: RustBuffer.ByValue,`additional`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun ffi_xbible_engine_rust_future_poll_u8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -991,15 +1007,15 @@ external fun ffi_xbible_engine_rust_future_cancel_u8(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_u8(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_u8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Byte
+external fun ffi_xbible_engine_rust_future_complete_u8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Int
 external fun ffi_xbible_engine_rust_future_poll_i8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_cancel_i8(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_i8(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_i8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_i8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
 external fun ffi_xbible_engine_rust_future_poll_u16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1007,15 +1023,15 @@ external fun ffi_xbible_engine_rust_future_cancel_u16(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_u16(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_u16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
-): Short
+external fun ffi_xbible_engine_rust_future_complete_u16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Int
 external fun ffi_xbible_engine_rust_future_poll_i16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_cancel_i16(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_i16(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_i16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_i16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Short
 external fun ffi_xbible_engine_rust_future_poll_u32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1023,7 +1039,7 @@ external fun ffi_xbible_engine_rust_future_cancel_u32(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_u32(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_u32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_u32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Int
 external fun ffi_xbible_engine_rust_future_poll_i32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1031,7 +1047,7 @@ external fun ffi_xbible_engine_rust_future_cancel_i32(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_i32(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_i32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_i32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Int
 external fun ffi_xbible_engine_rust_future_poll_u64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1039,7 +1055,7 @@ external fun ffi_xbible_engine_rust_future_cancel_u64(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_u64(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_u64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_u64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun ffi_xbible_engine_rust_future_poll_i64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1047,7 +1063,7 @@ external fun ffi_xbible_engine_rust_future_cancel_i64(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_i64(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_i64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_i64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun ffi_xbible_engine_rust_future_poll_f32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1055,7 +1071,7 @@ external fun ffi_xbible_engine_rust_future_cancel_f32(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_f32(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_f32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_f32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Float
 external fun ffi_xbible_engine_rust_future_poll_f64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1063,7 +1079,7 @@ external fun ffi_xbible_engine_rust_future_cancel_f64(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_f64(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_f64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_f64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Double
 external fun ffi_xbible_engine_rust_future_poll_rust_buffer(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1071,7 +1087,7 @@ external fun ffi_xbible_engine_rust_future_cancel_rust_buffer(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_rust_buffer(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_rust_buffer(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_rust_buffer(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun ffi_xbible_engine_rust_future_poll_void(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
 ): Unit
@@ -1079,10 +1095,10 @@ external fun ffi_xbible_engine_rust_future_cancel_void(`handle`: Long,
 ): Unit
 external fun ffi_xbible_engine_rust_future_free_void(`handle`: Long,
 ): Unit
-external fun ffi_xbible_engine_rust_future_complete_void(`handle`: Long,uniffi_out_err: UniffiRustCallStatus,
+external fun ffi_xbible_engine_rust_future_complete_void(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
 
-
+    
 }
 
 private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
@@ -1096,223 +1112,232 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id() != 7264.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_func_init_logging() != 47264) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules() != 15262.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_timelinedata_get_data() != 9534) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path() != 23605.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id() != 7264) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree() != 50914.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules() != 15262) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_playback_state() != 62968.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path() != 23605) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_load_audio_module() != 7872.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree() != 50914) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata() != 43550.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_playback_state() != 62968) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter() != 12491.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_load_audio_module() != 7872) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_time() != 33296.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata() != 43550) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode() != 57587.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter() != 12491) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_backward() != 51523.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_time() != 33296) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_forward() != 56965.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode() != 57587) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_stop() != 3892.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_backward() != 51523) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_toggle_playback() != 54972.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_forward() != 56965) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module() != 4449.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_stop() != 3892) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules() != 13868.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_toggle_playback() != 54972) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress() != 50095.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module() != 4449) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path() != 17367.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules() != 13868) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog() != 6199.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress() != 50095) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_client() != 56651.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path() != 17367) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_install_module() != 43943.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog() != 6199) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog() != 18774.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_client() != 56651) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_artwork_extract_colors() != 50120.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_install_module() != 43943) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_artwork_image_bytes() != 35402.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog() != 18774) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details() != 32431.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_artwork_extract_colors() != 50120) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_fetch_modules_async() != 48524.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_artwork_image_bytes() != 35402) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_fetch_multiple_sources_async() != 15171.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details() != 32431) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_fetch_remote_modules() != 33149.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_fetch_modules_async() != 48524) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_available_categories() != 17163.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_fetch_multiple_sources_async() != 15171) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_available_modules() != 47826.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_fetch_remote_modules() != 33149) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_bible_modules() != 8827.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_available_categories() != 17163) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_book_modules() != 28718.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_available_modules() != 47826) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_books() != 20009.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_bible_modules() != 8827) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_chapter_content() != 40760.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_book_modules() != 28718) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_commentary_modules() != 27810.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_books() != 20009) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_content() != 47547.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_chapter_content() != 40760) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_cult_modules() != 24417.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_commentary_modules() != 27810) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_daily_devotional_modules() != 17280.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_content() != 47547) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_dictionary_modules() != 42019.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_cult_modules() != 24417) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress() != 56300.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_daily_devotional_modules() != 17280) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules() != 34865.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_dictionary_modules() != 42019) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules() != 34064.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress() != 56300) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_image_modules() != 58292.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules() != 34865) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_by_category() != 42738.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules() != 34064) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_size() != 23438.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_image_modules() != 58292) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_lexicon_modules() != 4082.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_by_category() != 42738) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_map_modules() != 57702.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_size() != 23438) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_modules_by_language() != 28136.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_lexicon_modules() != 4082) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_module_info() != 15276.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_map_modules() != 57702) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources() != 65226.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_modules_by_language() != 28136) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources_with_details() != 23500.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_module_info() != 15276) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_single_entry() != 23627.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources() != 65226) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_source_description() != 59404.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources_with_details() != 23500) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_source_url() != 25055.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_single_entry() != 23627) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_module() != 23364.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_source_description() != 59404) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_module_async() != 49600.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_source_url() != 25055) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_is_module_installed() != 19712.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_module() != 23364) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_lookup_dictionary() != 15572.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_module_async() != 49600) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_lookup_strongs_number() != 57484.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_is_module_installed() != 19712) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules() != 7357.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_lookup_dictionary() != 15572) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search_modules() != 64541.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_lookup_strongs_number() != 57484) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_set_global_options() != 8745.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules() != 7357) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module() != 60780.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search_modules() != 64541) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module_async() != 25701.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_set_global_options() != 8745) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_cancel_task() != 34342.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module() != 60780) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_task_result_modules() != 61400.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module_async() != 25701) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status() != 39544.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_cancel_task() != 34342) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_audioengine_new() != 33430.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_task_result_modules() != 61400) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_storeapiclient_new() != 19502.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status() != 39544) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new() != 25131.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_constructor_timelinedata_new() != 19980) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_storeapiservice_new() != 43960.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_constructor_audioengine_new() != 33430) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_artwork_new() != 38662.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_constructor_storeapiclient_new() != 19502) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_xbibleengine_new() != 63190.toShort()) {
+    if (lib.uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new() != 25131) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_constructor_storeapiservice_new() != 43960) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_constructor_artwork_new() != 38662) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_constructor_xbibleengine_new() != 63190) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1430,7 +1455,7 @@ inline fun <T : Disposable?, R> T.use(block: (T) -> R) =
         }
     }
 
-/**
+/** 
  * Placeholder object used to signal that we're constructing an interface with a FFI handle.
  *
  * This is the first argument for interface constructors that input a raw handle. It exists is that
@@ -1441,7 +1466,7 @@ inline fun <T : Disposable?, R> T.use(block: (T) -> R) =
  * */
 object UniffiWithHandle
 
-/**
+/** 
  * Used to instantiate an interface without an actual pointer, for fakes in tests, mostly.
  *
  * @suppress
@@ -1823,14 +1848,14 @@ public object FfiConverterByteArray: FfiConverterRustBuffer<ByteArray> {
 
 
 public interface ArtworkInterface {
-
+    
     /**
      * Extracts colors directly targeting the internal image_bytes payload option
      */
     fun `extractColors`(`count`: kotlin.UInt): List<AudioEngineRgbaColor>
-
+    
     fun `imageBytes`(): kotlin.ByteArray?
-
+    
     companion object
 }
 
@@ -1859,10 +1884,10 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
         this.cleanable = null
     }
     constructor(`filePath`: kotlin.String) :
-        this(UniffiWithHandle,
+        this(UniffiWithHandle, 
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_artwork_new(
-
+    
         FfiConverterString.lower(`filePath`),_status)
 }
     )
@@ -1938,7 +1963,7 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
         }
     }
 
-
+    
     /**
      * Extracts colors directly targeting the internal image_bytes payload option
      */override fun `extractColors`(`count`: kotlin.UInt): List<AudioEngineRgbaColor> {
@@ -1952,7 +1977,7 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
     }
     )
     }
-
+    
 
     override fun `imageBytes`(): kotlin.ByteArray? {
             return FfiConverterOptionalByteArray.lift(
@@ -1965,20 +1990,20 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
     }
     )
     }
+    
+
+    
+
+    
 
 
-
-
-
-
-
-
-
+    
+    
     /**
      * @suppress
      */
     companion object
-
+    
 }
 
 
@@ -2102,50 +2127,50 @@ public object FfiConverterTypeArtwork: FfiConverter<Artwork, Long> {
 
 
 public interface AudioEngineInterface {
-
+    
     fun `findActiveNodeId`(`timeMs`: kotlin.Long): kotlin.String?
-
+    
     fun `getAudioModules`(): List<AudioModuleInfo>
-
+    
     fun `getAudioModulesPath`(): kotlin.String
-
+    
     fun `getNavigationTree`(): AudioNode?
-
+    
     /**
      * Unified state lookup pulling directly from current values managed inside Rust
      */
     fun `getPlaybackState`(): PlaybackState?
-
+    
     fun `loadAudioModule`(`filePath`: kotlin.String): kotlin.ByteArray
-
+    
     fun `peekModuleMetadata`(`filePath`: kotlin.String): ModuleMetadata
-
+    
     fun `seekToChapter`(`chapterId`: kotlin.String)
-
+    
     fun `seekToTime`(`targetMs`: kotlin.Long)
-
+    
     /**
      * Assign alternate repeat constraints directly onto the system core
      */
     fun `setRepeatMode`(`mode`: RepeatMode)
-
+    
     /**
      * Backtracks cleanly by (seconds) seconds (seconds * 1,000 milliseconds) bounded at 0
      */
     fun `skipBackward`(`seconds`: kotlin.Long)
-
+    
     /**
      * Skips forward cleanly by (seconds) seconds ((seconds) * 1,000 milliseconds) capped to total duration
      */
     fun `skipForward`(`seconds`: kotlin.Long)
-
+    
     /**
      * Stop playback completely, resetting timestamps to 0 and dropping loaded audio references
      */
     fun `stop`()
-
+    
     fun `togglePlayback`()
-
+    
     companion object
 }
 
@@ -2174,10 +2199,10 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         this.cleanable = null
     }
     constructor() :
-        this(UniffiWithHandle,
+        this(UniffiWithHandle, 
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_audioengine_new(
-
+    
         _status)
 }
     )
@@ -2264,7 +2289,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
-
+    
 
     override fun `getAudioModules`(): List<AudioModuleInfo> {
             return FfiConverterSequenceTypeAudioModuleInfo.lift(
@@ -2277,7 +2302,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
-
+    
 
     override fun `getAudioModulesPath`(): kotlin.String {
             return FfiConverterString.lift(
@@ -2290,7 +2315,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
-
+    
 
     override fun `getNavigationTree`(): AudioNode? {
             return FfiConverterOptionalTypeAudioNode.lift(
@@ -2303,9 +2328,9 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Unified state lookup pulling directly from current values managed inside Rust
      */override fun `getPlaybackState`(): PlaybackState? {
@@ -2319,9 +2344,9 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
+    
 
-
-
+    
     @Throws(AudioEngineException::class)override fun `loadAudioModule`(`filePath`: kotlin.String): kotlin.ByteArray {
             return FfiConverterByteArray.lift(
     callWithHandle {
@@ -2333,9 +2358,9 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
+    
 
-
-
+    
     @Throws(AudioEngineException::class)override fun `peekModuleMetadata`(`filePath`: kotlin.String): ModuleMetadata {
             return FfiConverterTypeModuleMetadata.lift(
     callWithHandle {
@@ -2347,10 +2372,10 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     )
     }
-
+    
 
     override fun `seekToChapter`(`chapterId`: kotlin.String)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_seek_to_chapter(
@@ -2358,11 +2383,11 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         FfiConverterString.lower(`chapterId`),_status)
 }
     }
-
-
+    
+    
 
     override fun `seekToTime`(`targetMs`: kotlin.Long)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_seek_to_time(
@@ -2370,14 +2395,14 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         FfiConverterLong.lower(`targetMs`),_status)
 }
     }
+    
+    
 
-
-
-
+    
     /**
      * Assign alternate repeat constraints directly onto the system core
      */override fun `setRepeatMode`(`mode`: RepeatMode)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_set_repeat_mode(
@@ -2385,14 +2410,14 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         FfiConverterTypeRepeatMode.lower(`mode`),_status)
 }
     }
+    
+    
 
-
-
-
+    
     /**
      * Backtracks cleanly by (seconds) seconds (seconds * 1,000 milliseconds) bounded at 0
      */override fun `skipBackward`(`seconds`: kotlin.Long)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_skip_backward(
@@ -2400,14 +2425,14 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         FfiConverterLong.lower(`seconds`),_status)
 }
     }
+    
+    
 
-
-
-
+    
     /**
      * Skips forward cleanly by (seconds) seconds ((seconds) * 1,000 milliseconds) capped to total duration
      */override fun `skipForward`(`seconds`: kotlin.Long)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_skip_forward(
@@ -2415,14 +2440,14 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         FfiConverterLong.lower(`seconds`),_status)
 }
     }
+    
+    
 
-
-
-
+    
     /**
      * Stop playback completely, resetting timestamps to 0 and dropping loaded audio references
      */override fun `stop`()
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_stop(
@@ -2430,11 +2455,11 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         _status)
 }
     }
-
-
+    
+    
 
     override fun `togglePlayback`()
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_toggle_playback(
@@ -2442,21 +2467,21 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
         _status)
 }
     }
+    
+    
+
+    
+
+    
 
 
-
-
-
-
-
-
-
-
+    
+    
     /**
      * @suppress
      */
     companion object
-
+    
 }
 
 
@@ -2580,11 +2605,11 @@ public object FfiConverterTypeAudioEngine: FfiConverter<AudioEngine, Long> {
 
 
 public interface StoreApiClientInterface {
-
+    
     suspend fun `downloadAndInstallModule`(`module`: RemoteAudioModuleInfo, `targetDirPath`: kotlin.String, `progressListener`: StoreDownloadProgressListener): kotlin.String
-
+    
     suspend fun `fetchAudioModules`(): List<RemoteAudioModuleInfo>
-
+    
     companion object
 }
 
@@ -2613,10 +2638,10 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         this.cleanable = null
     }
     constructor(`endpointUrl`: kotlin.String, `authToken`: kotlin.String?) :
-        this(UniffiWithHandle,
+        this(UniffiWithHandle, 
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_storeapiclient_new(
-
+    
         FfiConverterString.lower(`endpointUrl`),FfiConverterOptionalString.lower(`authToken`),_status)
 }
     )
@@ -2692,7 +2717,7 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         }
     }
 
-
+    
     @Throws(StoreApiException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     override suspend fun `downloadAndInstallModule`(`module`: RemoteAudioModuleInfo, `targetDirPath`: kotlin.String, `progressListener`: StoreDownloadProgressListener) : kotlin.String {
@@ -2713,7 +2738,7 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
     )
     }
 
-
+    
     @Throws(StoreApiException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     override suspend fun `fetchAudioModules`() : List<RemoteAudioModuleInfo> {
@@ -2721,7 +2746,7 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(
                 uniffiHandle,
-
+                
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -2734,18 +2759,18 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
     )
     }
 
+    
+
+    
 
 
-
-
-
-
-
+    
+    
     /**
      * @suppress
      */
     companion object
-
+    
 }
 
 
@@ -2869,17 +2894,17 @@ public object FfiConverterTypeStoreApiClient: FfiConverter<StoreApiClient, Long>
 
 
 public interface StoreApiServiceInterface {
-
+    
     fun `getAudioModulesPath`(): kotlin.String
-
+    
     fun `getCachedCatalog`(): List<RemoteAudioModuleInfo>
-
+    
     fun `getClient`(): StoreApiClient
-
+    
     fun `installModule`(`moduleId`: kotlin.String, `progressListener`: StoreDownloadProgressListener): kotlin.String
-
+    
     fun `loadCatalog`(): List<RemoteAudioModuleInfo>
-
+    
     companion object
 }
 
@@ -2908,10 +2933,10 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
         this.cleanable = null
     }
     constructor() :
-        this(UniffiWithHandle,
+        this(UniffiWithHandle, 
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_storeapiservice_new(
-
+    
         _status)
 }
     )
@@ -2998,7 +3023,7 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     )
     }
-
+    
 
     override fun `getCachedCatalog`(): List<RemoteAudioModuleInfo> {
             return FfiConverterSequenceTypeRemoteAudioModuleInfo.lift(
@@ -3011,7 +3036,7 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     )
     }
-
+    
 
     override fun `getClient`(): StoreApiClient {
             return FfiConverterTypeStoreApiClient.lift(
@@ -3024,9 +3049,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     )
     }
+    
 
-
-
+    
     @Throws(StoreApiException::class)override fun `installModule`(`moduleId`: kotlin.String, `progressListener`: StoreDownloadProgressListener): kotlin.String {
             return FfiConverterString.lift(
     callWithHandle {
@@ -3038,9 +3063,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     )
     }
+    
 
-
-
+    
     @Throws(StoreApiException::class)override fun `loadCatalog`(): List<RemoteAudioModuleInfo> {
             return FfiConverterSequenceTypeRemoteAudioModuleInfo.lift(
     callWithHandle {
@@ -3052,20 +3077,20 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     )
     }
+    
+
+    
+
+    
 
 
-
-
-
-
-
-
-
+    
+    
     /**
      * @suppress
      */
     companion object
-
+    
 }
 
 
@@ -3189,9 +3214,9 @@ public object FfiConverterTypeStoreApiService: FfiConverter<StoreApiService, Lon
 
 
 public interface StoreDownloadProgressListenerInterface {
-
+    
     fun `onProgress`(`uniqueId`: kotlin.String, `bytesWritten`: kotlin.ULong, `totalBytes`: kotlin.ULong?)
-
+    
     companion object
 }
 
@@ -3220,10 +3245,10 @@ open class StoreDownloadProgressListener: Disposable, AutoCloseable, StoreDownlo
         this.cleanable = null
     }
     constructor(`uniqueIdFilter`: kotlin.String?) :
-        this(UniffiWithHandle,
+        this(UniffiWithHandle, 
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_storedownloadprogresslistener_new(
-
+    
         FfiConverterOptionalString.lower(`uniqueIdFilter`),_status)
 }
     )
@@ -3300,7 +3325,7 @@ open class StoreDownloadProgressListener: Disposable, AutoCloseable, StoreDownlo
     }
 
     override fun `onProgress`(`uniqueId`: kotlin.String, `bytesWritten`: kotlin.ULong, `totalBytes`: kotlin.ULong?)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storedownloadprogresslistener_on_progress(
@@ -3308,21 +3333,21 @@ open class StoreDownloadProgressListener: Disposable, AutoCloseable, StoreDownlo
         FfiConverterString.lower(`uniqueId`),FfiConverterULong.lower(`bytesWritten`),FfiConverterOptionalULong.lower(`totalBytes`),_status)
 }
     }
+    
+    
+
+    
+
+    
 
 
-
-
-
-
-
-
-
-
+    
+    
     /**
      * @suppress
      */
     companion object
-
+    
 }
 
 
@@ -3445,227 +3470,485 @@ public object FfiConverterTypeStoreDownloadProgressListener: FfiConverter<StoreD
 //
 
 
+public interface TimelineDataInterface {
+    
+    fun `getData`(): List<Period>
+    
+    companion object
+}
+
+open class TimelineData: Disposable, AutoCloseable, TimelineDataInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+    constructor() :
+        this(UniffiWithHandle, 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_constructor_timelinedata_new(
+    
+        _status)
+}
+    )
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_xbible_engine_fn_free_timelinedata(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_xbible_engine_fn_clone_timelinedata(handle, status)
+        }
+    }
+
+    override fun `getData`(): List<Period> {
+            return FfiConverterSequenceTypePeriod.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_timelinedata_get_data(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+
+    
+
+
+    
+    
+    /**
+     * @suppress
+     */
+    companion object
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeTimelineData: FfiConverter<TimelineData, Long> {
+    override fun lower(value: TimelineData): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): TimelineData {
+        return TimelineData(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): TimelineData {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: TimelineData) = 8UL
+
+    override fun write(value: TimelineData, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
 /**
  * High-level Bible API abstraction layer for UniFFI export
  * Provides a clean interface for Swift and other languages to interact with Bible modules
  */
 public interface XBibleEngineInterface {
-
+    
     /**
      * Get detailed download progress for module installation
      */
     fun `getDownloadProgressDetails`(): DownloadProgress
-
+    
     /**
      * Fetch available modules from a remote source (Asynchronous)
      * Returns a TaskID for tracking progress
      */
     fun `fetchModulesAsync`(`sourceName`: kotlin.String): kotlin.String
-
+    
     /**
      * Fetch available modules from multiple remote sources in parallel (Asynchronous)
      * Returns a TaskID for tracking progress
      */
     fun `fetchMultipleSourcesAsync`(`sources`: List<kotlin.String>): kotlin.String
-
+    
     /**
      * Fetch available modules from a remote source
      */
     fun `fetchRemoteModules`(`sourceName`: kotlin.String): List<SwordModule>
-
+    
     /**
      * Get all available module categories
      */
     fun `getAvailableCategories`(): List<kotlin.String>
-
+    
     /**
      * Get all available Bible modules
      */
     fun `getAvailableModules`(): List<SwordModule>
-
+    
     /**
      * Get all Bible modules (alias for get_available_modules for clarity)
      */
     fun `getBibleModules`(): List<SwordModule>
-
+    
     /**
      * Get all book modules (devotional books, etc.)
      */
     fun `getBookModules`(): List<SwordModule>
-
+    
     /**
      * Get the book structure for a specific module
      */
     fun `getBooks`(`moduleName`: kotlin.String): List<ModuleBook>
-
+    
     /**
      * Get content for a whole chapter (e.g., "Genesis 1" or "John 3")
      * using a specific module
      */
     fun `getChapterContent`(`moduleName`: kotlin.String, `reference`: kotlin.String): List<Section>
-
+    
     /**
      * Get all commentary modules
      */
     fun `getCommentaryModules`(): List<SwordModule>
-
+    
     /**
      * Get content for a specific reference (e.g., "Genesis 1:1" or "John 3:16")
      * using a specific module
      */
     fun `getContent`(`moduleName`: kotlin.String, `reference`: kotlin.String): List<Section>
-
+    
     /**
      * Get all cult/religion study modules
      */
     fun `getCultModules`(): List<SwordModule>
-
+    
     /**
      * Get all daily devotional modules
      */
     fun `getDailyDevotionalModules`(): List<SwordModule>
-
+    
     /**
      * Get all dictionary modules
      */
     fun `getDictionaryModules`(): List<SwordModule>
-
+    
     /**
      * Get download progress (0.0 to 1.0)
      */
     fun `getDownloadProgress`(): kotlin.Double
-
+    
     /**
      * Get all essay modules (theological essays and articles)
      */
     fun `getEssayModules`(): List<SwordModule>
-
+    
     /**
      * Get all glossary modules (simple word definitions)
      */
     fun `getGlossaryModules`(): List<SwordModule>
-
+    
     /**
      * Get all image modules (illustrations and artwork)
      */
     fun `getImageModules`(): List<SwordModule>
-
+    
     /**
      * Get installed modules by category
      */
     fun `getInstalledModulesByCategory`(`category`: kotlin.String): List<SwordModule>
-
+    
     /**
      * Get total size of all installed modules in bytes
      */
     fun `getInstalledModulesSize`(): kotlin.Long
-
+    
     /**
      * Get all lexicon modules (detailed language study tools)
      */
     fun `getLexiconModules`(): List<SwordModule>
-
+    
     /**
      * Get all map modules
      */
     fun `getMapModules`(): List<SwordModule>
-
+    
     /**
      * Get modules by language
      */
     fun `getModulesByLanguage`(`languageCode`: kotlin.String, `sourceName`: kotlin.String): List<SwordModule>
-
+    
     /**
      * Get information about a specific remote module
      * Returns a TaskID for tracking progress
      */
     fun `getRemoteModuleInfo`(`sourceName`: kotlin.String, `moduleName`: kotlin.String): List<SwordModule>
-
+    
     /**
      * Get list of remote sources
      */
     fun `getRemoteSources`(): List<kotlin.String>
-
+    
     /**
      * Get list of remote sources with details
      */
     fun `getRemoteSourcesWithDetails`(): List<ModuleSource>
-
+    
     /**
      * Get a single module entry by name
      */
     fun `getSingleEntry`(`swordModule`: SwordModule, `reference`: kotlin.String): List<Section>
-
+    
     /**
      * Get helper function for source description
      */
     fun `getSourceDescription`(`source`: kotlin.String): kotlin.String
-
+    
     /**
      * Get helper function for source URL
      */
     fun `getSourceUrl`(`source`: kotlin.String): kotlin.String
-
+    
     /**
      * Install a remote module from a source
      * Returns 0 on success, non-zero error code on failure
      */
     fun `installModule`(`source`: kotlin.String, `moduleName`: kotlin.String): kotlin.Int
-
+    
     /**
      * Install a remote module from a source (Asynchronous)
      * Returns a TaskID for tracking progress
      */
     fun `installModuleAsync`(`source`: kotlin.String, `moduleName`: kotlin.String): kotlin.String
-
+    
     /**
      * Check if a module is installed
      */
     fun `isModuleInstalled`(`moduleName`: kotlin.String): kotlin.Boolean
-
+    
     fun `lookupDictionary`(`query`: DictionaryQuery): DictionaryResponse
-
+    
     fun `lookupStrongsNumber`(`query`: LexiconQuery): LexiconResponse
-
+    
     /**
      * Refresh the list of installed modules
      */
     fun `refreshInstalledModules`(): List<SwordModule>
-
+    
     /**
      * Search for modules matching a query across all sources
      */
     fun `searchModules`(`sourceName`: kotlin.String, `query`: kotlin.String): List<SwordModule>
-
+    
     fun `setGlobalOptions`(`options`: List<EngineGlobalOption>)
-
+    
     /**
      * Uninstall a module
      * Returns 0 on success, non-zero error code on failure
      */
     fun `uninstallModule`(`moduleName`: kotlin.String): kotlin.Int
-
+    
     /**
      * Uninstall a module (Asynchronous)
      * Returns a TaskID for tracking progress
      */
     fun `uninstallModuleAsync`(`moduleName`: kotlin.String): kotlin.String
-
+    
     /**
      * Cancel a background task
      */
     fun `cancelTask`(`taskId`: kotlin.String)
-
+    
     /**
      * Get the modules resulting from a fetch task
      */
     fun `getTaskResultModules`(`taskId`: kotlin.String): List<SwordModule>
-
+    
     /**
      * Get the status of a background task
      */
     fun `getTaskStatus`(`taskId`: kotlin.String): TaskStatus?
-
+    
     companion object
 }
 
@@ -3701,10 +3984,10 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
      * Create a new BibleEngine instance
      */
     constructor() :
-        this(UniffiWithHandle,
+        this(UniffiWithHandle, 
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_xbibleengine_new(
-
+    
         _status)
 }
     )
@@ -3780,7 +4063,7 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
         }
     }
 
-
+    
     /**
      * Get detailed download progress for module installation
      */override fun `getDownloadProgressDetails`(): DownloadProgress {
@@ -3794,9 +4077,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Fetch available modules from a remote source (Asynchronous)
      * Returns a TaskID for tracking progress
@@ -3811,9 +4094,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Fetch available modules from multiple remote sources in parallel (Asynchronous)
      * Returns a TaskID for tracking progress
@@ -3828,9 +4111,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Fetch available modules from a remote source
      */override fun `fetchRemoteModules`(`sourceName`: kotlin.String): List<SwordModule> {
@@ -3844,9 +4127,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all available module categories
      */override fun `getAvailableCategories`(): List<kotlin.String> {
@@ -3860,9 +4143,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all available Bible modules
      */override fun `getAvailableModules`(): List<SwordModule> {
@@ -3876,9 +4159,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all Bible modules (alias for get_available_modules for clarity)
      */override fun `getBibleModules`(): List<SwordModule> {
@@ -3892,9 +4175,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all book modules (devotional books, etc.)
      */override fun `getBookModules`(): List<SwordModule> {
@@ -3908,9 +4191,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get the book structure for a specific module
      */override fun `getBooks`(`moduleName`: kotlin.String): List<ModuleBook> {
@@ -3924,9 +4207,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get content for a whole chapter (e.g., "Genesis 1" or "John 3")
      * using a specific module
@@ -3941,9 +4224,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all commentary modules
      */override fun `getCommentaryModules`(): List<SwordModule> {
@@ -3957,9 +4240,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get content for a specific reference (e.g., "Genesis 1:1" or "John 3:16")
      * using a specific module
@@ -3974,9 +4257,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all cult/religion study modules
      */override fun `getCultModules`(): List<SwordModule> {
@@ -3990,9 +4273,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all daily devotional modules
      */override fun `getDailyDevotionalModules`(): List<SwordModule> {
@@ -4006,9 +4289,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all dictionary modules
      */override fun `getDictionaryModules`(): List<SwordModule> {
@@ -4022,9 +4305,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get download progress (0.0 to 1.0)
      */override fun `getDownloadProgress`(): kotlin.Double {
@@ -4038,9 +4321,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all essay modules (theological essays and articles)
      */override fun `getEssayModules`(): List<SwordModule> {
@@ -4054,9 +4337,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all glossary modules (simple word definitions)
      */override fun `getGlossaryModules`(): List<SwordModule> {
@@ -4070,9 +4353,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all image modules (illustrations and artwork)
      */override fun `getImageModules`(): List<SwordModule> {
@@ -4086,9 +4369,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get installed modules by category
      */override fun `getInstalledModulesByCategory`(`category`: kotlin.String): List<SwordModule> {
@@ -4102,9 +4385,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get total size of all installed modules in bytes
      */override fun `getInstalledModulesSize`(): kotlin.Long {
@@ -4118,9 +4401,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all lexicon modules (detailed language study tools)
      */override fun `getLexiconModules`(): List<SwordModule> {
@@ -4134,9 +4417,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get all map modules
      */override fun `getMapModules`(): List<SwordModule> {
@@ -4150,9 +4433,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get modules by language
      */override fun `getModulesByLanguage`(`languageCode`: kotlin.String, `sourceName`: kotlin.String): List<SwordModule> {
@@ -4166,9 +4449,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get information about a specific remote module
      * Returns a TaskID for tracking progress
@@ -4183,9 +4466,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get list of remote sources
      */override fun `getRemoteSources`(): List<kotlin.String> {
@@ -4199,9 +4482,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get list of remote sources with details
      */override fun `getRemoteSourcesWithDetails`(): List<ModuleSource> {
@@ -4215,9 +4498,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get a single module entry by name
      */override fun `getSingleEntry`(`swordModule`: SwordModule, `reference`: kotlin.String): List<Section> {
@@ -4231,9 +4514,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get helper function for source description
      */override fun `getSourceDescription`(`source`: kotlin.String): kotlin.String {
@@ -4247,9 +4530,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get helper function for source URL
      */override fun `getSourceUrl`(`source`: kotlin.String): kotlin.String {
@@ -4263,9 +4546,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Install a remote module from a source
      * Returns 0 on success, non-zero error code on failure
@@ -4280,9 +4563,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Install a remote module from a source (Asynchronous)
      * Returns a TaskID for tracking progress
@@ -4297,9 +4580,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Check if a module is installed
      */override fun `isModuleInstalled`(`moduleName`: kotlin.String): kotlin.Boolean {
@@ -4313,7 +4596,7 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
-
+    
 
     override fun `lookupDictionary`(`query`: DictionaryQuery): DictionaryResponse {
             return FfiConverterTypeDictionaryResponse.lift(
@@ -4326,7 +4609,7 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
-
+    
 
     override fun `lookupStrongsNumber`(`query`: LexiconQuery): LexiconResponse {
             return FfiConverterTypeLexiconResponse.lift(
@@ -4339,9 +4622,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Refresh the list of installed modules
      */override fun `refreshInstalledModules`(): List<SwordModule> {
@@ -4355,9 +4638,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Search for modules matching a query across all sources
      */override fun `searchModules`(`sourceName`: kotlin.String, `query`: kotlin.String): List<SwordModule> {
@@ -4371,10 +4654,10 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
-
+    
 
     override fun `setGlobalOptions`(`options`: List<EngineGlobalOption>)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_set_global_options(
@@ -4382,10 +4665,10 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
         FfiConverterSequenceTypeEngineGlobalOption.lower(`options`),_status)
 }
     }
+    
+    
 
-
-
-
+    
     /**
      * Uninstall a module
      * Returns 0 on success, non-zero error code on failure
@@ -4400,9 +4683,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Uninstall a module (Asynchronous)
      * Returns a TaskID for tracking progress
@@ -4417,13 +4700,13 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Cancel a background task
      */override fun `cancelTask`(`taskId`: kotlin.String)
-        =
+        = 
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_cancel_task(
@@ -4431,10 +4714,10 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
         FfiConverterString.lower(`taskId`),_status)
 }
     }
+    
+    
 
-
-
-
+    
     /**
      * Get the modules resulting from a fetch task
      */override fun `getTaskResultModules`(`taskId`: kotlin.String): List<SwordModule> {
@@ -4448,9 +4731,9 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
 
-
-
+    
     /**
      * Get the status of a background task
      */override fun `getTaskStatus`(`taskId`: kotlin.String): TaskStatus? {
@@ -4464,20 +4747,20 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     )
     }
+    
+
+    
+
+    
 
 
-
-
-
-
-
-
-
+    
+    
     /**
      * @suppress
      */
     companion object
-
+    
 }
 
 
@@ -4508,19 +4791,19 @@ public object FfiConverterTypeXBibleEngine: FfiConverter<XBibleEngine, Long> {
 
 data class AudioEngineRgbaColor (
     var `red`: kotlin.Double
-    ,
+    , 
     var `green`: kotlin.Double
-    ,
+    , 
     var `blue`: kotlin.Double
-    ,
+    , 
     var `alpha`: kotlin.Double
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4556,22 +4839,22 @@ public object FfiConverterTypeAudioEngineRGBAColor: FfiConverterRustBuffer<Audio
 
 data class AudioModuleInfo (
     var `fileName`: kotlin.String
-    ,
+    , 
     var `absolutePath`: kotlin.String
-    ,
+    , 
     var `metadata`: ModuleMetadata?
-    ,
+    , 
     var `artwork`: Artwork
-
+    
 ): Disposable{
+    
 
+    
 
-
-
-
+    
     @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
     override fun destroy() {
-
+        
     Disposable.destroy(
         this.`fileName`,
         this.`absolutePath`,
@@ -4579,7 +4862,7 @@ data class AudioModuleInfo (
         this.`artwork`
     )
     }
-
+    
     companion object
 }
 
@@ -4615,25 +4898,25 @@ public object FfiConverterTypeAudioModuleInfo: FfiConverterRustBuffer<AudioModul
 
 data class AudioNode (
     var `type`: kotlin.String
-    ,
+    , 
     var `id`: kotlin.String
-    ,
+    , 
     var `title`: kotlin.String
-    ,
+    , 
     var `startMs`: kotlin.Long?
-    ,
+    , 
     var `endMs`: kotlin.Long?
-    ,
+    , 
     var `text`: kotlin.String?
-    ,
+    , 
     var `children`: List<AudioNode>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4678,17 +4961,17 @@ public object FfiConverterTypeAudioNode: FfiConverterRustBuffer<AudioNode> {
 
 data class DictionaryQuery (
     var `word`: kotlin.String
-    ,
+    , 
     var `strongs`: List<kotlin.String>
-    ,
+    , 
     var `language`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4721,13 +5004,13 @@ public object FfiConverterTypeDictionaryQuery: FfiConverterRustBuffer<Dictionary
 
 data class DictionaryResponse (
     var `results`: List<DictionaryResult>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4754,17 +5037,17 @@ public object FfiConverterTypeDictionaryResponse: FfiConverterRustBuffer<Diction
 
 data class DictionaryResult (
     var `moduleName`: kotlin.String
-    ,
+    , 
     var `key`: kotlin.String
-    ,
+    , 
     var `definition`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4800,21 +5083,21 @@ public object FfiConverterTypeDictionaryResult: FfiConverterRustBuffer<Dictionar
  */
 data class DownloadProgress (
     var `progress`: kotlin.Double
-    ,
+    , 
     var `downloadedBytes`: kotlin.Long
-    ,
+    , 
     var `totalBytes`: kotlin.Long
-    ,
+    , 
     var `currentModule`: kotlin.String
-    ,
+    , 
     var `status`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4853,15 +5136,15 @@ public object FfiConverterTypeDownloadProgress: FfiConverterRustBuffer<DownloadP
 
 data class EngineGlobalOption (
     var `name`: kotlin.String
-    ,
+    , 
     var `state`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4889,15 +5172,93 @@ public object FfiConverterTypeEngineGlobalOption: FfiConverterRustBuffer<EngineG
 
 
 
+data class Event (
+    var `id`: kotlin.ULong
+    , 
+    var `title`: kotlin.String
+    , 
+    var `image`: kotlin.String?
+    , 
+    var `slug`: kotlin.String
+    , 
+    var `start`: kotlin.Long
+    , 
+    var `end`: kotlin.Long
+    , 
+    var `row`: kotlin.UInt
+    , 
+    var `type`: kotlin.String
+    , 
+    var `approx`: kotlin.Boolean?
+    , 
+    var `isFixed`: kotlin.Boolean?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeEvent: FfiConverterRustBuffer<Event> {
+    override fun read(buf: ByteBuffer): Event {
+        return Event(
+            FfiConverterULong.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterLong.read(buf),
+            FfiConverterLong.read(buf),
+            FfiConverterUInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalBoolean.read(buf),
+            FfiConverterOptionalBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: Event) = (
+            FfiConverterULong.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`title`) +
+            FfiConverterOptionalString.allocationSize(value.`image`) +
+            FfiConverterString.allocationSize(value.`slug`) +
+            FfiConverterLong.allocationSize(value.`start`) +
+            FfiConverterLong.allocationSize(value.`end`) +
+            FfiConverterUInt.allocationSize(value.`row`) +
+            FfiConverterString.allocationSize(value.`type`) +
+            FfiConverterOptionalBoolean.allocationSize(value.`approx`) +
+            FfiConverterOptionalBoolean.allocationSize(value.`isFixed`)
+    )
+
+    override fun write(value: Event, buf: ByteBuffer) {
+            FfiConverterULong.write(value.`id`, buf)
+            FfiConverterString.write(value.`title`, buf)
+            FfiConverterOptionalString.write(value.`image`, buf)
+            FfiConverterString.write(value.`slug`, buf)
+            FfiConverterLong.write(value.`start`, buf)
+            FfiConverterLong.write(value.`end`, buf)
+            FfiConverterUInt.write(value.`row`, buf)
+            FfiConverterString.write(value.`type`, buf)
+            FfiConverterOptionalBoolean.write(value.`approx`, buf)
+            FfiConverterOptionalBoolean.write(value.`isFixed`, buf)
+    }
+}
+
+
+
 data class HygraphAudioResponse (
     var `audioModules`: List<RemoteAudioModuleInfo>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4924,13 +5285,13 @@ public object FfiConverterTypeHygraphAudioResponse: FfiConverterRustBuffer<Hygra
 
 data class HygraphFeatures (
     var `features`: List<kotlin.String>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -4957,19 +5318,19 @@ public object FfiConverterTypeHygraphFeatures: FfiConverterRustBuffer<HygraphFea
 
 data class InternalPlaybackState (
     var `currentTimeMs`: kotlin.Long
-    ,
+    , 
     var `isPlaying`: kotlin.Boolean
-    ,
+    , 
     var `repeatMode`: RepeatMode
-    ,
+    , 
     var `currentDurationMs`: kotlin.Long
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5005,19 +5366,19 @@ public object FfiConverterTypeInternalPlaybackState: FfiConverterRustBuffer<Inte
 
 data class LexicalInfo (
     var `strongs`: List<kotlin.String>
-    ,
+    , 
     var `lemma`: kotlin.String?
-    ,
+    , 
     var `gloss`: kotlin.String?
-    ,
+    , 
     var `morph`: List<kotlin.String>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5053,15 +5414,15 @@ public object FfiConverterTypeLexicalInfo: FfiConverterRustBuffer<LexicalInfo> {
 
 data class LexiconQuery (
     var `strongsNumber`: kotlin.String
-    ,
+    , 
     var `language`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5091,13 +5452,13 @@ public object FfiConverterTypeLexiconQuery: FfiConverterRustBuffer<LexiconQuery>
 
 data class LexiconResponse (
     var `results`: List<LexiconResult>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5124,17 +5485,17 @@ public object FfiConverterTypeLexiconResponse: FfiConverterRustBuffer<LexiconRes
 
 data class LexiconResult (
     var `moduleName`: kotlin.String
-    ,
+    , 
     var `key`: kotlin.String
-    ,
+    , 
     var `definition`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5167,15 +5528,15 @@ public object FfiConverterTypeLexiconResult: FfiConverterRustBuffer<LexiconResul
 
 data class ModuleBook (
     var `name`: kotlin.String
-    ,
+    , 
     var `chapters`: List<ModuleChapter>
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5205,15 +5566,15 @@ public object FfiConverterTypeModuleBook: FfiConverterRustBuffer<ModuleBook> {
 
 data class ModuleChapter (
     var `number`: kotlin.Int
-    ,
+    , 
     var `verseCount`: kotlin.Int
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5243,17 +5604,17 @@ public object FfiConverterTypeModuleChapter: FfiConverterRustBuffer<ModuleChapte
 
 data class ModuleColor (
     var `hue`: kotlin.Double
-    ,
+    , 
     var `saturation`: kotlin.Double
-    ,
+    , 
     var `brightness`: kotlin.Double
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5286,31 +5647,31 @@ public object FfiConverterTypeModuleColor: FfiConverterRustBuffer<ModuleColor> {
 
 data class ModuleMetadata (
     var `uniqueId`: kotlin.String
-    ,
+    , 
     var `displayTitle`: kotlin.String
-    ,
+    , 
     var `version`: kotlin.Int
-    ,
+    , 
     var `language`: kotlin.String
-    ,
+    , 
     var `contributor`: kotlin.String
-    ,
+    , 
     var `description`: kotlin.String
-    ,
+    , 
     var `sourceUrl`: kotlin.String
-    ,
+    , 
     var `durationMs`: kotlin.Long
-    ,
+    , 
     var `features`: List<kotlin.String>
-    ,
+    , 
     var `artworkFile`: kotlin.String?
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5367,17 +5728,17 @@ public object FfiConverterTypeModuleMetadata: FfiConverterRustBuffer<ModuleMetad
  */
 data class ModuleSource (
     var `name`: kotlin.String
-    ,
+    , 
     var `description`: kotlin.String
-    ,
+    , 
     var `url`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5408,23 +5769,106 @@ public object FfiConverterTypeModuleSource: FfiConverterRustBuffer<ModuleSource>
 
 
 
+data class Period (
+    var `id`: kotlin.String
+    , 
+    var `image`: kotlin.String
+    , 
+    var `description`: kotlin.String
+    , 
+    var `startYear`: kotlin.Long
+    , 
+    var `endYear`: kotlin.Long
+    , 
+    var `interval`: kotlin.UInt
+    , 
+    var `title`: kotlin.String
+    , 
+    var `sectionTitle`: kotlin.String
+    , 
+    var `subTitle`: kotlin.String
+    , 
+    var `color`: kotlin.String
+    , 
+    var `events`: List<Event>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePeriod: FfiConverterRustBuffer<Period> {
+    override fun read(buf: ByteBuffer): Period {
+        return Period(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterLong.read(buf),
+            FfiConverterLong.read(buf),
+            FfiConverterUInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeEvent.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: Period) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`image`) +
+            FfiConverterString.allocationSize(value.`description`) +
+            FfiConverterLong.allocationSize(value.`startYear`) +
+            FfiConverterLong.allocationSize(value.`endYear`) +
+            FfiConverterUInt.allocationSize(value.`interval`) +
+            FfiConverterString.allocationSize(value.`title`) +
+            FfiConverterString.allocationSize(value.`sectionTitle`) +
+            FfiConverterString.allocationSize(value.`subTitle`) +
+            FfiConverterString.allocationSize(value.`color`) +
+            FfiConverterSequenceTypeEvent.allocationSize(value.`events`)
+    )
+
+    override fun write(value: Period, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`image`, buf)
+            FfiConverterString.write(value.`description`, buf)
+            FfiConverterLong.write(value.`startYear`, buf)
+            FfiConverterLong.write(value.`endYear`, buf)
+            FfiConverterUInt.write(value.`interval`, buf)
+            FfiConverterString.write(value.`title`, buf)
+            FfiConverterString.write(value.`sectionTitle`, buf)
+            FfiConverterString.write(value.`subTitle`, buf)
+            FfiConverterString.write(value.`color`, buf)
+            FfiConverterSequenceTypeEvent.write(value.`events`, buf)
+    }
+}
+
+
+
 data class PlaybackState (
     var `currentTimeMs`: kotlin.Long
-    ,
+    , 
     var `activeAnchorIndex`: kotlin.Int
-    ,
+    , 
     var `activeText`: kotlin.String
-    ,
+    , 
     var `isPlaying`: kotlin.Boolean
-    ,
+    , 
     var `repeatMode`: RepeatMode
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5463,13 +5907,13 @@ public object FfiConverterTypePlaybackState: FfiConverterRustBuffer<PlaybackStat
 
 data class RemoteArtworkFile (
     var `url`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5496,39 +5940,39 @@ public object FfiConverterTypeRemoteArtworkFile: FfiConverterRustBuffer<RemoteAr
 
 data class RemoteAudioModuleInfo (
     var `uniqueId`: kotlin.String
-    ,
+    , 
     var `displayTitle`: kotlin.String
-    ,
+    , 
     var `contributor`: kotlin.String?
-    ,
+    , 
     var `description`: kotlin.String?
-    ,
+    , 
     var `durationMs`: kotlin.Long
-    ,
+    , 
     var `features`: HygraphFeatures
-    ,
+    , 
     var `language`: kotlin.String
-    ,
+    , 
     var `sourceUrl`: kotlin.String
-    ,
+    , 
     var `artworkFile`: RemoteArtworkFile?
-    ,
+    , 
     var `version`: kotlin.Int
-    ,
+    , 
     var `createdAt`: kotlin.String
-    ,
+    , 
     var `updatedAt`: kotlin.String
-    ,
+    , 
     var `isInstalled`: kotlin.Boolean
-    ,
+    , 
     var `status`: ModuleStatus
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5594,17 +6038,17 @@ public object FfiConverterTypeRemoteAudioModuleInfo: FfiConverterRustBuffer<Remo
 
 data class Section (
     var `title`: List<Word>
-    ,
+    , 
     var `verses`: List<Verse>
-    ,
+    , 
     var `textDirection`: TextDirection
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5637,31 +6081,31 @@ public object FfiConverterTypeSection: FfiConverterRustBuffer<Section> {
 
 data class SwordModule (
     var `name`: kotlin.String
-    ,
+    , 
     var `description`: kotlin.String
-    ,
+    , 
     var `category`: kotlin.String
-    ,
+    , 
     var `language`: kotlin.String
-    ,
+    , 
     var `source`: kotlin.String
-    ,
+    , 
     var `version`: kotlin.String
-    ,
+    , 
     var `delta`: kotlin.String
-    ,
+    , 
     var `cipherKey`: kotlin.String
-    ,
+    , 
     var `features`: List<kotlin.String>
-    ,
+    , 
     var `signatureColor`: ModuleColor
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5715,19 +6159,19 @@ public object FfiConverterTypeSwordModule: FfiConverterRustBuffer<SwordModule> {
 
 data class TaskStatus (
     var `taskId`: kotlin.String
-    ,
+    , 
     var `state`: TaskState
-    ,
+    , 
     var `progress`: kotlin.Double
-    ,
+    , 
     var `message`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5763,21 +6207,21 @@ public object FfiConverterTypeTaskStatus: FfiConverterRustBuffer<TaskStatus> {
 
 data class Verse (
     var `osisId`: kotlin.String
-    ,
+    , 
     var `number`: kotlin.Int
-    ,
+    , 
     var `words`: List<Word>
-    ,
+    , 
     var `notes`: List<kotlin.String>
-    ,
+    , 
     var `isParagraphStart`: kotlin.Boolean
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5816,33 +6260,33 @@ public object FfiConverterTypeVerse: FfiConverterRustBuffer<Verse> {
 
 data class Word (
     var `text`: kotlin.String
-    ,
+    , 
     var `isRed`: kotlin.Boolean
-    ,
+    , 
     var `isItalic`: kotlin.Boolean
-    ,
+    , 
     var `isBoldText`: kotlin.Boolean
-    ,
+    , 
     var `lex`: LexicalInfo?
-    ,
+    , 
     var `note`: kotlin.String?
-    ,
+    , 
     var `isFirstInGroup`: kotlin.Boolean
-    ,
+    , 
     var `isLastInGroup`: kotlin.Boolean
-    ,
+    , 
     var `isPunctuation`: kotlin.Boolean
-    ,
+    , 
     var `isTitle`: kotlin.Boolean
-    ,
+    , 
     var `language`: kotlin.String
-
+    
 ){
+    
 
+    
 
-
-
-
+    
     companion object
 }
 
@@ -5900,48 +6344,48 @@ public object FfiConverterTypeWord: FfiConverterRustBuffer<Word> {
 
 
 sealed class AudioEngineException: kotlin.Exception() {
-
+    
     class ModuleNotFound(
-
+        
         val `path`: kotlin.String
         ) : AudioEngineException() {
         override val message
             get() = "path=${ `path` }"
     }
-
+    
     class IoFailure(
-
+        
         val `errorMessage`: kotlin.String
         ) : AudioEngineException() {
         override val message
             get() = "errorMessage=${ `errorMessage` }"
     }
-
+    
     class SerializationFailure(
-
+        
         val `errorMessage`: kotlin.String
         ) : AudioEngineException() {
         override val message
             get() = "errorMessage=${ `errorMessage` }"
     }
-
+    
     class DecryptionFailure(
-
+        
         val `errorMessage`: kotlin.String
         ) : AudioEngineException() {
         override val message
             get() = "errorMessage=${ `errorMessage` }"
     }
+    
 
-
-
+    
 
 
     companion object ErrorHandler : UniffiRustCallStatusErrorHandler<AudioEngineException> {
         override fun lift(error_buf: RustBuffer.ByValue): AudioEngineException = FfiConverterTypeAudioEngineError.lift(error_buf)
     }
 
-
+    
 }
 
 /**
@@ -5949,7 +6393,7 @@ sealed class AudioEngineException: kotlin.Exception() {
  */
 public object FfiConverterTypeAudioEngineError : FfiConverterRustBuffer<AudioEngineException> {
     override fun read(buf: ByteBuffer): AudioEngineException {
-
+        
 
         return when(buf.getInt()) {
             1 -> AudioEngineException.ModuleNotFound(
@@ -6023,27 +6467,27 @@ public object FfiConverterTypeAudioEngineError : FfiConverterRustBuffer<AudioEng
 
 
 sealed class ModuleStatus {
-
+    
     object Idle : ModuleStatus()
-
-
+    
+    
     data class Downloading(
         val `progress`: kotlin.Double) : ModuleStatus()
-
+        
     {
-
+        
 
         companion object
     }
-
+    
     object Installed : ModuleStatus()
+    
+    
 
+    
 
-
-
-
-
-
+    
+    
 
 
     companion object
@@ -6111,12 +6555,12 @@ public object FfiConverterTypeModuleStatus : FfiConverterRustBuffer<ModuleStatus
 
 
 enum class RepeatMode {
-
+    
     OFF,
     ONE,
     ALL;
 
-
+    
 
 
     companion object
@@ -6147,40 +6591,40 @@ public object FfiConverterTypeRepeatMode: FfiConverterRustBuffer<RepeatMode> {
 
 
 sealed class StoreApiException: kotlin.Exception() {
-
+    
     class NetworkFailure(
-
+        
         val `errorMessage`: kotlin.String
         ) : StoreApiException() {
         override val message
             get() = "errorMessage=${ `errorMessage` }"
     }
-
+    
     class SerializationFailure(
-
+        
         val `errorMessage`: kotlin.String
         ) : StoreApiException() {
         override val message
             get() = "errorMessage=${ `errorMessage` }"
     }
-
+    
     class IoFailure(
-
+        
         val `errorMessage`: kotlin.String
         ) : StoreApiException() {
         override val message
             get() = "errorMessage=${ `errorMessage` }"
     }
+    
 
-
-
+    
 
 
     companion object ErrorHandler : UniffiRustCallStatusErrorHandler<StoreApiException> {
         override fun lift(error_buf: RustBuffer.ByValue): StoreApiException = FfiConverterTypeStoreApiError.lift(error_buf)
     }
 
-
+    
 }
 
 /**
@@ -6188,7 +6632,7 @@ sealed class StoreApiException: kotlin.Exception() {
  */
 public object FfiConverterTypeStoreApiError : FfiConverterRustBuffer<StoreApiException> {
     override fun read(buf: ByteBuffer): StoreApiException {
-
+        
 
         return when(buf.getInt()) {
             1 -> StoreApiException.NetworkFailure(
@@ -6249,30 +6693,30 @@ public object FfiConverterTypeStoreApiError : FfiConverterRustBuffer<StoreApiExc
 
 
 sealed class TaskState {
-
+    
     object Queued : TaskState()
-
-
+    
+    
     object Running : TaskState()
-
-
+    
+    
     object Completed : TaskState()
-
-
+    
+    
     data class Failed(
         val `error`: kotlin.String) : TaskState()
-
+        
     {
-
+        
 
         companion object
     }
+    
 
+    
 
-
-
-
-
+    
+    
 
 
     companion object
@@ -6351,11 +6795,11 @@ public object FfiConverterTypeTaskState : FfiConverterRustBuffer<TaskState>{
 
 
 enum class TextDirection {
-
+    
     RTL,
     LTR;
 
-
+    
 
 
     companion object
@@ -6441,6 +6885,38 @@ public object FfiConverterOptionalLong: FfiConverterRustBuffer<kotlin.Long?> {
         } else {
             buf.put(1)
             FfiConverterLong.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalBoolean: FfiConverterRustBuffer<kotlin.Boolean?> {
+    override fun read(buf: ByteBuffer): kotlin.Boolean? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterBoolean.read(buf)
+    }
+
+    override fun allocationSize(value: kotlin.Boolean?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterBoolean.allocationSize(value)
+        }
+    }
+
+    override fun write(value: kotlin.Boolean?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterBoolean.write(value, buf)
         }
     }
 }
@@ -6875,6 +7351,34 @@ public object FfiConverterSequenceTypeEngineGlobalOption: FfiConverterRustBuffer
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeEvent: FfiConverterRustBuffer<List<Event>> {
+    override fun read(buf: ByteBuffer): List<Event> {
+        val len = buf.getInt()
+        return List<Event>(len) {
+            FfiConverterTypeEvent.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<Event>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeEvent.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<Event>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeEvent.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeLexiconResult: FfiConverterRustBuffer<List<LexiconResult>> {
     override fun read(buf: ByteBuffer): List<LexiconResult> {
         val len = buf.getInt()
@@ -6977,6 +7481,34 @@ public object FfiConverterSequenceTypeModuleSource: FfiConverterRustBuffer<List<
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeModuleSource.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypePeriod: FfiConverterRustBuffer<List<Period>> {
+    override fun read(buf: ByteBuffer): List<Period> {
+        val len = buf.getInt()
+        return List<Period>(len) {
+            FfiConverterTypePeriod.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<Period>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypePeriod.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<Period>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypePeriod.write(it, buf)
         }
     }
 }
@@ -7127,5 +7659,14 @@ public object FfiConverterSequenceTypeWord: FfiConverterRustBuffer<List<Word>> {
 
 
 
+ fun `initLogging`()
+        = 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_func_init_logging(
+    
+        _status)
+}
+    
+    
 
 

@@ -9,8 +9,13 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,6 +52,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
@@ -80,6 +86,17 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.TonalToggleButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AdaptStrategy
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.PaneExpansionState
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldDefaults
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
+import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.window.core.layout.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -94,6 +111,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -106,12 +127,15 @@ import com.example.xbible.viewmodel.StudyTab
 import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.SwordModule
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun StudyScreen(
     engineViewModel: EngineViewModel,
     onNavigateToStore: () -> Unit
 ) {
+    val adaptiveInfo = currentWindowAdaptiveInfo()
+    val isCompact = !adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+    
     val sections by engineViewModel.currentChapterContent.collectAsState()
     val installedBibles by engineViewModel.installedBibles.collectAsState()
     val isLoading by engineViewModel.isLoadingContent.collectAsState()
@@ -121,11 +145,33 @@ fun StudyScreen(
     val tabs by engineViewModel.tabs.collectAsState()
     val activeTabIndex by engineViewModel.activeTabIndex.collectAsState()
     var showTabsPreview by remember { mutableStateOf(false) }
+    
+    // Selection states for panes/bottomsheets
     var showModuleSelection by remember { mutableStateOf(false) }
     var showReferencePicker by remember { mutableStateOf(false) }
+    
     val moduleSheetState = rememberModalBottomSheetState()
     val referenceSheetState = rememberModalBottomSheetState()
     
+    val navigator = rememberSupportingPaneScaffoldNavigator(
+        adaptStrategies = SupportingPaneScaffoldDefaults.adaptStrategies(
+            supportingPaneAdaptStrategy = AdaptStrategy.Hide
+        )
+    )
+    
+    // Manage side pane visibility based on button toggles and adaptive info
+    val isSidePaneVisible = (showModuleSelection || showReferencePicker) && !isCompact
+    
+    LaunchedEffect(isSidePaneVisible, isCompact) {
+        if (!isCompact) {
+            if (isSidePaneVisible) {
+                navigator.navigateTo(SupportingPaneScaffoldRole.Supporting)
+            } else {
+                navigator.navigateBack()
+            }
+        }
+    }
+
     val currentBooks by engineViewModel.currentBooksFlow.collectAsState()
     val currentBookIndex by engineViewModel.currentBookIndexFlow.collectAsState()
     val currentChapterIndex by engineViewModel.currentChapterIndexFlow.collectAsState()
@@ -135,6 +181,9 @@ fun StudyScreen(
 
     val listState = rememberLazyListState()
     
+    // Resizable pane state
+    val paneExpansionState = rememberPaneExpansionState()
+
     var lastScrollIndex by remember { mutableIntStateOf(0) }
     var lastScrollOffset by remember { mutableIntStateOf(0) }
     var isScrollingUp by remember { mutableStateOf(true) }
@@ -174,150 +223,274 @@ fun StudyScreen(
         engineViewModel.refreshEngine()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            topBar = {
-                TopAppBar(
-                    title = {
-
-                            SplitButtonLayout(
-                                leadingButton = {
-                                    SplitButtonDefaults.ElevatedLeadingButton(
-                                        onClick = { showModuleSelection = true }
-                                    ) {
-                                        Text(
-                                            text = currentModule?.name ?: "Select Bible",
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                },
-                                trailingButton = {
-                                    SplitButtonDefaults.ElevatedTrailingButton(
-                                        checked = showReferencePicker,
-                                        onCheckedChange = {
-                                            showReferencePicker = it
-                                        }
-                                    ) {
-                                        Text(text = currentReference ?: "Study")
-                                    }
-                                }
-                            )
-
-                    },
-                    actions = {
-                        IconToggleButton(checked = false, onCheckedChange = { }) {
-                            Icon(
-                                Icons.Outlined.Search,
-                                contentDescription = "Search"
-                            )
-
-                        }
-                        IconToggleButton(checked = false, onCheckedChange = { }) {
-                            Icon(
-                                Icons.Outlined.MoreVert,
-                                contentDescription = "More"
-                            )
-
-                        }
-                    }
-                )
-            },
-            floatingActionButtonPosition = FabPosition.Center,
-            floatingActionButton = {
-                AnimatedVisibility(
-                    visible = showFab,
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it })
+    SupportingPaneScaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+        directive = navigator.scaffoldDirective,
+        value = navigator.scaffoldValue,
+        paneExpansionState = paneExpansionState,
+        paneExpansionDragHandle = { expansionState ->
+            if (!isCompact && isSidePaneVisible) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(24.dp)
+                        .paneExpansionDraggable(
+                            state = expansionState,
+                            minTouchTargetSize = 48.dp,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        .pointerHoverIcon(PointerIcon.Hand),
+                    contentAlignment = Alignment.Center
                 ) {
-                    HorizontalFloatingToolbar(
-                        expanded = true,
-                        colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
-                        content = {
-                            IconButton(
-                                onClick = { engineViewModel.previousChapter() },
-                                enabled = hasPrevious
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Chapter")
-                            }
-
-                            Box(contentAlignment = Alignment.Center) {
-                                FilledTonalButton(
-                                    onClick = { showTabsPreview = true },
-
-                                    shape = IconButtonDefaults.filledShape
-                                ) {
-                                    Icon(tab_group, contentDescription = "Tabs")
-                                }
-                                if (tabs.size > 1) {
-                                    Surface(
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .padding(top = 2.dp, end = 2.dp),
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        shape = RoundedCornerShape(8.dp)
-                                    ) {
-                                        Text(
-                                            text = tabs.size.toString(),
-                                            modifier = Modifier.padding(horizontal = 4.dp),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSecondary
-                                        )
-                                    }
-                                }
-                            }
-
-                            IconButton(
-                                onClick = { engineViewModel.nextChapter() },
-                                enabled = hasNext
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Chapter")
-                            }
-                        }
+                    Box(
+                        modifier = Modifier
+                            .height(48.dp)
+                            .width(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     )
                 }
             }
-        ) { paddingValues ->
-            Box(
+        },
+        mainPane = {
+            AnimatedPane(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .then(if (!isCompact) Modifier.padding(12.dp) else Modifier)
             ) {
-                when {
-                    installedBibles.isEmpty() -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    shape = if (!isCompact) RoundedCornerShape(28.dp) else RectangleShape,
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = if (!isCompact) 1.dp else 0.dp,
+                    shadowElevation = if (!isCompact) 2.dp else 0.dp
+                ) {
+                    Scaffold(
+                        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                        topBar = {
+                            TopAppBar(
+                                title = {
+                                    SplitButtonLayout(
+                                        leadingButton = {
+                                            val isSelected = showModuleSelection && !isCompact
+                                            SplitButtonDefaults.ElevatedLeadingButton(
+                                                onClick = { 
+                                                    if (isCompact) {
+                                                        showModuleSelection = true
+                                                    } else {
+                                                        showModuleSelection = !showModuleSelection
+                                                        showReferencePicker = false
+                                                    }
+                                                },
+                                                colors = if (isSelected) {
+                                                    ButtonDefaults.elevatedButtonColors(
+                                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                                    )
+                                                } else ButtonDefaults.elevatedButtonColors()
+                                            ) {
+                                                Text(
+                                                    text = currentModule?.name ?: "Select Bible",
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                        },
+                                        trailingButton = {
+                                            val isSelected = showReferencePicker && !isCompact
+                                            SplitButtonDefaults.ElevatedTrailingButton(
+                                                checked = isSelected,
+                                                onCheckedChange = {
+                                                    if (isCompact) {
+                                                        showReferencePicker = it
+                                                    } else {
+                                                        showReferencePicker = it
+                                                        showModuleSelection = false
+                                                    }
+                                                }
+                                            ) {
+                                                Text(text = currentReference ?: "Study")
+                                            }
+                                        }
+                                    )
+                                },
+                                actions = {
+                                    IconToggleButton(checked = false, onCheckedChange = { }) {
+                                        Icon(
+                                            Icons.Outlined.Search,
+                                            contentDescription = "Search"
+                                        )
+                                    }
+                                    IconToggleButton(checked = false, onCheckedChange = { }) {
+                                        Icon(
+                                            Icons.Outlined.MoreVert,
+                                            contentDescription = "More"
+                                        )
+                                    }
+                                }
+                            )
+                        },
+                        floatingActionButtonPosition = FabPosition.Center,
+                        floatingActionButton = {
+                            AnimatedVisibility(
+                                visible = showFab,
+                                enter = slideInVertically(initialOffsetY = { it }),
+                                exit = slideOutVertically(targetOffsetY = { it })
+                            ) {
+                                HorizontalFloatingToolbar(
+                                    expanded = true,
+                                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
+                                    content = {
+                                        IconButton(
+                                            onClick = { engineViewModel.previousChapter() },
+                                            enabled = hasPrevious
+                                        ) {
+                                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Chapter")
+                                        }
+
+                                        Box(contentAlignment = Alignment.Center) {
+                                            FilledTonalButton(
+                                                onClick = { showTabsPreview = true },
+                                                shape = IconButtonDefaults.filledShape
+                                            ) {
+                                                Icon(tab_group, contentDescription = "Tabs")
+                                            }
+                                            if (tabs.size > 1) {
+                                                Surface(
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopEnd)
+                                                        .padding(top = 2.dp, end = 2.dp),
+                                                    color = MaterialTheme.colorScheme.secondary,
+                                                    shape = RoundedCornerShape(8.dp)
+                                                ) {
+                                                    Text(
+                                                        text = tabs.size.toString(),
+                                                        modifier = Modifier.padding(horizontal = 4.dp),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.onSecondary
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        IconButton(
+                                            onClick = { engineViewModel.nextChapter() },
+                                            enabled = hasNext
+                                        ) {
+                                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Chapter")
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    ) { paddingValues ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
                         ) {
-                            Text(text = "No Bibles installed.")
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = onNavigateToStore) {
-                                Text("Go to Store")
+                            when {
+                                installedBibles.isEmpty() -> {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(text = "No Bibles installed.")
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Button(onClick = onNavigateToStore) {
+                                            Text("Go to Store")
+                                        }
+                                    }
+                                }
+                                isLoading -> {
+                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                        CircularProgressIndicator()
+                                    }
+                                }
+                                sections.isEmpty() -> {
+                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                        Text(text = "No content loaded. Select a chapter to study.")
+                                    }
+                                }
+                                else -> {
+                                    PageView(
+                                        sections = sections,
+                                        state = listState
+                                    )
+                                }
                             }
                         }
                     }
-                    isLoading -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+                }
+            }
+        },
+        supportingPane = {
+            if (isSidePaneVisible) {
+                AnimatedPane(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(if (!isCompact) Modifier.padding(12.dp) else Modifier)
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        shape = if (!isCompact) RoundedCornerShape(28.dp) else RectangleShape,
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        tonalElevation = if (!isCompact) 2.dp else 1.dp,
+                        shadowElevation = if (!isCompact) 2.dp else 0.dp
+                    ) {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = if (showModuleSelection) "Bible Selection" else "Reference Picker",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                IconButton(onClick = {
+                                    showModuleSelection = false
+                                    showReferencePicker = false
+                                }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Close Pane")
+                                }
+                            }
+                            
+                            if (showModuleSelection) {
+                                ModuleSelectionContent(
+                                    installedBibles = installedBibles,
+                                    currentModule = currentModule,
+                                    onModuleSelected = {
+                                        engineViewModel.selectModule(it)
+                                        showModuleSelection = false
+                                    }
+                                )
+                            } else if (showReferencePicker) {
+                                ReferencePickerContent(
+                                    books = currentBooks,
+                                    selectedBookIndex = currentBookIndex,
+                                    selectedChapterIndex = currentChapterIndex,
+                                    onChapterSelected = { chapterNumber ->
+                                        engineViewModel.selectChapter(chapterNumber)
+                                        showReferencePicker = false
+                                    },
+                                    onBookSelected = { index ->
+                                        engineViewModel.selectBook(index)
+                                    }
+                                )
+                            }
                         }
-                    }
-                    sections.isEmpty() -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(text = "No content loaded. Select a chapter to study.")
-                        }
-                    }
-                    else -> {
-                        PageView(
-                            sections = sections,
-                            state = listState
-                        )
                     }
                 }
             }
         }
+    )
 
+    // Overlays and Sheets (Only used for compact/mobile)
+    if (isCompact) {
         // Module Selection Bottom Sheet
         if (showModuleSelection) {
             ModalBottomSheet(
@@ -359,13 +532,14 @@ fun StudyScreen(
                 )
             }
         }
+    }
 
-        // Tabs Preview Overlay
-        AnimatedVisibility(
-            visible = showTabsPreview,
-            enter = fadeIn(animationSpec = tween(300)),
-            exit = fadeOut(animationSpec = tween(300))
-        ) {
+    // Tabs Preview Overlay remains same (full screen overlay)
+    AnimatedVisibility(
+        visible = showTabsPreview,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300))
+    ) {
             TabsPreview(
                 tabs = tabs,
                 activeTabIndex = activeTabIndex,
@@ -380,7 +554,6 @@ fun StudyScreen(
                 onRemoveTab = { index -> engineViewModel.removeTab(index) },
                 onDismiss = { showTabsPreview = false }
             )
-        }
     }
 }
 
@@ -398,7 +571,7 @@ fun ReferencePickerContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.6f)
+            .fillMaxHeight()
             .padding(bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

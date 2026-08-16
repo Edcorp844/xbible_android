@@ -1,5 +1,7 @@
 package com.example.xbible.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,9 +58,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,8 +78,9 @@ import com.example.xbible.ui.components.LanguageHeader
 import com.example.xbible.viewmodel.InstallationStatus
 import com.example.xbible.viewmodel.StoreViewModel
 import uniffi.xbible_engine.SwordModule
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun StoreScreen(
     viewModel: StoreViewModel = viewModel()
@@ -91,9 +97,22 @@ fun StoreScreen(
     var expandedLanguages by remember { mutableStateOf(setOf<String>()) }
     var showSourceDropdown by remember { mutableStateOf(false) }
 
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    
+    // Show search button in app bar if the primary search bar (item 0) is scrolled off
+    val showAppBarSearch by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0
+        }
+    }
+
     // Auto-select first category when loaded or list changes
     androidx.compose.runtime.LaunchedEffect(categories) {
-        if (categories.isNotEmpty() && (selectedCategory.isEmpty() || !categories.contains(selectedCategory))) {
+        if (categories.isNotEmpty() && (selectedCategory.isEmpty() || !categories.contains(
+                selectedCategory
+            ))
+        ) {
             selectedCategory = categories.first()
         }
     }
@@ -103,14 +122,26 @@ fun StoreScreen(
         topBar = {
             TopAppBar(
                 title = {
-                        Text("Store", style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        "Store", style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 actions = {
+                    if (showAppBarSearch) {
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                listState.animateScrollToItem(0)
+                            }
+                        }) {
+                            Icon(Icons.Default.Search, contentDescription = "Scroll to Search")
+                        }
+                    }
                     Box {
                         SplitButtonLayout(
                             leadingButton = {
                                 SplitButtonDefaults.ElevatedLeadingButton(
-                                    onClick = {  }
+                                    onClick = { }
                                 ) {
                                     Text(
                                         text = selectedSource ?: "Source",
@@ -126,11 +157,14 @@ fun StoreScreen(
                                         showSourceDropdown = it
                                     }
                                 ) {
-                                   Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = "Source")
+                                    Icon(
+                                        Icons.Outlined.KeyboardArrowDown,
+                                        contentDescription = "Source"
+                                    )
                                 }
                             }
                         )
-                        }
+                    }
                     DropdownMenu(
                         expanded = showSourceDropdown,
                         onDismissRequest = { showSourceDropdown = false },
@@ -174,109 +208,147 @@ fun StoreScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        val languages = organizedModules[selectedCategory] ?: emptyMap()
+        
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            // Search Bar
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Search Bibles, commentaries...") },
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
-                trailingIcon = if (searchQuery.isNotEmpty()) {
-                    {
-                        IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
+            // Item 0: Search Bar
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { viewModel.updateSearchQuery(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = { Text("Search Bibles, commentaries...") },
+                    leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                    trailingIcon = if (searchQuery.isNotEmpty()) {
+                        {
+                            IconButton(onClick = { viewModel.updateSearchQuery("") }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                            }
                         }
-                    }
-                } else null,
-                shape = CircleShape,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                ),
-                singleLine = true
-            )
+                    } else null,
+                    shape = CircleShape,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    ),
+                    singleLine = true
+                )
+            }
 
-            CategoryTabBar(
-                categories = categories,
-                selectedCategory = selectedCategory,
-                onCategorySelected = { 
-                    selectedCategory = it
-                    expandedLanguages = emptySet()
+            // Item 1: Sticky Category Tab Bar
+            stickyHeader {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    CategoryTabBar(
+                        categories = categories,
+                        selectedCategory = selectedCategory,
+                        onCategorySelected = {
+                            selectedCategory = it
+                            expandedLanguages = emptySet()
+                            coroutineScope.launch {
+                                // Scroll to just below search bar when category changes
+                                if (listState.firstVisibleItemIndex > 1) {
+                                    listState.scrollToItem(1)
+                                }
+                            }
+                        }
+                    )
                 }
-            )
+            }
 
             if (isLoading && organizedModules.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    LoadingIndicator()
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize()
+                            .padding(bottom = 100.dp), 
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LoadingIndicator()
+                    }
                 }
             } else if (organizedModules[selectedCategory]?.isEmpty() != false && !isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(48.dp))
-                        Text("No modules found in this category", style = MaterialTheme.typography.bodyLarge)
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize()
+                            .padding(bottom = 100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Text(
+                                "No modules found in this category",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                     }
                 }
             } else {
-                val languages = organizedModules[selectedCategory] ?: emptyMap()
-                
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
-                    languages.keys.sorted().forEach { langCode ->
-                        val modules = languages[langCode] ?: emptyList()
-                        val isExpanded = true//expandedLanguages.contains(langCode)
-                        
-                        item {
-                            LanguageHeader(
-                                langCode = langCode,
-                                count = modules.size,
-                                isExpanded = isExpanded,
-                                onToggle = {
-                                    expandedLanguages = if (isExpanded) {
-                                        expandedLanguages - langCode
-                                    } else {
-                                        expandedLanguages + langCode
-                                    }
+                languages.keys.sorted().forEach { langCode ->
+                    val modules = languages[langCode] ?: emptyList()
+                    val isExpanded = true
+
+                    item(key = "header_$langCode") {
+                        LanguageHeader(
+                            langCode = langCode,
+                            count = modules.size,
+                            isExpanded = isExpanded,
+                            onToggle = {
+                                expandedLanguages = if (isExpanded) {
+                                    expandedLanguages - langCode
+                                } else {
+                                    expandedLanguages + langCode
                                 }
-                            )
+                            }
+                        )
+                    }
+
+                    if (isExpanded) {
+                        item(key = "row_$langCode") {
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                items(modules) { module ->
+                                    val status = installationStates[module.name]
+                                        ?: InstallationStatus.Idle
+                                    BookCardView(
+                                        module = module,
+                                        status = status,
+                                        onAction = {
+                                            handleModuleAction(module, status, viewModel)
+                                        },
+                                        categoryName = module.category
+                                    )
+                                }
+                            }
                         }
-                        
-                        if (isExpanded) {
-                            item {
-                                LazyRow(
-                                    contentPadding = PaddingValues(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    items(modules) { module ->
-                                        val status = installationStates[module.name] ?: InstallationStatus.Idle
-                                        BookCardView(
-                                            module = module,
-                                            status = status,
-                                            onAction = {
-                                                handleModuleAction(module, status, viewModel)
-                                            },
-                                            categoryName = module.category
-                                        )
-                                    }
-                                }
-                            }
-                            item {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                                )
-                            }
+                        item(key = "divider_$langCode") {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(
+                                    vertical = 8.dp,
+                                    horizontal = 16.dp
+                                ),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            )
                         }
                     }
                 }
@@ -285,14 +357,20 @@ fun StoreScreen(
     }
 }
 
-private fun handleModuleAction(module: SwordModule, status: InstallationStatus, viewModel: StoreViewModel) {
+private fun handleModuleAction(
+    module: SwordModule,
+    status: InstallationStatus,
+    viewModel: StoreViewModel
+) {
     when (status) {
         is InstallationStatus.Idle, is InstallationStatus.Failed, is InstallationStatus.Cancelled -> {
             viewModel.install(module)
         }
+
         is InstallationStatus.Installed -> {
             // Open logic - could navigate to StudyScreen with this module
         }
+
         is InstallationStatus.Pending, is InstallationStatus.Installing -> {
             viewModel.cancelInstall(module.name)
         }
