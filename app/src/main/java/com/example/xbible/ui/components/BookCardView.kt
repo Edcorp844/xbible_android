@@ -105,9 +105,7 @@ fun BookCardView(
                 Box {
                     IconButton(
                         onClick = { showMenu = true },
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(Color.Gray.copy(alpha = 0.1f), CircleShape)
+
                     ) {
                         Icon(
                             Icons.Default.MoreVert,
@@ -118,7 +116,10 @@ fun BookCardView(
                     DropdownMenu(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false },
-                        shape = RoundedCornerShape(12.dp)
+                        containerColor = Color.Transparent,
+                        tonalElevation = 0.dp,
+                        shadowElevation = 0.dp,
+                        border = null
                     ) {
                         val groupCount = if (onDelete != null) 2 else 1
                         

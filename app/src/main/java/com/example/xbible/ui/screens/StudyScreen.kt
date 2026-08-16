@@ -89,14 +89,19 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AdaptStrategy
 import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.LevitatedPaneScrim
 import androidx.compose.material3.adaptive.layout.PaneExpansionState
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldDefaults
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.window.core.layout.WindowSizeClass
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -154,8 +159,21 @@ fun StudyScreen(
     val referenceSheetState = rememberModalBottomSheetState()
     
     val navigator = rememberSupportingPaneScaffoldNavigator(
+        scaffoldDirective = calculatePaneScaffoldDirective(adaptiveInfo).copy(
+            maxHorizontalPartitions = 1
+        ),
         adaptStrategies = SupportingPaneScaffoldDefaults.adaptStrategies(
-            supportingPaneAdaptStrategy = AdaptStrategy.Hide
+            supportingPaneAdaptStrategy = AdaptStrategy.Levitate(
+                alignment = Alignment.TopEnd,
+                scrim = {
+                    LevitatedPaneScrim(
+                        onClick = {
+                            showModuleSelection = false
+                            showReferencePicker = false
+                        }
+                    )
+                }
+            )
         )
     )
     
@@ -230,42 +248,17 @@ fun StudyScreen(
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         paneExpansionState = paneExpansionState,
-        paneExpansionDragHandle = { expansionState ->
-            if (!isCompact && isSidePaneVisible) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(24.dp)
-                        .paneExpansionDraggable(
-                            state = expansionState,
-                            minTouchTargetSize = 48.dp,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                        .pointerHoverIcon(PointerIcon.Hand),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .width(4.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                    )
-                }
-            }
-        },
+        paneExpansionDragHandle = null,
         mainPane = {
             AnimatedPane(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(if (!isCompact) Modifier.padding(12.dp) else Modifier)
+                modifier = Modifier.fillMaxSize()
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    shape = if (!isCompact) RoundedCornerShape(28.dp) else RectangleShape,
+                    shape = RectangleShape,
                     color = MaterialTheme.colorScheme.surface,
-                    tonalElevation = if (!isCompact) 1.dp else 0.dp,
-                    shadowElevation = if (!isCompact) 2.dp else 0.dp
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp
                 ) {
                     Scaffold(
                         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -431,34 +424,22 @@ fun StudyScreen(
             if (isSidePaneVisible) {
                 AnimatedPane(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .then(if (!isCompact) Modifier.padding(12.dp) else Modifier)
+                        .preferredHeight(1f)
+                        .preferredWidth(400.dp)
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
-                        shape = if (!isCompact) RoundedCornerShape(28.dp) else RectangleShape,
+                        shape = RectangleShape,
                         color = MaterialTheme.colorScheme.surfaceContainerLow,
-                        tonalElevation = if (!isCompact) 2.dp else 1.dp,
-                        shadowElevation = if (!isCompact) 2.dp else 0.dp
+                        tonalElevation = 3.dp,
+                        shadowElevation = 16.dp
                     ) {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = if (showModuleSelection) "Bible Selection" else "Reference Picker",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                IconButton(onClick = {
-                                    showModuleSelection = false
-                                    showReferencePicker = false
-                                }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Close Pane")
-                                }
-                            }
-                            
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .statusBarsPadding()
+                                .padding(top = 16.dp)
+                        ) {
                             if (showModuleSelection) {
                                 ModuleSelectionContent(
                                     installedBibles = installedBibles,
@@ -752,6 +733,7 @@ fun ModuleSelectionContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(bottom = 32.dp)
     ) {
         Text(
@@ -762,7 +744,9 @@ fun ModuleSelectionContent(
         )
         
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
             groupedByLanguage.keys.sorted().forEach { langCode ->
                 val modules = groupedByLanguage[langCode] ?: emptyList()
