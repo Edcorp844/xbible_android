@@ -10,9 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import uniffi.xbible_engine.DictionaryQuery
+import uniffi.xbible_engine.DictionaryResult
+import uniffi.xbible_engine.LexiconQuery
+import uniffi.xbible_engine.LexiconResult
+import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
-import uniffi.xbible_engine.ModuleBook
+import uniffi.xbible_engine.Word
 
 data class StudyTab(
     val id: String = java.util.UUID.randomUUID().toString(),
@@ -23,6 +28,10 @@ data class StudyTab(
     val chapterIndex: Int = -1,
     val books: List<ModuleBook> = emptyList()
 )
+
+enum class StudyTool {
+    Dictionary, Lexicon, Commentary
+}
 
 class EngineViewModel @JvmOverloads constructor(
     application: Application,
@@ -70,6 +79,52 @@ class EngineViewModel @JvmOverloads constructor(
 
     private val _currentChapterIndex = MutableStateFlow(-1)
     val currentChapterIndexFlow: StateFlow<Int> = _currentChapterIndex.asStateFlow()
+
+    // Study Tools State
+    private val _selectedTool = MutableStateFlow(StudyTool.Dictionary)
+    val selectedTool: StateFlow<StudyTool> = _selectedTool.asStateFlow()
+
+    // Dictionary State
+    private val _selectedWordForLookup = MutableStateFlow("")
+    val selectedWordForLookup: StateFlow<String> = _selectedWordForLookup.asStateFlow()
+
+    private val _dictionaryResults = MutableStateFlow<List<DictionaryResult>>(emptyList())
+    val dictionaryResults: StateFlow<List<DictionaryResult>> = _dictionaryResults.asStateFlow()
+
+    private val _isDictionaryLoading = MutableStateFlow(false)
+    val isDictionaryLoading: StateFlow<Boolean> = _isDictionaryLoading.asStateFlow()
+
+    // Lexicon State
+    private val _selectedStrongsForLookup = MutableStateFlow("")
+    val selectedStrongsForLookup: StateFlow<String> = _selectedStrongsForLookup.asStateFlow()
+
+    private val _selectedLexiconModule = MutableStateFlow<SwordModule?>(null)
+    val selectedLexiconModule: StateFlow<SwordModule?> = _selectedLexiconModule.asStateFlow()
+
+    private val _availableLexicons = MutableStateFlow<List<SwordModule>>(emptyList())
+    val availableLexicons: StateFlow<List<SwordModule>> = _availableLexicons.asStateFlow()
+
+    private val _lexiconResults = MutableStateFlow<List<LexiconResult>>(emptyList())
+    val lexiconResults: StateFlow<List<LexiconResult>> = _lexiconResults.asStateFlow()
+
+    private val _isLexiconLoading = MutableStateFlow(false)
+    val isLexiconLoading: StateFlow<Boolean> = _isLexiconLoading.asStateFlow()
+
+    // Commentary State
+    private val _selectedCommentaryModule = MutableStateFlow<SwordModule?>(null)
+    val selectedCommentaryModule: StateFlow<SwordModule?> = _selectedCommentaryModule.asStateFlow()
+
+    private val _availableCommentaries = MutableStateFlow<List<SwordModule>>(emptyList())
+    val availableCommentaries: StateFlow<List<SwordModule>> = _availableCommentaries.asStateFlow()
+
+    private val _commentaryResults = MutableStateFlow<List<Section>>(emptyList())
+    val commentaryResults: StateFlow<List<Section>> = _commentaryResults.asStateFlow()
+
+    private val _isCommentaryLoading = MutableStateFlow(false)
+    val isCommentaryLoading: StateFlow<Boolean> = _isCommentaryLoading.asStateFlow()
+
+    private val _currentCommentaryReference = MutableStateFlow("")
+    val currentCommentaryReference: StateFlow<String> = _currentCommentaryReference.asStateFlow()
 
     private var currentBooks: List<ModuleBook> = emptyList()
     private var currentBookIndex: Int = -1
@@ -367,10 +422,111 @@ class EngineViewModel @JvmOverloads constructor(
             viewModelScope.launch {
                 val modules = withContext(Dispatchers.IO) { repository.refreshModules() }
                 _installedBibles.value = repository.getBibleModules()
+                
+                // Load tool metadata
+                _availableLexicons.value = repository.getLexiconModules()
+                _availableCommentaries.value = repository.getCommentaryModules()
+                
+                if (_selectedLexiconModule.value == null && _availableLexicons.value.isNotEmpty()) {
+                    _selectedLexiconModule.value = _availableLexicons.value.first()
+                }
+                if (_selectedCommentaryModule.value == null && _availableCommentaries.value.isNotEmpty()) {
+                    _selectedCommentaryModule.value = _availableCommentaries.value.first()
+                }
+
                 if (_currentModule.value == null && _installedBibles.value.isNotEmpty()) {
                     loadInitialContent()
                 }
             }
+        }
+    }
+
+    // --- Study Tools Actions ---
+
+    fun selectTool(tool: StudyTool) {
+        _selectedTool.value = tool
+        if (tool == StudyTool.Commentary) {
+            loadCommentaryContent()
+        }
+    }
+
+    fun lookupWord(word: Word) {
+        val cleanWord = word.text.filter { it.isLetterOrDigit() }
+        if (cleanWord.isEmpty()) return
+
+        _selectedWordForLookup.value = cleanWord
+        _selectedTool.value = StudyTool.Dictionary
+        _isDictionaryLoading.value = true
+
+        viewModelScope.launch {
+            val query = DictionaryQuery(word = cleanWord, strongs = emptyList(), language = word.language)
+            val response = withContext(Dispatchers.IO) { repository.lookupDictionary(query) }
+            _dictionaryResults.value = response.results
+            _isDictionaryLoading.value = false
+        }
+    }
+
+    fun lookupStrongs(strongsCode: String) {
+        if (strongsCode.isEmpty()) return
+
+        _selectedStrongsForLookup.value = strongsCode
+        _selectedTool.value = StudyTool.Lexicon
+
+        if (_availableLexicons.value.isEmpty()) {
+            viewModelScope.launch {
+                _availableLexicons.value = withContext(Dispatchers.IO) { repository.getLexiconModules() }
+                if (_selectedLexiconModule.value == null && _availableLexicons.value.isNotEmpty()) {
+                    _selectedLexiconModule.value = _availableLexicons.value.first()
+                }
+                loadLexiconContent()
+            }
+        } else {
+            loadLexiconContent()
+        }
+    }
+
+    fun selectLexiconModule(module: SwordModule) {
+        _selectedLexiconModule.value = module
+        loadLexiconContent()
+    }
+
+    fun loadLexiconContent() {
+        val strongs = _selectedStrongsForLookup.value
+        if (strongs.isEmpty()) {
+            _lexiconResults.value = emptyList()
+            return
+        }
+
+        val module = _selectedLexiconModule.value
+        _isLexiconLoading.value = true
+        val targetLanguage = module?.language ?: "en"
+
+        viewModelScope.launch {
+            val query = LexiconQuery(strongsNumber = strongs, language = targetLanguage)
+            val response = withContext(Dispatchers.IO) { repository.lookupStrongsNumber(query) }
+            _lexiconResults.value = response.results
+            _isLexiconLoading.value = false
+        }
+    }
+
+    fun selectCommentaryModule(module: SwordModule) {
+        _selectedCommentaryModule.value = module
+        loadCommentaryContent()
+    }
+
+    fun loadCommentaryContent() {
+        val module = _selectedCommentaryModule.value ?: return
+        val reference = _currentReference.value ?: return
+        
+        _isCommentaryLoading.value = true
+        _currentCommentaryReference.value = reference
+
+        viewModelScope.launch {
+            val results = withContext(Dispatchers.IO) {
+                repository.getChapterContent(module.name, reference)
+            }
+            _commentaryResults.value = results
+            _isCommentaryLoading.value = false
         }
     }
 }

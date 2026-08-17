@@ -4,6 +4,10 @@ import android.app.Application
 import android.system.Os
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import uniffi.xbible_engine.DictionaryQuery
+import uniffi.xbible_engine.DictionaryResponse
+import uniffi.xbible_engine.LexiconQuery
+import uniffi.xbible_engine.LexiconResponse
 import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
@@ -97,14 +101,27 @@ class BibleRepository(private val application: Application) {
             println("Engine not initialized in getInstalledModules")
             return emptyList()
         }
-        val categories = engine?.getAvailableCategories()
-        println("Installed categories: $categories")
-        for (category in categories.orEmpty()) {
-            println("Category: $category")
-        }
-        val modules =  engine?.refreshInstalledModules() ?: emptyList()
-        println("Installed modules size: ${modules.size}")
-        return modules
+        return engine?.refreshInstalledModules() ?: emptyList()
+    }
+
+    fun getDictionaryModules(): List<SwordModule> {
+        return engine?.getDictionaryModules() ?: emptyList()
+    }
+
+    fun getLexiconModules(): List<SwordModule> {
+        return engine?.getLexiconModules() ?: emptyList()
+    }
+
+    fun getCommentaryModules(): List<SwordModule> {
+        return engine?.getCommentaryModules() ?: emptyList()
+    }
+
+    fun lookupDictionary(query: DictionaryQuery): DictionaryResponse {
+        return engine?.lookupDictionary(query) ?: DictionaryResponse(emptyList())
+    }
+
+    fun lookupStrongsNumber(query: LexiconQuery): LexiconResponse {
+        return engine?.lookupStrongsNumber(query) ?: LexiconResponse(emptyList())
     }
 
     // Add more methods here as needed to wrap XBibleEngine functionality
