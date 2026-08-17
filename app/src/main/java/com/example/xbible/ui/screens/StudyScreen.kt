@@ -82,7 +82,9 @@ fun StudyScreen(
     // Outer navigator for Bible/Reference Drawer
     val drawerNavigator = rememberSupportingPaneScaffoldNavigator(
         scaffoldDirective = calculatePaneScaffoldDirective(adaptiveInfo).copy(
-            maxHorizontalPartitions = 1
+            maxHorizontalPartitions = 1,
+            horizontalPartitionSpacerSize = 0.dp,
+            verticalPartitionSpacerSize = 0.dp
         ),
         adaptStrategies = SupportingPaneScaffoldDefaults.adaptStrategies(
             supportingPaneAdaptStrategy = AdaptStrategy.Levitate(
@@ -238,224 +240,231 @@ fun StudyScreen(
         )
     }
 
-    // --- ROOT SCAFFOLD ---
-    SupportingPaneScaffold(
+    Surface(
         modifier = Modifier.fillMaxSize(),
-        directive = drawerNavigator.scaffoldDirective,
-        value = drawerNavigator.scaffoldValue,
-        mainPane = {
-            AnimatedPane(modifier = Modifier.fillMaxSize()) {
-                Scaffold(
-                    topBar = sharedHeader,
-                    floatingActionButtonPosition = FabPosition.Center,
-                    floatingActionButton = {
-                        AnimatedVisibility(
-                            visible = showFab,
-                            enter = slideInVertically(initialOffsetY = { it }),
-                            exit = slideOutVertically(targetOffsetY = { it })
-                        ) {
-                            HorizontalFloatingToolbar(
-                                expanded = true,
-                                colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
-                                content = {
-                                    IconButton(
-                                        onClick = { engineViewModel.previousChapter() },
-                                        enabled = hasPrevious
-                                    ) {
-                                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Chapter")
-                                    }
-
-                                    Box(contentAlignment = Alignment.Center) {
-                                        FilledTonalButton(
-                                            onClick = { showTabsPreview = true },
-                                            shape = IconButtonDefaults.filledShape
+        color = MaterialTheme.colorScheme.surfaceContainerLowest
+    ) {
+        SupportingPaneScaffold(
+            modifier = Modifier.fillMaxSize(),
+            directive = drawerNavigator.scaffoldDirective,
+            value = drawerNavigator.scaffoldValue,
+            mainPane = {
+                AnimatedPane(modifier = Modifier.fillMaxSize()) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                        topBar = sharedHeader,
+                        floatingActionButtonPosition = FabPosition.Center,
+                        floatingActionButton = {
+                            AnimatedVisibility(
+                                visible = showFab,
+                                enter = slideInVertically(initialOffsetY = { it }),
+                                exit = slideOutVertically(targetOffsetY = { it })
+                            ) {
+                                HorizontalFloatingToolbar(
+                                    expanded = true,
+                                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
+                                    content = {
+                                        IconButton(
+                                            onClick = { engineViewModel.previousChapter() },
+                                            enabled = hasPrevious
                                         ) {
-                                            Icon(tab_group, contentDescription = "Tabs")
+                                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Chapter")
                                         }
-                                        if (tabs.size > 1) {
-                                            Surface(
-                                                modifier = Modifier
-                                                    .align(Alignment.TopEnd)
-                                                    .padding(top = 2.dp, end = 2.dp),
-                                                color = MaterialTheme.colorScheme.secondary,
-                                                shape = RoundedCornerShape(8.dp)
+
+                                        Box(contentAlignment = Alignment.Center) {
+                                            FilledTonalButton(
+                                                onClick = { showTabsPreview = true },
+                                                shape = IconButtonDefaults.filledShape
                                             ) {
-                                                Text(
-                                                    text = tabs.size.toString(),
-                                                    modifier = Modifier.padding(horizontal = 4.dp),
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = MaterialTheme.colorScheme.onSecondary
-                                                )
+                                                Icon(tab_group, contentDescription = "Tabs")
+                                            }
+                                            if (tabs.size > 1) {
+                                                Surface(
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopEnd)
+                                                        .padding(top = 2.dp, end = 2.dp),
+                                                    color = MaterialTheme.colorScheme.secondary,
+                                                    shape = RoundedCornerShape(8.dp)
+                                                ) {
+                                                    Text(
+                                                        text = tabs.size.toString(),
+                                                        modifier = Modifier.padding(horizontal = 4.dp),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.onSecondary
+                                                    )
+                                                }
                                             }
                                         }
-                                    }
 
-                                    IconButton(
-                                        onClick = { engineViewModel.nextChapter() },
-                                        enabled = hasNext
-                                    ) {
-                                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Chapter")
+                                        IconButton(
+                                            onClick = { engineViewModel.nextChapter() },
+                                            enabled = hasNext
+                                        ) {
+                                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Chapter")
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    ) { paddingValues ->
+                        BoxWithConstraints(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
+                        ) {
+                            val innerMaxWidth = maxWidth
+                            val minPaneWidth = 300.dp
+                            
+                            Row(modifier = Modifier.fillMaxSize()) {
+                                // 1. Bible Text Area
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                ) {
+                                    when {
+                                        installedBibles.isEmpty() -> {
+                                            Column(
+                                                modifier = Modifier.fillMaxSize(),
+                                                verticalArrangement = Arrangement.Center,
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                Text(text = "No Bibles installed.")
+                                                Spacer(modifier = Modifier.height(16.dp))
+                                                Button(onClick = onNavigateToStore) {
+                                                    Text("Go to Store")
+                                                }
+                                            }
+                                        }
+                                        isLoading -> {
+                                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                CircularProgressIndicator()
+                                            }
+                                        }
+                                        sections.isEmpty() -> {
+                                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                Text(text = "No content loaded. Select a chapter to study.")
+                                            }
+                                        }
+                                        else -> {
+                                            PageView(
+                                                sections = sections,
+                                                state = listState,
+                                                onWordClick = { word ->
+                                                    selectedWord = word
+                                                    engineViewModel.lookupWord(word)
+                                                    showLexicon = true
+                                                },
+                                                onStrongsClick = { strongs ->
+                                                    engineViewModel.lookupStrongs(strongs)
+                                                    showLexicon = true
+                                                }
+                                            )
+                                        }
                                     }
                                 }
-                            )
-                        }
-                    }
-                ) { paddingValues ->
-                    BoxWithConstraints(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                    ) {
-                        val innerMaxWidth = maxWidth
-                        val minPaneWidth = 300.dp
-                        
-                        Row(modifier = Modifier.fillMaxSize()) {
-                            // 1. Bible Text Area
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            ) {
-                                when {
-                                    installedBibles.isEmpty() -> {
-                                        Column(
-                                            modifier = Modifier.fillMaxSize(),
-                                            verticalArrangement = Arrangement.Center,
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Text(text = "No Bibles installed.")
-                                            Spacer(modifier = Modifier.height(16.dp))
-                                            Button(onClick = onNavigateToStore) {
-                                                Text("Go to Store")
-                                            }
-                                        }
+
+                                // 2. Study Tools Side Pane (Resizable)
+                                if (showLexicon && !isCompact) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .width(12.dp)
+                                            .pointerHoverIcon(PointerIcon.Hand)
+                                            .draggable(
+                                                state = rememberDraggableState { delta ->
+                                                    val deltaDp = with(density) { delta.toDp() }
+                                                    lexiconPaneWidth = (lexiconPaneWidth - deltaDp).coerceIn(minPaneWidth, innerMaxWidth * 0.7f)
+                                                },
+                                                orientation = Orientation.Horizontal
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .height(48.dp)
+                                                .width(4.dp)
+                                                .clip(RoundedCornerShape(2.dp))
+                                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                        )
                                     }
-                                    isLoading -> {
-                                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                            CircularProgressIndicator()
-                                        }
-                                    }
-                                    sections.isEmpty() -> {
-                                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                            Text(text = "No content loaded. Select a chapter to study.")
-                                        }
-                                    }
-                                    else -> {
-                                        PageView(
-                                            sections = sections,
-                                            state = listState,
-                                            onWordClick = { word ->
-                                                selectedWord = word
-                                                engineViewModel.lookupWord(word)
-                                                showLexicon = true
-                                            },
-                                            onStrongsClick = { strongs ->
-                                                engineViewModel.lookupStrongs(strongs)
-                                                showLexicon = true
-                                            }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .width(lexiconPaneWidth)
+                                            .fillMaxHeight()
+                                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                                    ) {
+                                        SplitDetailPane(
+                                            engineViewModel = engineViewModel,
+                                            onDismiss = { showLexicon = false }
                                         )
                                     }
                                 }
                             }
-
-                            // 2. Study Tools Side Pane (Resizable)
-                            if (showLexicon && !isCompact) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .width(12.dp)
-                                        .pointerHoverIcon(PointerIcon.Hand)
-                                        .draggable(
-                                            state = rememberDraggableState { delta ->
-                                                val deltaDp = with(density) { delta.toDp() }
-                                                lexiconPaneWidth = (lexiconPaneWidth - deltaDp).coerceIn(minPaneWidth, innerMaxWidth * 0.7f)
-                                            },
-                                            orientation = Orientation.Horizontal
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .height(48.dp)
-                                            .width(4.dp)
-                                            .clip(RoundedCornerShape(2.dp))
-                                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                                    )
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .width(lexiconPaneWidth)
-                                        .fillMaxHeight()
-                                ) {
-                                    SplitDetailPane(
-                                        engineViewModel = engineViewModel,
-                                        onDismiss = { showLexicon = false }
-                                    )
-                                }
-                            }
                         }
                     }
                 }
-            }
-        },
-        supportingPane = {
-            if (isBibleDrawerVisible) {
-                AnimatedPane(
-                    modifier = Modifier
-                        .preferredHeight(1f)
-                        .preferredWidth(400.dp)
-                ) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        shape = RectangleShape,
-                        color = MaterialTheme.colorScheme.surfaceContainerLow,
-                        tonalElevation = 3.dp,
-                        shadowElevation = 16.dp
+            },
+            supportingPane = {
+                if (isBibleDrawerVisible) {
+                    AnimatedPane(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(400.dp)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .statusBarsPadding()
-                                .padding(top = 16.dp)
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RectangleShape,
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            tonalElevation = 3.dp,
+                            shadowElevation = 16.dp
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .statusBarsPadding()
+                                    .padding(top = 16.dp)
                             ) {
-                                Text(
-                                    text = if (showModuleSelection) "Bible Selection" else "Reference Picker",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                IconButton(onClick = {
-                                    showModuleSelection = false
-                                    showReferencePicker = false
-                                }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Close Drawer")
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (showModuleSelection) "Bible Selection" else "Reference Picker",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    IconButton(onClick = {
+                                        showModuleSelection = false
+                                        showReferencePicker = false
+                                    }) {
+                                        Icon(Icons.Default.Close, contentDescription = "Close Drawer")
+                                    }
                                 }
-                            }
-                            
-                            Spacer(modifier = Modifier.height(8.dp))
+                                
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            if (showModuleSelection) {
-                                ModuleSelectionContent(installedBibles, currentModule) { module ->
-                                    engineViewModel.selectModule(module)
-                                    showModuleSelection = false
-                                }
-                            } else if (showReferencePicker) {
-                                ReferencePickerContent(currentBooks, currentBookIndex, currentChapterIndex, { index -> engineViewModel.selectBook(index) }) { chapter ->
-                                    engineViewModel.selectChapter(chapter)
-                                    showReferencePicker = false
+                                if (showModuleSelection) {
+                                    ModuleSelectionContent(installedBibles, currentModule) { module ->
+                                        engineViewModel.selectModule(module)
+                                        showModuleSelection = false
+                                    }
+                                } else if (showReferencePicker) {
+                                    ReferencePickerContent(currentBooks, currentBookIndex, currentChapterIndex, { index -> engineViewModel.selectBook(index) }) { chapter ->
+                                        engineViewModel.selectChapter(chapter)
+                                        showReferencePicker = false
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-    )
+        )
+    }
 
     // --- MOBILE OVERLAYS ---
     if (isCompact) {

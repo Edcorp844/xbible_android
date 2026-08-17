@@ -2,22 +2,16 @@ package com.example.xbible.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.LibraryBooks
-import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Storefront
-import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.ShoppingBag
-import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.window.core.layout.WindowSizeClass
@@ -43,7 +37,7 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val customNavSuiteType = with(adaptiveInfo) {
         if (!windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)) {
-            NavigationSuiteType.ShortNavigationBarCompact
+            NavigationSuiteType.NavigationBar
         } else {
             NavigationSuiteType.WideNavigationRailCollapsed
         }
@@ -51,6 +45,11 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
 
     NavigationSuiteScaffold(
         layoutType = customNavSuiteType,
+        modifier = Modifier.fillMaxSize(),
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            navigationRailContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
         navigationSuiteItems = {
             AppDestinations.entries.forEach { destination ->
                 item(
@@ -68,6 +67,7 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
         }
     ) {
         MainContent(
+            modifier = Modifier.fillMaxSize(),
             destination = currentDestination,
             engineViewModel = engineViewModel,
             onNavigate = { currentDestination = it }
@@ -77,20 +77,23 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
 
 @Composable
 fun MainContent(
+    modifier: Modifier = Modifier,
     destination: AppDestinations,
     engineViewModel: EngineViewModel,
     onNavigate: (AppDestinations) -> Unit
 ) {
-    when (destination) {
-        AppDestinations.STUDY -> StudyScreen(engineViewModel = engineViewModel, onNavigateToStore = { onNavigate(AppDestinations.STORE) })
-        AppDestinations.STORE -> StoreScreen()
-        AppDestinations.TOOLS -> ToolsScreen()
-        AppDestinations.LIBRARY -> LibraryScreen(
-            onOpenModule = { module ->
-                engineViewModel.selectModule(module)
-                onNavigate(AppDestinations.STUDY)
-            }
-        )
+    Box(modifier = modifier) {
+        when (destination) {
+            AppDestinations.STUDY -> StudyScreen(engineViewModel = engineViewModel, onNavigateToStore = { onNavigate(AppDestinations.STORE) })
+            AppDestinations.STORE -> StoreScreen()
+            AppDestinations.TOOLS -> ToolsScreen()
+            AppDestinations.LIBRARY -> LibraryScreen(
+                onOpenModule = { module ->
+                    engineViewModel.selectModule(module)
+                    onNavigate(AppDestinations.STUDY)
+                }
+            )
+        }
     }
 }
 
