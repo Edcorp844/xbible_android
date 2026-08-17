@@ -75,9 +75,9 @@ fun StudyScreen(
     var showModuleSelection by remember { mutableStateOf(false) }
     var showReferencePicker by remember { mutableStateOf(false) }
     
-    val moduleSheetState = rememberModalBottomSheetState()
-    val referenceSheetState = rememberModalBottomSheetState()
-    val lexiconSheetState = rememberModalBottomSheetState()
+    val moduleSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val referenceSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val lexiconSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Outer navigator for Bible/Reference Drawer
     val drawerNavigator = rememberSupportingPaneScaffoldNavigator(
@@ -262,8 +262,9 @@ fun StudyScreen(
                                 exit = slideOutVertically(targetOffsetY = { it })
                             ) {
                                 HorizontalFloatingToolbar(
-                                    expanded = true,
-                                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
+                                modifier = Modifier.navigationBarsPadding(),
+                                expanded = true,
+                                colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
                                     content = {
                                         IconButton(
                                             onClick = { engineViewModel.previousChapter() },
@@ -394,7 +395,6 @@ fun StudyScreen(
                                         modifier = Modifier
                                             .width(lexiconPaneWidth)
                                             .fillMaxHeight()
-                                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
                                     ) {
                                         SplitDetailPane(
                                             engineViewModel = engineViewModel,
@@ -410,10 +410,10 @@ fun StudyScreen(
             supportingPane = {
                 if (isBibleDrawerVisible) {
                     AnimatedPane(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(400.dp)
-                    ) {
+                    modifier = Modifier
+                        .preferredHeight(1f)
+                        .width(400.dp)
+                ) {
                         Surface(
                             modifier = Modifier.fillMaxSize(),
                             shape = RectangleShape,

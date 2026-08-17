@@ -1,11 +1,20 @@
 package com.example.xbible.ui.screens.study
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.text.Layout
+import android.text.SpannableStringBuilder
+import android.text.style.LeadingMarginSpan
+import android.text.style.LineBackgroundSpan
+import android.text.style.QuoteSpan
 import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,6 +23,7 @@ import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Translate
@@ -65,37 +75,67 @@ fun SplitDetailPane(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StudyToolPicker(
     selectedTab: StudyTool,
     onTabSelected: (StudyTool) -> Unit
 ) {
     val toolList = StudyTool.entries
-    PrimaryTabRow(
-        selectedTabIndex = toolList.indexOf(selectedTab),
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = Color.Transparent,
-        divider = {
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        }
-    ) {
-        toolList.forEach { tool ->
-            val isSelected = selectedTab == tool
-            Tab(
-                selected = isSelected,
-                onClick = { onTabSelected(tool) },
-                text = {
-                    Text(
-                        text = tool.name,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(vertical = 12.dp, horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ButtonGroup(
+                overflowIndicator = { menuState ->
+                    IconButton(onClick = { menuState.show() }) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = "More")
+                    }
+                },
+                modifier = Modifier.wrapContentWidth(),
+                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+            ) {
+                toolList.forEachIndexed { index, tool ->
+                    val isSelected = selectedTab == tool
+                    customItem(
+                        buttonGroupContent = {
+                            val shapes = when {
+                                index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                index == toolList.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                            }
+                            OutlinedToggleButton(
+                                checked = isSelected,
+                                onCheckedChange = { if (it) onTabSelected(tool) },
+                                shapes = shapes
+                            ) {
+                                Text(
+                                    text = tool.name,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    maxLines = 1
+                                )
+                            }
+                        },
+                        menuContent = { menuState ->
+                            DropdownMenuItem(
+                                text = { Text(tool.name) },
+                                onClick = {
+                                    onTabSelected(tool)
+                                    menuState.dismiss()
+                                }
+                            )
+                        }
                     )
                 }
-            )
+            }
         }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     }
 }
 
@@ -350,32 +390,63 @@ fun HtmlText(
     modifier: Modifier = Modifier,
     style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium
 ) {
-    val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
-    val secondaryColor = MaterialTheme.colorScheme.secondary.toArgb()
-    val primaryColor = MaterialTheme.colorScheme.primary.toArgb()
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val outlineVariant = MaterialTheme.colorScheme.outlineVariant
+    val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
     
-    val spanned = remember(html, key, textColor) {
+    val spanned = remember(html, key, onSurface, primary, secondary, outlineVariant, surfaceVariant) {
         var text = html.trim()
         val keyLower = key.lowercase()
         // Clean prefix/suffix search key
         if (text.lowercase().startsWith(keyLower)) text = text.drop(keyLower.length).trim()
         if (text.lowercase().endsWith(keyLower)) text = text.dropLast(keyLower.length).trim()
         
-        // Map common TEI/Dictionary classes to Android-supported HTML
-        text = text.replace("class=\"orth\"", "color='#${Integer.toHexString(primaryColor).substring(2)}'")
-        text = text.replace("class=\"pos\"", "color='#${Integer.toHexString(secondaryColor).substring(2)}'")
-        text = text.replace("class=\"cit\"", "style=\"background-color:#00000010; padding:4px\"") // Blockquote-like
+        // Prepare HTML for parsing
+        val processedHtml = text
+            .replace("class=\"orth\"", "color='#${String.format("%06X", 0xFFFFFF and primary.toArgb())}'")
+            .replace("class=\"pos\"", "color='#${String.format("%06X", 0xFFFFFF and secondary.toArgb())}'")
+            .replace("<div class=\"cit\">", "<blockquote>")
+            .replace("</div>", "</blockquote>")
+            .replace("class=\"cit\"", "")
 
-        HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val rawSpanned = HtmlCompat.fromHtml(processedHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val spannable = SpannableStringBuilder(rawSpanned)
+        
+        // Post-process QuoteSpans for a professional "Full Width" block look with padding
+        val quoteSpans = spannable.getSpans(0, spannable.length, QuoteSpan::class.java)
+        for (span in quoteSpans) {
+            val start = spannable.getSpanStart(span)
+            val end = spannable.getSpanEnd(span)
+            val flags = spannable.getSpanFlags(span)
+            
+            spannable.removeSpan(span)
+            
+            // Inject our custom Block Quote Span for background + stripe + padding
+            spannable.setSpan(
+                BlockQuoteSpan(
+                    backgroundColor = surfaceVariant.copy(alpha = 0.25f).toArgb(),
+                    stripeColor = outlineVariant.toArgb(),
+                    stripeWidth = 8,
+                    gapWidth = 24
+                ),
+                start, end, flags
+            )
+        }
+        
+        spannable
     }
 
     AndroidView(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         factory = { context ->
             TextView(context).apply {
                 setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, style.fontSize.value)
-                setTextColor(textColor)
+                setTextColor(onSurface.toArgb())
                 setLineSpacing(0f, 1.2f)
+                // Internal padding for the whole TextView
+                setPadding(0, 0, 0, 0) 
                 if (style.fontFamily == FontFamily.Serif) {
                     setTypeface(android.graphics.Typeface.SERIF)
                 }
@@ -383,4 +454,50 @@ fun HtmlText(
         },
         update = { it.text = spanned }
     )
+}
+
+/**
+ * Custom Span to provide a professional full-width block quote appearance.
+ */
+private class BlockQuoteSpan(
+    private val backgroundColor: Int,
+    private val stripeColor: Int,
+    private val stripeWidth: Int,
+    private val gapWidth: Int
+) : LeadingMarginSpan, LineBackgroundSpan {
+
+    override fun getLeadingMargin(first: Boolean): Int = stripeWidth + gapWidth
+
+    override fun drawLeadingMargin(
+        c: Canvas, p: Paint, x: Int, dir: Int,
+        top: Int, baseline: Int, bottom: Int,
+        text: CharSequence, start: Int, end: Int,
+        first: Boolean, layout: Layout
+    ) {
+        val originalStyle = p.style
+        val originalColor = p.color
+
+        p.style = Paint.Style.FILL
+        p.color = stripeColor
+        
+        // Draw the vertical stripe
+        c.drawRect(x.toFloat(), top.toFloat(), (x + dir * stripeWidth).toFloat(), bottom.toFloat(), p)
+
+        p.style = originalStyle
+        p.color = originalColor
+    }
+
+    override fun drawBackground(
+        c: Canvas, p: Paint,
+        left: Int, right: Int, top: Int, baseline: Int, bottom: Int,
+        text: CharSequence, start: Int, end: Int, lineNumber: Int
+    ) {
+        val originalColor = p.color
+        p.color = backgroundColor
+        
+        // Draw full-width background
+        c.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), p)
+        
+        p.color = originalColor
+    }
 }
