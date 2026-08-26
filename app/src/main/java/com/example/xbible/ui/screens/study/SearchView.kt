@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.StudyTab
 import uniffi.xbible_engine.SearchHit
 import uniffi.xbible_engine.Section
@@ -76,7 +77,9 @@ fun SearchView(
         if (tab.isSearching) {
             LinearProgressIndicator(
                 progress = { tab.searchLoadProgress },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             )
         }
 
@@ -153,12 +156,14 @@ fun SearchHitItem(
                         text = word.text,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = if (isMatch) {
-                            Modifier.background(
-                                MaterialTheme.colorScheme.primaryContainer.copy(
-                                    alpha = 0.7f
-                                ),
-                                RoundedCornerShape(size = 8.dp)
-                            ).padding(horizontal = 4.dp)
+                            Modifier
+                                .background(
+                                    MaterialTheme.colorScheme.primaryContainer.copy(
+                                        alpha = 0.7f
+                                    ),
+                                    RoundedCornerShape(size = 8.dp)
+                                )
+                                .padding(horizontal = 4.dp)
                         } else Modifier
                     )
                 }
@@ -180,14 +185,14 @@ fun SearchHitItem(
                 }
                 IconButton(onClick = onOpenInNewTab) {
                     Icon(
-                        Icons.AutoMirrored.Filled.OpenInNew,
+                        XBibleIcons.OpenInTab,
                         contentDescription = "Open in New Tab",
                         modifier = Modifier.size(20.dp)
                     )
                 }
                 IconButton(onClick = { onCopyVerse(content) }) {
                     Icon(
-                        Icons.Default.ContentCopy,
+                        XBibleIcons.Copy,
                         contentDescription = "Copy Verse",
                         modifier = Modifier.size(20.dp)
                     )

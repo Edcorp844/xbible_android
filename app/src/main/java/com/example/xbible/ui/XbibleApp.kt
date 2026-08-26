@@ -2,10 +2,6 @@ package com.example.xbible.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -22,7 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.xbible.ui.icons.handyman
+import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.ui.screens.LibraryScreen
 import com.example.xbible.ui.screens.StoreScreen
 import com.example.xbible.ui.screens.StudyScreen
@@ -101,8 +97,8 @@ enum class AppDestinations(
     val label: String,
     val icon: ImageVector
 ) {
-    STUDY("Study", Icons.AutoMirrored.Outlined.MenuBook),
-    STORE("Store", Icons.Outlined.ShoppingBag),
-    TOOLS("Tools", handyman),
-    LIBRARY("Library", Icons.AutoMirrored.Outlined.LibraryBooks),
+    STUDY("Study", XBibleIcons.Study),
+    STORE("Store", XBibleIcons.Store),
+    TOOLS("Tools", XBibleIcons.Tools),
+    LIBRARY("Library", XBibleIcons.Library),
 }

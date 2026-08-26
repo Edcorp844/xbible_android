@@ -48,7 +48,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.xbible.ui.icons.family_history
+import com.example.xbible.ui.icons.XBibleIcons
 
 // Data class representing a tool item
 data class ToolItem(
@@ -62,7 +62,7 @@ data class ToolItem(
 @Composable
 fun ToolsScreen() {
     val toolsList = listOf(
-        ToolItem(1, "Advanced Search", "Find specific words, phrases, or topics instantly.", family_history),
+        ToolItem(1, "Advanced Search", "Find specific words, phrases, or topics instantly.", XBibleIcons.TimeLine),
         ToolItem(2, "Bookmarks & Highlights", "Access your saved verses and personalized notes.", Icons.Default.Bookmark),
         ToolItem(3, "Reading History", "Pick up right where you left off in your study.", Icons.Default.History),
         ToolItem(4, "Share Verses", "Create and export beautiful verse images for social media.", Icons.Default.Share)

@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.xbible.ui.components.PageView
-import com.example.xbible.ui.icons.tab_group
+import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.ui.screens.study.ModuleSelectionContent
 import com.example.xbible.ui.screens.study.ReferencePickerContent
 import com.example.xbible.ui.screens.study.SearchSettingsContent
@@ -246,7 +246,7 @@ fun StudyScreen(
                         onCheckedChange = { showLexicon = it }
                     ) {
                         Icon(
-                            Icons.Outlined.AutoAwesome,
+                            XBibleIcons.Sidebar,
                             contentDescription = "Study Tools"
                         )
                     }
@@ -299,7 +299,7 @@ fun StudyScreen(
                                                 onClick = { showTabsPreview = true },
                                                 shape = IconButtonDefaults.filledShape
                                             ) {
-                                                Icon(tab_group, contentDescription = "Tabs")
+                                                Icon(XBibleIcons.Tabs, contentDescription = "Tabs")
                                             }
                                             if (tabs.size > 1) {
                                                 Surface(

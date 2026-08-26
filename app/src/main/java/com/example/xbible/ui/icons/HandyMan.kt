@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("CheckReturnValue")
-public val handyman: ImageVector
+internal val handyman: ImageVector
     get() {
         if (_handyman != null) {
             return _handyman!!
