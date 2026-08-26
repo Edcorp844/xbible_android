@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,12 +13,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uniffi.xbible_engine.SwordModule
+import javax.inject.Inject
 
 private const val TAG = "LibraryViewModel"
 
-class LibraryViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = BibleRepository(application)
+@HiltViewModel
+class LibraryViewModel @Inject constructor(
+    application: Application,
+    private val repository: BibleRepository
+) : AndroidViewModel(application) {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()

@@ -1,4 +1,4 @@
-package com.example.xbible.ui.components
+package com.example.xbible.core.ui.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface

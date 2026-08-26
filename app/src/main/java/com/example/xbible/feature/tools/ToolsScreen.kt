@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens
+package com.example.xbible.feature.tools
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,16 +45,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.xbible.R
 import com.example.xbible.ui.icons.XBibleIcons
 
 // Data class representing a tool item
 data class ToolItem(
     val id: Int,
-    val title: String,
-    val description: String,
+    val titleRes: Int,
+    val descriptionRes: Int,
     val icon: ImageVector
 )
 
@@ -62,10 +64,10 @@ data class ToolItem(
 @Composable
 fun ToolsScreen() {
     val toolsList = listOf(
-        ToolItem(1, "Advanced Search", "Find specific words, phrases, or topics instantly.", XBibleIcons.TimeLine),
-        ToolItem(2, "Bookmarks & Highlights", "Access your saved verses and personalized notes.", Icons.Default.Bookmark),
-        ToolItem(3, "Reading History", "Pick up right where you left off in your study.", Icons.Default.History),
-        ToolItem(4, "Share Verses", "Create and export beautiful verse images for social media.", Icons.Default.Share)
+        ToolItem(1, R.string.advanced_search, R.string.advanced_search_desc, XBibleIcons.TimeLine),
+        ToolItem(2, R.string.bookmarks_highlights, R.string.bookmarks_highlights_desc, Icons.Default.Bookmark),
+        ToolItem(3, R.string.reading_history, R.string.reading_history_desc, Icons.Default.History),
+        ToolItem(4, R.string.share_verses, R.string.share_verses_desc, Icons.Default.Share)
     )
 
     val count = toolsList.size
@@ -78,7 +80,7 @@ fun ToolsScreen() {
             TopAppBar(
                 title = { 
                     Text(
-                        "Bible Tools",
+                        stringResource(R.string.bible_tools),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     ) 
@@ -97,7 +99,7 @@ fun ToolsScreen() {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             
-            SectionTitle("Study Aids")
+            SectionTitle(stringResource(R.string.study_aids))
 
             toolsList.forEachIndexed { index, tool ->
                 SegmentedListItem(
@@ -114,24 +116,24 @@ fun ToolsScreen() {
                             tint = MaterialTheme.colorScheme.outline
                         )
                     },
-                    supportingContent = { Text(tool.description) }
+                    supportingContent = { Text(stringResource(tool.descriptionRes)) }
                 ) {
-                    Text(tool.title, fontWeight = FontWeight.Bold)
+                    Text(stringResource(tool.titleRes), fontWeight = FontWeight.Bold)
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
             
-            SectionTitle("General")
+            SectionTitle(stringResource(R.string.general))
 
             SegmentedListItem(
                 onClick = { /* Handle click */ },
                 shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
                 colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 leadingContent = { SegmentIcon(Icons.Default.Share) }, 
-                supportingContent = { Text("Configure app preferences and appearance.") }
+                supportingContent = { Text(stringResource(R.string.settings_tool_desc)) }
             ) {
-                Text("Settings", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.settings), fontWeight = FontWeight.Bold)
             }
             
             Spacer(modifier = Modifier.height(32.dp))

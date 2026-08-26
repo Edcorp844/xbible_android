@@ -1,4 +1,4 @@
-package com.example.xbible.ui.components
+package com.example.xbible.core.ui.components
 
 enum class AddedWordStyle {
     Brackets,

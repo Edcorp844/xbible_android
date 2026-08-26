@@ -18,11 +18,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import com.example.xbible.R
+import com.example.xbible.feature.library.LibraryScreen
+import com.example.xbible.feature.store.StoreScreen
+import com.example.xbible.feature.study.StudyScreen
+import com.example.xbible.feature.tools.ToolsScreen
 import com.example.xbible.ui.icons.XBibleIcons
-import com.example.xbible.ui.screens.LibraryScreen
-import com.example.xbible.ui.screens.StoreScreen
-import com.example.xbible.ui.screens.StudyScreen
-import com.example.xbible.ui.screens.ToolsScreen
 import com.example.xbible.viewmodel.EngineViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -52,10 +54,10 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
                     icon = {
                         Icon(
                             imageVector = destination.icon,
-                            contentDescription = destination.label,
+                            contentDescription = stringResource(destination.labelRes),
                         )
                     },
-                    label = { Text(destination.label) },
+                    label = { Text(stringResource(destination.labelRes)) },
                     selected = destination == currentDestination,
                     onClick = { currentDestination = destination }
                 )
@@ -94,11 +96,11 @@ fun MainContent(
 }
 
 enum class AppDestinations(
-    val label: String,
+    val labelRes: Int,
     val icon: ImageVector
 ) {
-    STUDY("Study", XBibleIcons.Study),
-    STORE("Store", XBibleIcons.Store),
-    TOOLS("Tools", XBibleIcons.Tools),
-    LIBRARY("Library", XBibleIcons.Library),
+    STUDY(R.string.study, XBibleIcons.Study),
+    STORE(R.string.store, XBibleIcons.Store),
+    TOOLS(R.string.tools, XBibleIcons.Tools),
+    LIBRARY(R.string.library, XBibleIcons.Library),
 }

@@ -15,11 +15,14 @@ import uniffi.xbible_engine.TaskStatus
 import uniffi.xbible_engine.XBibleEngine
 import uniffi.xbible_engine.initLogging
 import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Repository that abstracts the XBibleEngine (Rust) and provides data to the ViewModels.
  */
-class BibleRepository(private val application: Application) {
+@Singleton
+class BibleRepository @Inject constructor(private val application: Application) {
 
     private var engine: XBibleEngine? = null
 

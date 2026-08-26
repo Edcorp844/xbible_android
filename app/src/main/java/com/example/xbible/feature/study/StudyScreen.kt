@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens
+package com.example.xbible.feature.study
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -35,22 +33,16 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.example.xbible.ui.components.PageView
+import com.example.xbible.R
+import com.example.xbible.core.ui.components.PageView
 import com.example.xbible.ui.icons.XBibleIcons
-import com.example.xbible.ui.screens.study.FontSettingsContent
-import com.example.xbible.ui.screens.study.ModuleSelectionContent
-import com.example.xbible.ui.screens.study.ParallelModeContent
-import com.example.xbible.ui.screens.study.ReferencePickerContent
-import com.example.xbible.ui.screens.study.SearchSettingsContent
-import com.example.xbible.ui.screens.study.SearchView
-import com.example.xbible.ui.screens.study.SplitDetailPane
-import com.example.xbible.ui.screens.study.TabsPreview
 import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.TabType
 import uniffi.xbible_engine.Word
@@ -215,7 +207,7 @@ fun StudyScreen(
                             } else ButtonDefaults.elevatedButtonColors()
                         ) {
                             Text(
-                                text = currentModule?.name ?: "Select Bible",
+                                text = currentModule?.name ?: stringResource(R.string.select_bible),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -244,7 +236,7 @@ fun StudyScreen(
                             }
                         ) {
                             Text(
-                                text = if (isSearchTab) "Settings" else (currentReference ?: "Study"),
+                                text = if (isSearchTab) stringResource(R.string.settings) else (currentReference ?: stringResource(R.string.study)),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -260,16 +252,16 @@ fun StudyScreen(
                     ) {
                         Icon(
                             XBibleIcons.Sidebar,
-                            contentDescription = "Study Tools"
+                            contentDescription = stringResource(R.string.study_tools)
                         )
                     }
                 }
                 IconButton(onClick = { engineViewModel.addSearchTab() }) {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search))
                 }
                 Box {
                     IconButton(onClick = { showMoreMenu = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more))
                     }
                     DropdownMenu(
                         expanded = showMoreMenu,
@@ -277,7 +269,7 @@ fun StudyScreen(
                         shape = RoundedCornerShape(24.dp)
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Font and Settings") },
+                            text = { Text(stringResource(R.string.font_and_settings)) },
                             onClick = {
                                 if (isCompact) {
                                     showFontSettings = true
@@ -293,7 +285,7 @@ fun StudyScreen(
                             leadingIcon = { Icon(XBibleIcons.FontSize, contentDescription = null, modifier = Modifier.size(20.dp)) }
                         )
                         DropdownMenuItem(
-                            text = { Text("Parallel Display") },
+                            text = { Text(stringResource(R.string.parallel_display)) },
                             onClick = {
                                 if (isCompact) {
                                     showParallelMode = true
@@ -344,7 +336,7 @@ fun StudyScreen(
                                             onClick = { engineViewModel.previousChapter() },
                                             enabled = hasPrevious
                                         ) {
-                                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous Chapter")
+                                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_chapter))
                                         }
 
                                         Box(contentAlignment = Alignment.Center) {
@@ -352,7 +344,7 @@ fun StudyScreen(
                                                 onClick = { showTabsPreview = true },
                                                 shape = IconButtonDefaults.filledShape
                                             ) {
-                                                Icon(XBibleIcons.Tabs, contentDescription = "Tabs")
+                                                Icon(XBibleIcons.Tabs, contentDescription = stringResource(R.string.tabs))
                                             }
                                             if (tabs.size > 1) {
                                                 Surface(
@@ -376,7 +368,7 @@ fun StudyScreen(
                                             onClick = { engineViewModel.nextChapter() },
                                             enabled = hasNext
                                         ) {
-                                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Chapter")
+                                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.next_chapter))
                                         }
                                     }
                                 )
@@ -436,10 +428,10 @@ fun StudyScreen(
                                                     verticalArrangement = Arrangement.Center,
                                                     horizontalAlignment = Alignment.CenterHorizontally
                                                 ) {
-                                                    Text(text = "No Bibles installed.")
+                                                    Text(text = stringResource(R.string.no_bibles_installed))
                                                     Spacer(modifier = Modifier.height(16.dp))
                                                     Button(onClick = onNavigateToStore) {
-                                                        Text("Go to Store")
+                                                        Text(stringResource(R.string.go_to_store))
                                                     }
                                                 }
                                             }
@@ -450,7 +442,7 @@ fun StudyScreen(
                                             }
                                             sections.isEmpty() -> {
                                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                                    Text(text = "No content loaded. Select a chapter to study.")
+                                                    Text(text = stringResource(R.string.no_content_loaded))
                                                 }
                                             }
                                             else -> {
@@ -541,11 +533,11 @@ fun StudyScreen(
                                 ) {
                                     Text(
                                         text = when {
-                                            showModuleSelection -> "Bible Selection"
-                                            showSearchSettings -> "Search Settings"
-                                            showFontSettings -> "Text Settings"
-                                            showParallelMode -> "Parallel Display"
-                                            else -> "Reference Picker"
+                                            showModuleSelection -> stringResource(R.string.bible_selection)
+                                            showSearchSettings -> stringResource(R.string.search_settings)
+                                            showFontSettings -> stringResource(R.string.text_settings)
+                                            showParallelMode -> stringResource(R.string.parallel_display)
+                                            else -> stringResource(R.string.reference_picker)
                                         },
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
@@ -557,7 +549,7 @@ fun StudyScreen(
                                         showFontSettings = false
                                         showParallelMode = false
                                     }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Close Drawer")
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close_drawer_desc))
                                     }
                                 }
                                 

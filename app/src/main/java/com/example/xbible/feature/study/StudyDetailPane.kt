@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens.study
+package com.example.xbible.feature.study
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
-import com.example.xbible.ui.components.SectionView
+import com.example.xbible.R
+import com.example.xbible.core.ui.components.SectionView
 import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.StudyTool
 import uniffi.xbible_engine.DictionaryResult
@@ -203,7 +205,7 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
                 }
             } else {
                 Text(
-                    text = "Select a word to lookup",
+                    text = stringResource(R.string.select_word_lookup),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -233,7 +235,7 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No definitions found for \"$selectedWord\".",
+                        text = stringResource(R.string.no_definitions_found, selectedWord),
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -288,7 +290,7 @@ fun DictionaryResultRow(result: DictionaryResult) {
                 ) {
                     Icon(
                         Icons.Outlined.ContentCopy,
-                        contentDescription = "Copy",
+                        contentDescription = stringResource(R.string.copy),
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -322,13 +324,13 @@ fun DictionaryEmptyState() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Dictionary Lookup",
+            text = stringResource(R.string.dictionary_lookup),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Click any word in the scripture view to automatically look up its definition across all matching installed dictionary modules.",
+            text = stringResource(R.string.dictionary_lookup_desc),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.outline
@@ -357,13 +359,13 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Lexicon",
+                        text = stringResource(R.string.lexicon),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     if (availableLexicons.isEmpty()) {
                         Text(
-                            text = "No lexicons installed",
+                            text = stringResource(R.string.no_lexicons_installed),
                             style = MaterialTheme.typography.labelSmall
                         )
                     } else {
@@ -379,7 +381,7 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                        ?: selectedModule?.name ?: "Select Lexicon",
+                                        ?: selectedModule?.name ?: stringResource(R.string.select_lexicon),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall)
@@ -418,7 +420,7 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Strong's Code: ",
+                            text = stringResource(R.string.strongs_code_label),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.outline
                         )
@@ -453,7 +455,7 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No lexicon entries found for \"$selectedStrongs\" in ${selectedModule?.name}.",
+                    text = stringResource(R.string.no_lexicon_entries_found, selectedStrongs, selectedModule?.name ?: ""),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -510,13 +512,13 @@ fun LexiconEmptyState() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Lexicon Study",
+            text = stringResource(R.string.lexicon_study),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Click on a Strong's number below any Greek/Hebrew word to see its lexicon entry, morphological information, and detailed translation notes.",
+            text = stringResource(R.string.lexicon_study_desc),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.outline
@@ -546,13 +548,13 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Commentary",
+                        text = stringResource(R.string.commentary),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     if (availableCommentaries.isEmpty()) {
                         Text(
-                            text = "No commentaries installed",
+                            text = stringResource(R.string.no_commentaries_installed),
                             style = MaterialTheme.typography.labelSmall
                         )
                     } else {
@@ -568,7 +570,7 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                        ?: selectedModule?.name ?: "Select Commentary",
+                                        ?: selectedModule?.name ?: stringResource(R.string.select_commentary),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall)
@@ -611,7 +613,7 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Reference: ",
+                            text = stringResource(R.string.reference_label),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.outline
                         )
@@ -645,7 +647,7 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                                 modifier = Modifier.size(12.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Copy", style = MaterialTheme.typography.labelSmall)
+                            Text(stringResource(R.string.copy), style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
@@ -667,7 +669,7 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No commentary found for \"$currentReference\" in ${selectedModule?.name}.",
+                    text = stringResource(R.string.no_commentary_found, currentReference, selectedModule?.name ?: ""),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -701,13 +703,13 @@ fun CommentaryEmptyState() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Commentaries",
+            text = stringResource(R.string.commentaries),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Select or install a commentary module from the Store to read study notes, theological essays, and explanations for the active scripture chapter.",
+            text = stringResource(R.string.commentaries_desc),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.outline

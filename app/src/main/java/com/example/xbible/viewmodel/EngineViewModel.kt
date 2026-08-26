@@ -6,7 +6,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
-import com.example.xbible.ui.components.WordConfig
+import com.example.xbible.core.ui.components.WordConfig
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.Word
+import javax.inject.Inject
 
 enum class TabType { READ, SEARCH }
 
@@ -48,9 +50,10 @@ enum class StudyTool {
     Dictionary, Lexicon, Commentary
 }
 
-class EngineViewModel @JvmOverloads constructor(
+@HiltViewModel
+class EngineViewModel @Inject constructor(
     application: Application,
-    private val repository: BibleRepository = BibleRepository(application)
+    private val repository: BibleRepository
 ) : AndroidViewModel(application) {
 
     private val _isReady = MutableStateFlow(false)

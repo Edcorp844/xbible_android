@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens
+package com.example.xbible.feature.library
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -46,11 +46,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.xbible.ui.components.BookCardView
-import com.example.xbible.ui.components.CategoryTabBar
-import com.example.xbible.ui.components.LanguageHeader
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.xbible.R
+import com.example.xbible.core.ui.components.BookCardView
+import com.example.xbible.core.ui.components.CategoryTabBar
+import com.example.xbible.core.ui.components.LanguageHeader
 import com.example.xbible.viewmodel.InstallationStatus
 import com.example.xbible.viewmodel.LibraryViewModel
 import uniffi.xbible_engine.SwordModule
@@ -60,7 +62,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LibraryScreen(
     onOpenModule: (SwordModule) -> Unit,
-    viewModel: LibraryViewModel = viewModel()
+    viewModel: LibraryViewModel = hiltViewModel()
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val organizedModules by viewModel.organizedModules.collectAsState()
@@ -93,7 +95,7 @@ fun LibraryScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
-                title = { Text("Library") },
+                title = { Text(stringResource(R.string.library_title)) },
                 actions = {
                     if (showAppBarSearch) {
                         IconButton(onClick = {
@@ -101,7 +103,7 @@ fun LibraryScreen(
                                 listState.animateScrollToItem(0)
                             }
                         }) {
-                            Icon(Icons.Default.Search, contentDescription = "Scroll to Search")
+                            Icon(Icons.Default.Search, contentDescription = stringResource(R.string.scroll_to_search))
                         }
                     }
                 },
@@ -129,12 +131,12 @@ fun LibraryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = { Text("Search installed Bibles...") },
+                    placeholder = { Text(stringResource(R.string.search_placeholder_library)) },
                     leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                     trailingIcon = if (searchQuery.isNotEmpty()) {
                         {
                             IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear_search))
                             }
                         }
                     } else null,
@@ -201,7 +203,7 @@ fun LibraryScreen(
                                     contentDescription = null,
                                     modifier = Modifier.size(48.dp)
                                 )
-                                Text("No installed modules found", style = MaterialTheme.typography.bodyLarge)
+                                Text(stringResource(R.string.no_installed_modules_found), style = MaterialTheme.typography.bodyLarge)
                             }
                         }
                     }

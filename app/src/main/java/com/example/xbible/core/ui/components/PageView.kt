@@ -1,4 +1,4 @@
-package com.example.xbible.ui.components
+package com.example.xbible.core.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

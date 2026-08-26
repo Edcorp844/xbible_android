@@ -1,4 +1,4 @@
-package com.example.xbible.ui.components
+package com.example.xbible.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,10 +44,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.xbible.R
 import com.example.xbible.viewmodel.InstallationStatus
 import uniffi.xbible_engine.SwordModule
 
@@ -109,7 +111,7 @@ fun BookCardView(
                     ) {
                         Icon(
                             Icons.Default.MoreVert,
-                            contentDescription = "Options",
+                            contentDescription = stringResource(R.string.options),
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -128,7 +130,7 @@ fun BookCardView(
                         ) {
                             if (isLibraryMode) {
                                 DropdownMenuItem(
-                                    text = { Text("Open in Study") },
+                                    text = { Text(stringResource(R.string.open_in_study)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Outlined.ArrowOutward,
@@ -143,7 +145,7 @@ fun BookCardView(
                             } else {
                                 menuAction?.let {
                                     DropdownMenuItem(
-                                        text = { Text("Update") },
+                                        text = { Text(stringResource(R.string.update)) },
                                         leadingIcon = {
                                             Icon(
                                                 Icons.Default.CloudDownload,
@@ -166,7 +168,7 @@ fun BookCardView(
                                 shapes = MenuDefaults.groupShape(index = 1, count = groupCount)
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Delete") },
+                                    text = { Text(stringResource(R.string.delete)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Outlined.Delete,
@@ -209,7 +211,7 @@ private fun ActionView(
                 modifier = Modifier.height(28.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
             ) {
-                Text("Get", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.get), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
         is InstallationStatus.Installed -> {
@@ -220,7 +222,7 @@ private fun ActionView(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
             ) {
-                Text("Open", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.open), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
         is InstallationStatus.Pending -> {
@@ -252,7 +254,7 @@ private fun ActionView(
                 shape = RoundedCornerShape(14.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
             ) {
-                Text("Retry", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.retry), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

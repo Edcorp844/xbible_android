@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens
+package com.example.xbible.feature.onboarding
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -24,10 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.xbible.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -65,7 +67,7 @@ fun EngineInitializationScreen() {
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "XBIBLE",
+                    text = stringResource(R.string.app_name).uppercase(),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 4.sp,
@@ -76,7 +78,7 @@ fun EngineInitializationScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Initializing core engine...",
+                    text = stringResource(R.string.initializing_engine),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

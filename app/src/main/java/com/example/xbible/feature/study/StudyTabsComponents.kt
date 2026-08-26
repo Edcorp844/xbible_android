@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens.study
+package com.example.xbible.feature.study
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -21,10 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.xbible.R
 import com.example.xbible.viewmodel.StudyTab
 import com.example.xbible.viewmodel.TabType
 
@@ -56,12 +58,12 @@ fun TabsPreview(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Study Tabs",
+                    text = stringResource(R.string.study_tabs),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onBackground)
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close), tint = MaterialTheme.colorScheme.onBackground)
                 }
             }
             
@@ -97,7 +99,7 @@ fun TabsPreview(
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Bible")
+                    Text(stringResource(R.string.bible_tab))
                 }
 
                 Button(
@@ -108,7 +110,7 @@ fun TabsPreview(
                 ) {
                     Icon(Icons.Default.Search, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Search")
+                    Text(stringResource(R.string.search_tab))
                 }
             }
             
@@ -153,7 +155,7 @@ fun TabThumbnail(
                             Spacer(modifier = Modifier.width(4.dp))
                         }
                         Text(
-                            text = tab.module?.name ?: "Empty",
+                            text = tab.module?.name ?: stringResource(R.string.empty),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -164,12 +166,12 @@ fun TabThumbnail(
                         onClick = onRemove,
                         modifier = Modifier.size(24.dp)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close Tab", modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close_tab), modifier = Modifier.size(16.dp))
                     }
                 }
                 
                 Text(
-                    text = if (tab.type == TabType.SEARCH) "Search: ${tab.searchQuery}" else tab.reference ?: "No Reference",
+                    text = if (tab.type == TabType.SEARCH) stringResource(R.string.search_label, tab.searchQuery) else (tab.reference ?: stringResource(R.string.no_reference)),
                     style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

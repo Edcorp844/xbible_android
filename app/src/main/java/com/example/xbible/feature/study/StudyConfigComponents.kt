@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens.study
+package com.example.xbible.feature.study
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,11 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.xbible.ui.components.AddedWordStyle
-import com.example.xbible.ui.components.WordConfig
+import com.example.xbible.R
+import com.example.xbible.core.ui.components.AddedWordStyle
+import com.example.xbible.core.ui.components.WordConfig
 import uniffi.xbible_engine.SwordModule
 
 @Composable
@@ -32,17 +34,17 @@ fun FontSettingsContent(
             .padding(bottom = 32.dp)
     ) {
         Text(
-            text = "Text Settings",
+            text = stringResource(R.string.text_settings),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
         )
 
-        SettingsGroup(title = "FONT") {
+        SettingsGroup(title = stringResource(R.string.font)) {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 // Size
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Size", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
+                    Text(stringResource(R.string.size), style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
                     Slider(
                         value = config.fontSize,
                         onValueChange = { onConfigChange(config.copy(fontSize = it)) },
@@ -53,7 +55,7 @@ fun FontSettingsContent(
 
                 // Family
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
-                    Text("Family", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
+                    Text(stringResource(R.string.family), style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
                     val families = listOf(
                         "Default" to FontFamily.Default,
                         "Serif" to FontFamily.Serif,
@@ -75,7 +77,7 @@ fun FontSettingsContent(
 
                 // Line Height
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Line", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
+                    Text(stringResource(R.string.line), style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
                     Slider(
                         value = config.lineHeight,
                         onValueChange = { onConfigChange(config.copy(lineHeight = it)) },
@@ -86,7 +88,7 @@ fun FontSettingsContent(
 
                 // Word Spacing
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Space", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
+                    Text(stringResource(R.string.space), style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(60.dp))
                     Slider(
                         value = config.wordSpacing,
                         onValueChange = { onConfigChange(config.copy(wordSpacing = it)) },
@@ -99,35 +101,35 @@ fun FontSettingsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        SettingsGroup(title = "DISPLAY OPTIONS") {
+        SettingsGroup(title = stringResource(R.string.display_options)) {
             Column {
                 SwitchItem(
-                    label = "Show Strongs",
+                    label = stringResource(R.string.show_strongs),
                     checked = config.showStrongs,
                     onCheckedChange = { onConfigChange(config.copy(showStrongs = it)) }
                 )
                 SwitchItem(
-                    label = "Show Lemma",
+                    label = stringResource(R.string.show_lemma),
                     checked = config.showLemma,
                     onCheckedChange = { onConfigChange(config.copy(showLemma = it)) }
                 )
                 SwitchItem(
-                    label = "Show Morph",
+                    label = stringResource(R.string.show_morph),
                     checked = config.showMorph,
                     onCheckedChange = { onConfigChange(config.copy(showMorph = it)) }
                 )
                 SwitchItem(
-                    label = "Show Verse Notes",
+                    label = stringResource(R.string.show_verse_notes),
                     checked = config.showVerseNotes,
                     onCheckedChange = { onConfigChange(config.copy(showVerseNotes = it)) }
                 )
                 SwitchItem(
-                    label = "Show Word Notes",
+                    label = stringResource(R.string.show_word_notes),
                     checked = config.showWordNotes,
                     onCheckedChange = { onConfigChange(config.copy(showWordNotes = it)) }
                 )
                 SwitchItem(
-                    label = "Christ's words in red",
+                    label = stringResource(R.string.red_words),
                     checked = config.showRedWords,
                     onCheckedChange = { onConfigChange(config.copy(showRedWords = it)) }
                 )
@@ -135,7 +137,7 @@ fun FontSettingsContent(
                 // Added Words Style
                 ListItem(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    headlineContent = { Text("Added Words", style = MaterialTheme.typography.labelMedium) },
+                    headlineContent = { Text(stringResource(R.string.added_words), style = MaterialTheme.typography.labelMedium) },
                     trailingContent = {
                         Row {
                             AddedWordStyle.values().forEach { style ->
@@ -154,10 +156,10 @@ fun FontSettingsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        SettingsGroup(title = "TEXT STYLE") {
+        SettingsGroup(title = stringResource(R.string.text_style)) {
             Column {
                 SwitchItem(
-                    label = "Justify Text",
+                    label = stringResource(R.string.justify_text),
                     checked = config.justify,
                     onCheckedChange = { onConfigChange(config.copy(justify = it)) }
                 )
@@ -176,7 +178,7 @@ fun FontSettingsContent(
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
-            Text("Reset to Defaults")
+            Text(stringResource(R.string.reset_to_defaults))
         }
     }
 }
@@ -210,19 +212,19 @@ fun ParallelModeContent(
             .padding(bottom = 32.dp)
     ) {
         Text(
-            text = "Parallel Display",
+            text = stringResource(R.string.parallel_display),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
         )
 
-        SettingsGroup(title = "SELECT PARALLEL BIBLE") {
+        SettingsGroup(title = stringResource(R.string.select_parallel_bible)) {
             LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp)) {
                 item {
                     ListItem(
                         modifier = Modifier.clickable { onParallelModuleSelected(null) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text("None") },
+                        headlineContent = { Text(stringResource(R.string.none)) },
                         trailingContent = {
                             RadioButton(selected = parallelModule == null, onClick = null)
                         }

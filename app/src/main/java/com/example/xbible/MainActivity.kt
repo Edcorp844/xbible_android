@@ -13,11 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.example.xbible.feature.onboarding.EngineInitializationScreen
 import com.example.xbible.ui.XbibleApp
-import com.example.xbible.ui.screens.EngineInitializationScreen
 import com.example.xbible.ui.theme.XbibleTheme
 import com.example.xbible.viewmodel.EngineViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val engineViewModel: EngineViewModel by viewModels()
 

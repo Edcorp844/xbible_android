@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens
+package com.example.xbible.feature.store
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -68,13 +68,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.xbible.ui.components.BookCardView
-import com.example.xbible.ui.components.CategoryTabBar
-import com.example.xbible.ui.components.LanguageHeader
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.xbible.R
+import com.example.xbible.core.ui.components.BookCardView
+import com.example.xbible.core.ui.components.CategoryTabBar
+import com.example.xbible.core.ui.components.LanguageHeader
 import com.example.xbible.viewmodel.InstallationStatus
 import com.example.xbible.viewmodel.StoreViewModel
 import uniffi.xbible_engine.SwordModule
@@ -83,7 +85,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun StoreScreen(
-    viewModel: StoreViewModel = viewModel()
+    viewModel: StoreViewModel = hiltViewModel()
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val organizedModules by viewModel.organizedModules.collectAsState()
@@ -125,7 +127,7 @@ fun StoreScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Store", style = MaterialTheme.typography.headlineMedium,
+                        stringResource(R.string.store_title), style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -136,7 +138,7 @@ fun StoreScreen(
                                 listState.animateScrollToItem(0)
                             }
                         }) {
-                            Icon(Icons.Default.Search, contentDescription = "Scroll to Search")
+                            Icon(Icons.Default.Search, contentDescription = stringResource(R.string.scroll_to_search))
                         }
                     }
                     Box {
@@ -146,7 +148,7 @@ fun StoreScreen(
                                     onClick = { }
                                 ) {
                                     Text(
-                                        text = selectedSource ?: "Source",
+                                        text = selectedSource ?: stringResource(R.string.source),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -161,7 +163,7 @@ fun StoreScreen(
                                 ) {
                                     Icon(
                                         Icons.Outlined.KeyboardArrowDown,
-                                        contentDescription = "Source"
+                                        contentDescription = stringResource(R.string.source)
                                     )
                                 }
                             }
@@ -192,7 +194,7 @@ fun StoreScreen(
                                     if (isSelected) {
                                         Icon(
                                             imageVector = Icons.Outlined.Check,
-                                            contentDescription = "Selected"
+                                            contentDescription = stringResource(R.string.selected_item)
                                         )
                                     } else {
                                         // Provides consistent spacing/alignment for unselected items
@@ -227,12 +229,12 @@ fun StoreScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = { Text("Search Bibles, commentaries...") },
+                    placeholder = { Text(stringResource(R.string.search_placeholder_store)) },
                     leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                     trailingIcon = if (searchQuery.isNotEmpty()) {
                         {
                             IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear_search))
                             }
                         }
                     } else null,
@@ -296,7 +298,7 @@ fun StoreScreen(
                                 modifier = Modifier.size(48.dp)
                             )
                             Text(
-                                "No modules found in this category",
+                                stringResource(R.string.no_modules_found),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }

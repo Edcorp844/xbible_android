@@ -1,3 +1,120 @@
-<resources>
-    <string name="app_name">xbible</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">XBible</string>
+    <string name="initializing_engine">Initializing core engine&#8230;</string>
+    <string name="study">Study</string>
+    <string name="store">Store</string>
+    <string name="tools">Tools</string>
+    <string name="library">Library</string>
+    <string name="select_bible">Select Bible</string>
+    <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="more">More</string>
+    <string name="previous_chapter">Previous Chapter</string>
+    <string name="next_chapter">Next Chapter</string>
+    <string name="tabs">Tabs</string>
+    <string name="no_bibles_installed">No Bibles installed.</string>
+    <string name="go_to_store">Go to Store</string>
+    <string name="no_content_loaded">No content loaded. Select a chapter to study.</string>
+    <string name="study_tools">Study Tools</string>
+    <string name="bible_selection">Bible Selection</string>
+    <string name="search_settings">Search Settings</string>
+    <string name="reference_picker">Reference Picker</string>
+    <string name="text_settings">Text Settings</string>
+    <string name="parallel_display">Parallel Display</string>
+    <string name="close_drawer_desc" tools:override="true">Close Drawer</string>
+    <string name="font_and_settings">Font and Settings</string>
+    <string name="reset_to_defaults">Reset to Defaults</string>
+    <string name="font">Font</string>
+    <string name="size">Size</string>
+    <string name="family">Family</string>
+    <string name="line">Line</string>
+    <string name="space">Space</string>
+    <string name="display_options">Display Options</string>
+    <string name="show_strongs">Show Strongs</string>
+    <string name="show_lemma">Show Lemma</string>
+    <string name="show_morph">Show Morph</string>
+    <string name="show_verse_notes">Show Verse Notes</string>
+    <string name="show_word_notes">Show Word Notes</string>
+    <string name="red_words">Christ\'s words in red</string>
+    <string name="added_words">Added Words</string>
+    <string name="text_style">Text Style</string>
+    <string name="justify_text">Justify Text</string>
+    <string name="select_parallel_bible">Select Parallel Bible</string>
+    <string name="none">None</string>
+
+    <!-- Store Screen -->
+    <string name="store_title">Store</string>
+    <string name="scroll_to_search">Scroll to Search</string>
+    <string name="source">Source</string>
+    <string name="selected_item">Selected</string>
+    <string name="search_placeholder_store">Search Bibles, commentaries&#8230;</string>
+    <string name="clear_search">Clear</string>
+    <string name="no_modules_found">No modules found in this category</string>
+
+    <!-- Library Screen -->
+    <string name="library_title">Library</string>
+    <string name="search_placeholder_library">Search installed Bibles&#8230;</string>
+    <string name="no_installed_modules_found">No installed modules found</string>
+
+    <!-- Tools Screen -->
+    <string name="bible_tools">Bible Tools</string>
+    <string name="study_aids">Study Aids</string>
+    <string name="general">General</string>
+    <string name="advanced_search">Advanced Search</string>
+    <string name="advanced_search_desc">Find specific words, phrases, or topics instantly.</string>
+    <string name="bookmarks_highlights">Bookmarks &amp; Highlights</string>
+    <string name="bookmarks_highlights_desc">Access your saved verses and personalized notes.</string>
+    <string name="reading_history">Reading History</string>
+    <string name="reading_history_desc">Pick up right where you left off in your study.</string>
+    <string name="share_verses">Share Verses</string>
+    <string name="share_verses_desc">Create and export beautiful verse images for social media.</string>
+    <string name="settings_tool_desc">Configure app preferences and appearance.</string>
+
+    <!-- Components -->
+    <string name="more_categories">More Categories</string>
+    <string name="options">Options</string>
+    <string name="open_in_study">Open in Study</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
+    <string name="get">Get</string>
+    <string name="open">Open</string>
+    <string name="retry">Retry</string>
+
+    <!-- Study Tools -->
+    <string name="select_word_lookup">Select a word to lookup</string>
+    <string name="no_definitions_found">No definitions found for \"%1$s\".</string>
+    <string name="dictionary_lookup">Dictionary Lookup</string>
+    <string name="dictionary_lookup_desc">Click any word in the scripture view to automatically look up its definition across all matching installed dictionary modules.</string>
+    <string name="lexicon">Lexicon</string>
+    <string name="no_lexicons_installed">No lexicons installed</string>
+    <string name="select_lexicon">Select Lexicon</string>
+    <string name="strongs_code_label">Strong\'s Code: </string>
+    <string name="no_lexicon_entries_found">No lexicon entries found for \"%1$s\" in %2$s.</string>
+    <string name="lexicon_study">Lexicon Study</string>
+    <string name="lexicon_study_desc">Click on a Strong\'s number below any Greek/Hebrew word to see its lexicon entry, morphological information, and detailed translation notes.</string>
+    <string name="commentary">Commentary</string>
+    <string name="no_commentaries_installed">No commentaries installed</string>
+    <string name="select_commentary">Select Commentary</string>
+    <string name="reference_label">Reference: </string>
+    <string name="copy">Copy</string>
+    <string name="no_commentary_found">No commentary found for \"%1$s\" in %2$s.</string>
+    <string name="commentaries">Commentaries</string>
+    <string name="commentaries_desc">Select or install a commentary module from the Store to read study notes, theological essays, and explanations for the active scripture chapter.</string>
+
+    <!-- Study Selection -->
+    <string name="select_bible_version">Select Bible Version</string>
+    <string name="search_type_label">Search Type</string>
+    <string name="books">Books</string>
+    <string name="chapters">Chapters</string>
+    <string name="select_book_first">Select a book first</string>
+
+    <!-- Tabs -->
+    <string name="study_tabs">Study Tabs</string>
+    <string name="close">Close</string>
+    <string name="bible_tab">Bible</string>
+    <string name="search_tab">Search</string>
+    <string name="empty">Empty</string>
+    <string name="close_tab">Close Tab</string>
+    <string name="no_reference">No Reference</string>
+    <string name="search_label">Search: %1$s</string>
 </resources>

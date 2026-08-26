@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.TaskState
+import javax.inject.Inject
 
 sealed class InstallationStatus {
     object Idle : InstallationStatus()
@@ -23,9 +25,11 @@ sealed class InstallationStatus {
     data class Failed(val message: String) : InstallationStatus()
 }
 
-class StoreViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = BibleRepository(application)
+@HiltViewModel
+class StoreViewModel @Inject constructor(
+    application: Application,
+    private val repository: BibleRepository
+) : AndroidViewModel(application) {
 
     private val _remoteSources = MutableStateFlow<List<String>>(emptyList())
     val remoteSources: StateFlow<List<String>> = _remoteSources.asStateFlow()

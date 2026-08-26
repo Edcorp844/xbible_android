@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens.study
+package com.example.xbible.feature.study
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.xbible.R
 import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.SwordModule
@@ -40,7 +42,7 @@ fun ModuleSelectionContent(
             .padding(bottom = 32.dp)
     ) {
         Text(
-            text = "Select Bible Version",
+            text = stringResource(R.string.select_bible_version),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
@@ -106,14 +108,14 @@ fun SearchSettingsContent(
             .padding(bottom = 32.dp)
     ) {
         Text(
-            text = "Search Settings",
+            text = stringResource(R.string.search_settings),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
         )
 
-        SettingsGroup(title = "SEARCH TYPE") {
-            SearchType.values().forEach { type ->
+        SettingsGroup(title = stringResource(R.string.search_type_label)) {
+            SearchType.entries.forEach { type ->
                 val isSelected = currentSearchType == type
                 ListItem(
                     modifier = Modifier.clickable { onSearchTypeSelected(type) },
@@ -174,12 +176,12 @@ fun ReferencePickerContent(
                         onCheckedChange = { if (it) selectedTab = 0 },
                         shapes = ButtonGroupDefaults.connectedLeadingButtonShapes()
                     ) {
-                        Text("Books")
+                        Text(stringResource(R.string.books))
                     }
                 },
                 menuContent = { menuState ->
                     DropdownMenuItem(
-                        text = { Text("Books") },
+                        text = { Text(stringResource(R.string.books)) },
                         onClick = {
                             selectedTab = 0
                             menuState.dismiss()
@@ -194,12 +196,12 @@ fun ReferencePickerContent(
                         onCheckedChange = { if (it) selectedTab = 1 },
                         shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
                     ) {
-                        Text("Chapters")
+                        Text(stringResource(R.string.chapters))
                     }
                 },
                 menuContent = { menuState ->
                     DropdownMenuItem(
-                        text = { Text("Chapters") },
+                        text = { Text(stringResource(R.string.chapters)) },
                         onClick = {
                             selectedTab = 1
                             menuState.dismiss()
@@ -282,7 +284,7 @@ fun ReferencePickerContent(
                     }
                 } else {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Select a book first")
+                        Text(stringResource(R.string.select_book_first))
                     }
                 }
             }

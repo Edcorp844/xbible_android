@@ -1,4 +1,4 @@
-package com.example.xbible.ui.components
+package com.example.xbible.core.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -30,8 +30,10 @@ import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.xbible.R
 
 @Composable
 fun LanguageHeader(
@@ -96,7 +98,7 @@ fun CategoryTabBar(
             horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
             overflowIndicator = { menuState ->
                 IconButton(onClick = { menuState.show() }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More Categories")
+                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more_categories))
                 }
             }
         ) {

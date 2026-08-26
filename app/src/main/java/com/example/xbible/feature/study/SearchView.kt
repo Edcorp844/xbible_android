@@ -1,4 +1,4 @@
-package com.example.xbible.ui.screens.study
+package com.example.xbible.feature.study
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
