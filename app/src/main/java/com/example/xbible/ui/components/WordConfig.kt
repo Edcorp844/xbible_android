@@ -15,6 +15,7 @@ data class WordConfig(
     val primaryTextColor: Color = Color.Unspecified, // Uses MaterialTheme.colorScheme.onBackground
     val showRedWords: Boolean = true,
     val redWordsColor: Color = Color.Red,
+    val showStrongs: Boolean = true,
     val showLemma: Boolean = true,
     val showMorph: Boolean = true,
     val showVerseNotes: Boolean = true,

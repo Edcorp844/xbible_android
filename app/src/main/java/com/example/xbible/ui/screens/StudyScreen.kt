@@ -273,7 +273,8 @@ fun StudyScreen(
                     }
                     DropdownMenu(
                         expanded = showMoreMenu,
-                        onDismissRequest = { showMoreMenu = false }
+                        onDismissRequest = { showMoreMenu = false },
+                        shape = RoundedCornerShape(24.dp)
                     ) {
                         DropdownMenuItem(
                             text = { Text("Font and Settings") },

@@ -99,44 +99,73 @@ fun WordView(
             )
         }
 
-        // Strong's Tag Metadata Container
-        val hasLexContent = word.lex != null && (word.lex!!.strongs.isNotEmpty() || word.lex!!.morph.isNotEmpty())
-        if ((config.showLemma || config.showMorph) && hasLexContent) {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(config.tagBackgroundColor)
-                    .padding(horizontal = 4.dp, vertical = 1.dp),
-                horizontalArrangement = Arrangement.spacedBy(3.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (config.showLemma) {
-                    word.lex!!.strongs.firstOrNull()?.let { strong ->
-                        val strongColor =
-                            if (config.strongsTagColor == Color.Unspecified) MaterialTheme.colorScheme.primary else config.strongsTagColor
-                        Text(
-                            text = strong,
-                            fontSize = config.strongsFontSize.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
-                            color = strongColor,
-                            modifier = Modifier.clickable { onStrongsClick?.invoke(strong) }
-                        )
-                    }
+        // Strong's, Lemma, and Morph Tag Metadata Containers
+        if (word.lex != null) {
+            val lex = word.lex!!
+            
+            // Strongs
+            if (config.showStrongs && lex.strongs.isNotEmpty()) {
+                lex.strongs.forEach { strong ->
+                    TagContainer(
+                        text = strong,
+                        config = config,
+                        color = if (config.strongsTagColor == Color.Unspecified) MaterialTheme.colorScheme.primary else config.strongsTagColor,
+                        fontFamily = FontFamily.Monospace,
+                        onClick = { onStrongsClick?.invoke(strong) }
+                    )
                 }
-                if (config.showMorph) {
-                    word.lex!!.morph.firstOrNull()?.let { morph ->
-                        val morphColor =
-                            if (config.morphTagColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else config.morphTagColor
-                        Text(
-                            text = morph,
-                            fontSize = config.morphFontSize.sp,
-                            fontFamily = FontFamily.Default,
-                            color = morphColor
-                        )
-                    }
+            }
+            
+            // Lemma
+            if (config.showLemma && !lex.lemma.isNullOrEmpty()) {
+                TagContainer(
+                    text = lex.lemma!!,
+                    config = config,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontFamily = config.fontFamily,
+                    onClick = { /* Could open lexicon for lemma too */ }
+                )
+            }
+            
+            // Morph
+            if (config.showMorph && lex.morph.isNotEmpty()) {
+                lex.morph.forEach { morph ->
+                    TagContainer(
+                        text = morph,
+                        config = config,
+                        color = if (config.morphTagColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else config.morphTagColor,
+                        fontFamily = FontFamily.Default,
+                        onClick = { /* Could open lexicon for morph too */ }
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TagContainer(
+    text: String,
+    config: WordConfig,
+    color: Color,
+    fontFamily: FontFamily,
+    onClick: (() -> Unit)? = null
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(config.tagBackgroundColor)
+            .padding(horizontal = 4.dp, vertical = 1.dp)
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            fontSize = config.strongsFontSize.sp,
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            color = color
+        )
     }
 }

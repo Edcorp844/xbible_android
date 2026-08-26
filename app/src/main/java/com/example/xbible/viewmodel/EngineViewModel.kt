@@ -155,6 +155,7 @@ class EngineViewModel @JvmOverloads constructor(
     private var currentChapterIndex: Int = -1
 
     private val prefs = application.getSharedPreferences("word_config", Context.MODE_PRIVATE)
+    private val tabPrefs = application.getSharedPreferences("tabs_state", Context.MODE_PRIVATE)
 
     init {
         loadConfig()
@@ -175,6 +176,7 @@ class EngineViewModel @JvmOverloads constructor(
         val wordSpacing = prefs.getFloat("wordSpacing", 0f)
         val justify = prefs.getBoolean("justify", false)
         val showRedWords = prefs.getBoolean("showRedWords", true)
+        val showStrongs = prefs.getBoolean("showStrongs", true)
         val showLemma = prefs.getBoolean("showLemma", true)
         val showMorph = prefs.getBoolean("showMorph", true)
         val showVerseNotes = prefs.getBoolean("showVerseNotes", true)
@@ -187,6 +189,7 @@ class EngineViewModel @JvmOverloads constructor(
             wordSpacing = wordSpacing,
             justify = justify,
             showRedWords = showRedWords,
+            showStrongs = showStrongs,
             showLemma = showLemma,
             showMorph = showMorph,
             showVerseNotes = showVerseNotes,
@@ -209,6 +212,7 @@ class EngineViewModel @JvmOverloads constructor(
             putFloat("wordSpacing", config.wordSpacing)
             putBoolean("justify", config.justify)
             putBoolean("showRedWords", config.showRedWords)
+            putBoolean("showStrongs", config.showStrongs)
             putBoolean("showLemma", config.showLemma)
             putBoolean("showMorph", config.showMorph)
             putBoolean("showVerseNotes", config.showVerseNotes)
@@ -234,29 +238,97 @@ class EngineViewModel @JvmOverloads constructor(
             val modules = withContext(Dispatchers.IO) { repository.getBibleModules() }
             _installedBibles.value = modules
 
-            if (modules.isNotEmpty()) {
-                val firstModule = modules.first()
-                val books = withContext(Dispatchers.IO) { repository.getBooks(firstModule.name) }
+            if (modules.isEmpty()) return@launch
 
-                if (books.isNotEmpty()) {
-                    val firstBook = books.first()
-                    val chapters = firstBook.chapters
-                    if (chapters.isNotEmpty()) {
-                        val chapter = chapters[0]
-                        val reference = "${firstBook.name} ${chapter.number}"
+            val savedTabCount = tabPrefs.getInt("tab_count", 0)
+            if (savedTabCount > 0) {
+                val restoredTabs = mutableListOf<StudyTab>()
+                for (i in 0 until savedTabCount) {
+                    val typeStr = tabPrefs.getString("tab_${i}_type", TabType.READ.name) ?: TabType.READ.name
+                    val type = try { TabType.valueOf(typeStr) } catch(e: Exception) { TabType.READ }
+                    val moduleName = tabPrefs.getString("tab_${i}_module", null)
+                    val reference = tabPrefs.getString("tab_${i}_reference", null)
+                    val searchQuery = tabPrefs.getString("tab_${i}_search_query", "") ?: ""
+                    val searchTypeStr = tabPrefs.getString("tab_${i}_search_type", SearchType.MULTI_WORD.name) ?: SearchType.MULTI_WORD.name
+                    val searchType = try { SearchType.valueOf(searchTypeStr) } catch(e: Exception) { SearchType.MULTI_WORD }
 
-                        val initialTab = StudyTab(
-                            module = firstModule,
+                    val module = modules.find { it.name == moduleName } ?: modules.firstOrNull()
+                    
+                    if (type == TabType.READ && module != null) {
+                        val books = withContext(Dispatchers.IO) { repository.getBooks(module.name) }
+                        val bookName = reference?.substringBeforeLast(" ")
+                        val chapterStr = reference?.substringAfterLast(" ")
+                        val chapterNumber = chapterStr?.toIntOrNull() ?: 1
+                        
+                        val bookIndex = if (bookName != null) books.indexOfFirst { it.name.contains(bookName, ignoreCase = true) || bookName.contains(it.name, ignoreCase = true) } else -1
+                        val chapterIndex = if (bookIndex != -1) books[bookIndex].chapters.indexOfFirst { it.number == chapterNumber } else -1
+
+                        restoredTabs.add(StudyTab(
+                            type = type,
+                            module = module,
                             reference = reference,
-                            bookIndex = 0,
-                            chapterIndex = 0,
-                            books = books
-                        )
-                        _tabs.value = listOf(initialTab)
-                        updateActiveTab(initialTab)
+                            books = books,
+                            bookIndex = bookIndex,
+                            chapterIndex = chapterIndex
+                        ))
+                    } else {
+                        restoredTabs.add(StudyTab(
+                            type = type,
+                            module = module,
+                            searchQuery = searchQuery,
+                            searchType = searchType
+                        ))
                     }
                 }
+                
+                if (restoredTabs.isNotEmpty()) {
+                    _tabs.value = restoredTabs
+                    val activeIndex = tabPrefs.getInt("active_tab_index", 0).coerceIn(0, restoredTabs.size - 1)
+                    _activeTabIndex.value = activeIndex
+                    updateActiveTab(restoredTabs[activeIndex])
+                    return@launch
+                }
             }
+
+            // Fallback to default first module
+            val firstModule = modules.first()
+            val books = withContext(Dispatchers.IO) { repository.getBooks(firstModule.name) }
+
+            if (books.isNotEmpty()) {
+                val firstBook = books.first()
+                val chapters = firstBook.chapters
+                if (chapters.isNotEmpty()) {
+                    val chapter = chapters[0]
+                    val reference = "${firstBook.name} ${chapter.number}"
+
+                    val initialTab = StudyTab(
+                        module = firstModule,
+                        reference = reference,
+                        bookIndex = 0,
+                        chapterIndex = 0,
+                        books = books
+                    )
+                    _tabs.value = listOf(initialTab)
+                    updateActiveTab(initialTab)
+                }
+            }
+        }
+    }
+
+    private fun saveTabsState() {
+        val tabs = _tabs.value
+        val activeIndex = _activeTabIndex.value
+        tabPrefs.edit().apply {
+            putInt("active_tab_index", activeIndex)
+            putInt("tab_count", tabs.size)
+            tabs.forEachIndexed { i, tab ->
+                putString("tab_${i}_type", tab.type.name)
+                putString("tab_${i}_module", tab.module?.name)
+                putString("tab_${i}_reference", tab.reference)
+                putString("tab_${i}_search_query", tab.searchQuery)
+                putString("tab_${i}_search_type", tab.searchType.name)
+            }
+            apply()
         }
     }
 
@@ -298,6 +370,7 @@ class EngineViewModel @JvmOverloads constructor(
 
             _activeTabIndex.value = index
             updateActiveTab(currentTabs[index])
+            saveTabsState()
         }
     }
 
@@ -305,6 +378,7 @@ class EngineViewModel @JvmOverloads constructor(
         val newTab = StudyTab()
         _tabs.value = _tabs.value + newTab
         switchTab(_tabs.value.size - 1)
+        saveTabsState()
 
         // If we have installed bibles, initialize the new tab with the first one
         if (_installedBibles.value.isNotEmpty()) {
@@ -327,6 +401,7 @@ class EngineViewModel @JvmOverloads constructor(
                     currentTabs[_activeTabIndex.value] = updatedTab
                     _tabs.value = currentTabs
                     updateActiveTab(updatedTab)
+                    saveTabsState()
                 }
             }
         }
@@ -340,6 +415,7 @@ class EngineViewModel @JvmOverloads constructor(
         )
         _tabs.value = _tabs.value + newTab
         switchTab(_tabs.value.size - 1)
+        saveTabsState()
     }
 
     private var searchContentLoadingJob: kotlinx.coroutines.Job? = null
@@ -452,6 +528,7 @@ class EngineViewModel @JvmOverloads constructor(
                 currentTabs[index] = updatedTab
                 _tabs.value = currentTabs
                 updateActiveTab(updatedTab)
+                saveTabsState()
             } catch (e: Exception) {
                 _errorMessage.value = "Error opening search result: ${e.message}"
             } finally {
@@ -493,6 +570,7 @@ class EngineViewModel @JvmOverloads constructor(
                 _tabs.update { it + newTab }
                 _activeTabIndex.value = _tabs.value.size - 1
                 updateActiveTab(newTab)
+                saveTabsState()
             } catch (e: Exception) {
                 _errorMessage.value = "Error opening search result in new tab: ${e.message}"
             } finally {
@@ -513,6 +591,7 @@ class EngineViewModel @JvmOverloads constructor(
                 } else t
             }
         }
+        saveTabsState()
         
         // Re-run search if there's a query
         if (tab.searchQuery.isNotEmpty()) {
@@ -528,6 +607,7 @@ class EngineViewModel @JvmOverloads constructor(
             val nextIndex = if (_activeTabIndex.value >= currentTabs.size) currentTabs.size - 1 else _activeTabIndex.value
             _activeTabIndex.value = nextIndex
             updateActiveTab(currentTabs[nextIndex])
+            saveTabsState()
         }
     }
 
@@ -580,6 +660,7 @@ class EngineViewModel @JvmOverloads constructor(
         loadChapter(module.name, reference)
         updateNavigationStatus()
         updateCurrentTabInList()
+        saveTabsState()
     }
 
     fun previousChapter() {
@@ -606,6 +687,7 @@ class EngineViewModel @JvmOverloads constructor(
         loadChapter(module.name, reference)
         updateNavigationStatus()
         updateCurrentTabInList()
+        saveTabsState()
     }
 
     private fun updateCurrentTabInList() {
@@ -621,6 +703,7 @@ class EngineViewModel @JvmOverloads constructor(
                 books = currentBooks
             )
             _tabs.value = currentTabs
+            saveTabsState()
         }
     }
 
@@ -649,6 +732,7 @@ class EngineViewModel @JvmOverloads constructor(
             }
             updateNavigationStatus()
             updateCurrentTabInList()
+            saveTabsState()
         }
     }
 
@@ -657,6 +741,7 @@ class EngineViewModel @JvmOverloads constructor(
             currentBookIndex = index
             _currentBookIndex.value = index
             // We don't load yet, user needs to pick a chapter
+            saveTabsState()
         }
     }
 
@@ -673,6 +758,7 @@ class EngineViewModel @JvmOverloads constructor(
                 loadChapter(module.name, reference)
                 updateNavigationStatus()
                 updateCurrentTabInList()
+                saveTabsState()
             }
         }
     }

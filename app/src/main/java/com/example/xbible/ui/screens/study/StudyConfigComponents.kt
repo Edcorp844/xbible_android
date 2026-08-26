@@ -102,6 +102,11 @@ fun FontSettingsContent(
         SettingsGroup(title = "DISPLAY OPTIONS") {
             Column {
                 SwitchItem(
+                    label = "Show Strongs",
+                    checked = config.showStrongs,
+                    onCheckedChange = { onConfigChange(config.copy(showStrongs = it)) }
+                )
+                SwitchItem(
                     label = "Show Lemma",
                     checked = config.showLemma,
                     onCheckedChange = { onConfigChange(config.copy(showLemma = it)) }
