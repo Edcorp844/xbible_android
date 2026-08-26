@@ -1,6 +1,5 @@
 package com.example.xbible.core.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowOutward
 import androidx.compose.material.icons.outlined.Delete
@@ -28,8 +24,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -108,7 +102,7 @@ fun BookCardView(
                     IconButton(
                         onClick = { showMenu = true },
 
-                    ) {
+                        ) {
                         Icon(
                             Icons.Default.MoreVert,
                             contentDescription = stringResource(R.string.options),
@@ -124,7 +118,7 @@ fun BookCardView(
                         border = null
                     ) {
                         val groupCount = if (onDelete != null) 2 else 1
-                        
+
                         DropdownMenuGroup(
                             shapes = MenuDefaults.groupShape(index = 0, count = groupCount)
                         ) {
@@ -163,7 +157,7 @@ fun BookCardView(
 
                         if (onDelete != null) {
                             Spacer(modifier = Modifier.height(MenuDefaults.GroupSpacing))
-                            
+
                             DropdownMenuGroup(
                                 shapes = MenuDefaults.groupShape(index = 1, count = groupCount)
                             ) {
@@ -214,6 +208,7 @@ private fun ActionView(
                 Text(stringResource(R.string.get), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
+
         is InstallationStatus.Installed -> {
             OutlinedButton(
                 onClick = { onAction() },
@@ -225,6 +220,7 @@ private fun ActionView(
                 Text(stringResource(R.string.open), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
+
         is InstallationStatus.Pending -> {
             Box(modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center) {
                 CircularWavyProgressIndicator(
@@ -233,6 +229,7 @@ private fun ActionView(
                 )
             }
         }
+
         is InstallationStatus.Installing -> {
             Box(modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center) {
                 CircularWavyProgressIndicator(
@@ -247,6 +244,7 @@ private fun ActionView(
                 )
             }
         }
+
         is InstallationStatus.Failed, is InstallationStatus.Cancelled -> {
             OutlinedButton(
                 onClick = { onAction() },
