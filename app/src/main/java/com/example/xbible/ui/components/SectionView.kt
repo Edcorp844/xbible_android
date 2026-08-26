@@ -16,6 +16,7 @@ import uniffi.xbible_engine.Word
 fun SectionView(
     section: Section,
     modifier: Modifier = Modifier,
+    config: WordConfig = WordConfig(),
     onWordClick: ((Word) -> Unit)? = null,
     onStrongsClick: ((String) -> Unit)? = null
 ) {
@@ -33,7 +34,7 @@ fun SectionView(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val titleTheme = WordConfig(fontSize = 14f)
+                val titleTheme = config.copy(fontSize = config.fontSize - 4)
                 section.title.forEach { item ->
                     WordView(
                         word = item,
@@ -49,6 +50,7 @@ fun SectionView(
         section.verses.forEach { verse ->
             VerseView(
                 verse = verse,
+                config = config,
                 onWordClick = onWordClick,
                 onStrongsClick = onStrongsClick,
                 textDirection = section.textDirection

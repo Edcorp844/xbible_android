@@ -13,4 +13,8 @@ object XBibleIcons {
     val OpenInTab: ImageVector = com.example.xbible.ui.icons.OpenInTab
     val Sidebar: ImageVector = com.example.xbible.ui.icons.Sidebar
     val Copy: ImageVector = com.example.xbible.ui.icons.Copy
+    val Lexicon: ImageVector = com.example.xbible.ui.icons.Lexicon
+    val FontSize: ImageVector = com.example.xbible.ui.icons.FontSize
+    val ParallelMode: ImageVector = com.example.xbible.ui.icons.ParallelMode
+    val Compare: ImageVector = com.example.xbible.ui.icons.Compare
 }

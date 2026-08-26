@@ -199,7 +199,7 @@ fun SearchHitItem(
                 }
                 IconButton(onClick = onLexiconLookup) {
                     Icon(
-                        Icons.Outlined.AutoAwesome,
+                        XBibleIcons.Lexicon,
                         contentDescription = "Lexicon",
                         modifier = Modifier.size(20.dp)
                     )

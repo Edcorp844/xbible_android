@@ -3,6 +3,8 @@ package com.example.xbible.ui.icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
@@ -241,3 +243,85 @@ internal val TimeLine: ImageVector
     }
 
 private var _timeLine: ImageVector? = null
+
+@Suppress("CheckReturnValue")
+internal val ParallelMode: ImageVector
+    get() {
+        if (_parallelMode != null) {
+            return _parallelMode!!
+        }
+        _parallelMode =
+            ImageVector.Builder(
+                name = "ParallelMode",
+                defaultWidth = 32.dp,
+                defaultHeight = 32.dp,
+                viewportWidth = 24f,
+                viewportHeight = 24f,
+            )
+                .apply {
+                    // Outer Frame / Book Border
+                    path(
+                        stroke = SolidColor(Color(0xFF1C274C)),
+                        strokeLineWidth = 1.5f,
+                        strokeLineCap = StrokeCap.Round,
+                        strokeLineJoin = StrokeJoin.Round,
+                    ) {
+                        moveTo(10f, 3f)
+                        horizontalLineTo(14f)
+                        curveTo(16.8284f, 3f, 18.2426f, 3f, 19.1213f, 3.8787f)
+                        curveTo(20f, 4.7574f, 20f, 6.1716f, 20f, 9f)
+                        verticalLineTo(15f)
+                        curveTo(20f, 17.8284f, 20f, 19.2426f, 19.1213f, 20.1213f)
+                        curveTo(18.2426f, 21f, 16.8284f, 21f, 14f, 21f)
+                        horizontalLineTo(10f)
+                        curveTo(7.1716f, 21f, 5.7574f, 21f, 4.8787f, 20.1213f)
+                        curveTo(4f, 19.2426f, 4f, 17.8284f, 4f, 15f)
+                        verticalLineTo(9f)
+                        curveTo(4f, 6.1716f, 4f, 4.7574f, 4.8787f, 3.8787f)
+                        curveTo(5.7574f, 3f, 7.1716f, 3f, 10f, 3f)
+                        close()
+                    }
+
+                    // Center Parallel Split Divider
+                    path(
+                        stroke = SolidColor(Color(0xFF1C274C)),
+                        strokeLineWidth = 1.5f,
+                        strokeLineCap = StrokeCap.Round,
+                    ) {
+                        moveTo(12f, 3f)
+                        lineTo(12f, 21f)
+                    }
+
+                    // Left Page Text Lines
+                    path(
+                        stroke = SolidColor(Color(0xFF1C274C)),
+                        strokeLineWidth = 1.5f,
+                        strokeLineCap = StrokeCap.Round,
+                    ) {
+                        moveTo(7f, 8f)
+                        horizontalLineTo(9.5f)
+                        moveTo(7f, 12f)
+                        horizontalLineTo(9.5f)
+                        moveTo(7f, 16f)
+                        horizontalLineTo(9f)
+                    }
+
+                    // Right Page Text Lines
+                    path(
+                        stroke = SolidColor(Color(0xFF1C274C)),
+                        strokeLineWidth = 1.5f,
+                        strokeLineCap = StrokeCap.Round,
+                    ) {
+                        moveTo(14.5f, 8f)
+                        horizontalLineTo(17f)
+                        moveTo(14.5f, 12f)
+                        horizontalLineTo(17f)
+                        moveTo(14.5f, 16f)
+                        horizontalLineTo(16.5f)
+                    }
+                }
+                .build()
+        return _parallelMode!!
+    }
+
+private var _parallelMode: ImageVector? = null

@@ -43,7 +43,9 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.xbible.ui.components.PageView
 import com.example.xbible.ui.icons.XBibleIcons
+import com.example.xbible.ui.screens.study.FontSettingsContent
 import com.example.xbible.ui.screens.study.ModuleSelectionContent
+import com.example.xbible.ui.screens.study.ParallelModeContent
 import com.example.xbible.ui.screens.study.ReferencePickerContent
 import com.example.xbible.ui.screens.study.SearchSettingsContent
 import com.example.xbible.ui.screens.study.SearchView
@@ -66,10 +68,13 @@ fun StudyScreen(
     val clipboardManager = LocalClipboardManager.current
     
     val sections by engineViewModel.currentChapterContent.collectAsState()
+    val parallelSections by engineViewModel.parallelChapterContent.collectAsState()
+    val wordConfig by engineViewModel.wordConfig.collectAsState()
     val installedBibles by engineViewModel.installedBibles.collectAsState()
     val isLoading by engineViewModel.isLoadingContent.collectAsState()
     val currentReference by engineViewModel.currentReference.collectAsState()
     val currentModule by engineViewModel.currentModule.collectAsState()
+    val parallelModule by engineViewModel.parallelModule.collectAsState()
     
     // Selection State
     var selectedWord by remember { mutableStateOf<Word?>(null) }
@@ -82,11 +87,17 @@ fun StudyScreen(
     var showModuleSelection by remember { mutableStateOf(false) }
     var showReferencePicker by remember { mutableStateOf(false) }
     var showSearchSettings by remember { mutableStateOf(false) }
+    var showFontSettings by remember { mutableStateOf(false) }
+    var showParallelMode by remember { mutableStateOf(false) }
+    
+    var showMoreMenu by remember { mutableStateOf(false) }
     
     val moduleSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val referenceSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lexiconSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val searchSettingsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val fontSettingsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val parallelModeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Outer navigator for Bible/Reference Drawer
     val drawerNavigator = rememberSupportingPaneScaffoldNavigator(
@@ -104,6 +115,8 @@ fun StudyScreen(
                             showModuleSelection = false
                             showReferencePicker = false
                             showSearchSettings = false
+                            showFontSettings = false
+                            showParallelMode = false
                         }
                     )
                 }
@@ -112,7 +125,7 @@ fun StudyScreen(
     )
 
     // Handle Drawer Visibility
-    val isBibleDrawerVisible = (showModuleSelection || showReferencePicker || showSearchSettings) && !isCompact
+    val isBibleDrawerVisible = (showModuleSelection || showReferencePicker || showSearchSettings || showFontSettings || showParallelMode) && !isCompact
     LaunchedEffect(isBibleDrawerVisible) {
         if (isBibleDrawerVisible) {
             drawerNavigator.navigateTo(SupportingPaneScaffoldRole.Supporting)
@@ -254,8 +267,47 @@ fun StudyScreen(
                 IconButton(onClick = { engineViewModel.addSearchTab() }) {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
-                IconButton(onClick = { }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More")
+                Box {
+                    IconButton(onClick = { showMoreMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                    }
+                    DropdownMenu(
+                        expanded = showMoreMenu,
+                        onDismissRequest = { showMoreMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Font and Settings") },
+                            onClick = {
+                                if (isCompact) {
+                                    showFontSettings = true
+                                } else {
+                                    showFontSettings = !showFontSettings
+                                    showParallelMode = false
+                                    showModuleSelection = false
+                                    showReferencePicker = false
+                                    showSearchSettings = false
+                                }
+                                showMoreMenu = false
+                            },
+                            leadingIcon = { Icon(XBibleIcons.FontSize, contentDescription = null, modifier = Modifier.size(20.dp)) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Parallel Display") },
+                            onClick = {
+                                if (isCompact) {
+                                    showParallelMode = true
+                                } else {
+                                    showParallelMode = !showParallelMode
+                                    showFontSettings = false
+                                    showModuleSelection = false
+                                    showReferencePicker = false
+                                    showSearchSettings = false
+                                }
+                                showMoreMenu = false
+                            },
+                            leadingIcon = { Icon(XBibleIcons.ParallelMode, contentDescription = null, modifier = Modifier.size(20.dp)) }
+                        )
+                    }
                 }
             }
         )
@@ -403,6 +455,8 @@ fun StudyScreen(
                                             else -> {
                                                 PageView(
                                                     sections = sections,
+                                                    parallelSections = parallelSections,
+                                                    config = wordConfig,
                                                     state = listState,
                                                     onWordClick = { word ->
                                                         selectedWord = word
@@ -488,6 +542,8 @@ fun StudyScreen(
                                         text = when {
                                             showModuleSelection -> "Bible Selection"
                                             showSearchSettings -> "Search Settings"
+                                            showFontSettings -> "Text Settings"
+                                            showParallelMode -> "Parallel Display"
                                             else -> "Reference Picker"
                                         },
                                         style = MaterialTheme.typography.titleMedium,
@@ -497,6 +553,8 @@ fun StudyScreen(
                                         showModuleSelection = false
                                         showReferencePicker = false
                                         showSearchSettings = false
+                                        showFontSettings = false
+                                        showParallelMode = false
                                     }) {
                                         Icon(Icons.Default.Close, contentDescription = "Close Drawer")
                                     }
@@ -525,6 +583,20 @@ fun StudyScreen(
                                             engineViewModel.selectChapter(chapter)
                                             showReferencePicker = false
                                         }
+                                    }
+                                    showFontSettings -> {
+                                        FontSettingsContent(
+                                            config = wordConfig,
+                                            onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } }
+                                        )
+                                    }
+                                    showParallelMode -> {
+                                        ParallelModeContent(
+                                            installedBibles = installedBibles,
+                                            currentModule = currentModule,
+                                            parallelModule = parallelModule,
+                                            onParallelModuleSelected = { engineViewModel.selectParallelModule(it) }
+                                        )
                                     }
                                 }
                             }
@@ -567,6 +639,24 @@ fun StudyScreen(
         if (showLexicon) {
             ModalBottomSheet(onDismissRequest = { showLexicon = false }, sheetState = lexiconSheetState) {
                 SplitDetailPane(engineViewModel)
+            }
+        }
+        if (showFontSettings) {
+            ModalBottomSheet(onDismissRequest = { showFontSettings = false }, sheetState = fontSettingsSheetState) {
+                FontSettingsContent(
+                    config = wordConfig,
+                    onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } }
+                )
+            }
+        }
+        if (showParallelMode) {
+            ModalBottomSheet(onDismissRequest = { showParallelMode = false }, sheetState = parallelModeSheetState) {
+                ParallelModeContent(
+                    installedBibles = installedBibles,
+                    currentModule = currentModule,
+                    parallelModule = parallelModule,
+                    onParallelModuleSelected = { engineViewModel.selectParallelModule(it) }
+                )
             }
         }
     }

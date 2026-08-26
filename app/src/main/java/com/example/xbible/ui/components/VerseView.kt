@@ -18,10 +18,12 @@ import uniffi.xbible_engine.TextDirection
 import uniffi.xbible_engine.Verse
 import uniffi.xbible_engine.Word
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun VerseView(
     verse: Verse,
     modifier: Modifier = Modifier,
+    config: WordConfig = WordConfig(),
     onWordClick: ((Word) -> Unit)? = null,
     onStrongsClick: ((String) -> Unit)? = null,
     textDirection: TextDirection
@@ -35,7 +37,7 @@ fun VerseView(
         if (textDirection == TextDirection.LTR) {
             Text(
                 text = "${verse.number}",
-                fontSize = 11.sp,
+                fontSize = (config.fontSize * 0.6f).sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(top = 2.dp)
@@ -43,21 +45,22 @@ fun VerseView(
         }
 
         // Flow layout simulation for words inside a verse
-        @OptIn(ExperimentalLayoutApi::class)
+        val horizontalSpacing = 6.dp + config.wordSpacing.dp
+        val verticalSpacing = (config.lineHeight * 10).dp // Heuristic for line spacing in FlowRow
+
         FlowRow(
             modifier = Modifier.weight(1f),
             horizontalArrangement = if (textDirection == TextDirection.RTL) {
-                Arrangement.spacedBy(6.dp, Alignment.End)
+                Arrangement.spacedBy(horizontalSpacing, Alignment.End)
             } else {
-                Arrangement.spacedBy(6.dp, Alignment.Start)
+                Arrangement.spacedBy(horizontalSpacing, Alignment.Start)
             },
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(verticalSpacing)
         ) {
-            val commentaryTheme = WordConfig(fontSize = 18f)
             verse.words.forEach { word ->
                 WordView(
                     word = word,
-                    config = commentaryTheme,
+                    config = config,
                     onWordClick = { onWordClick?.invoke(word) },
                     onStrongsClick = { strong -> onStrongsClick?.invoke(strong) },
                     isTitle = false
@@ -69,7 +72,7 @@ fun VerseView(
         if (textDirection == TextDirection.RTL) {
             Text(
                 text = "${verse.number}",
-                fontSize = 11.sp,
+                fontSize = (config.fontSize * 0.6f).sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(top = 2.dp)

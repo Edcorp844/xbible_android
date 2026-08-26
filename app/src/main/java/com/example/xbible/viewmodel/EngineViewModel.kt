@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
+import com.example.xbible.ui.components.WordConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -62,11 +63,20 @@ class EngineViewModel @JvmOverloads constructor(
     private val _currentModule = MutableStateFlow<SwordModule?>(null)
     val currentModule: StateFlow<SwordModule?> = _currentModule.asStateFlow()
 
+    private val _parallelModule = MutableStateFlow<SwordModule?>(null)
+    val parallelModule: StateFlow<SwordModule?> = _parallelModule.asStateFlow()
+
     private val _currentReference = MutableStateFlow<String?>(null)
     val currentReference: StateFlow<String?> = _currentReference.asStateFlow()
 
     private val _currentChapterContent = MutableStateFlow<List<Section>>(emptyList())
     val currentChapterContent: StateFlow<List<Section>> = _currentChapterContent.asStateFlow()
+
+    private val _parallelChapterContent = MutableStateFlow<List<Section>>(emptyList())
+    val parallelChapterContent: StateFlow<List<Section>> = _parallelChapterContent.asStateFlow()
+
+    private val _wordConfig = MutableStateFlow(WordConfig())
+    val wordConfig: StateFlow<WordConfig> = _wordConfig.asStateFlow()
 
     private val _isLoadingContent = MutableStateFlow(false)
     val isLoadingContent: StateFlow<Boolean> = _isLoadingContent.asStateFlow()
@@ -556,6 +566,9 @@ class EngineViewModel @JvmOverloads constructor(
     fun selectModule(module: SwordModule) {
         viewModelScope.launch {
             _currentModule.value = module
+            if (_parallelModule.value?.name == module.name) {
+                _parallelModule.value = null
+            }
             val books = withContext(Dispatchers.IO) { repository.getBooks(module.name) }
             currentBooks = books
             _currentBooks.value = books
@@ -603,6 +616,35 @@ class EngineViewModel @JvmOverloads constructor(
         }
     }
 
+    fun selectParallelModule(module: SwordModule?) {
+        _parallelModule.value = module
+        if (module != null) {
+            val reference = _currentReference.value
+            if (reference != null) {
+                loadParallelChapter(module.name, reference)
+            }
+        } else {
+            _parallelChapterContent.value = emptyList()
+        }
+    }
+
+    fun updateWordConfig(update: (WordConfig) -> WordConfig) {
+        _wordConfig.value = update(_wordConfig.value)
+    }
+
+    private fun loadParallelChapter(moduleName: String, reference: String) {
+        viewModelScope.launch {
+            try {
+                val content = withContext(Dispatchers.IO) {
+                    repository.getChapterContent(moduleName, reference)
+                }
+                _parallelChapterContent.value = content
+            } catch (e: Exception) {
+                // Silently fail or log
+            }
+        }
+    }
+
     fun loadChapter(moduleName: String, reference: String) {
         viewModelScope.launch {
             _isLoadingContent.value = true
@@ -611,6 +653,13 @@ class EngineViewModel @JvmOverloads constructor(
                     repository.getChapterContent(moduleName, reference)
                 }
                 _currentChapterContent.value = content
+                
+                // Also load parallel if exists
+                val parallel = _parallelModule.value
+                if (parallel != null) {
+                    loadParallelChapter(parallel.name, reference)
+                }
+                
                 updateCurrentTabInList()
             } catch (e: Exception) {
                 _errorMessage.value = "Error loading chapter: ${e.message}"

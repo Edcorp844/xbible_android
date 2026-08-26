@@ -38,7 +38,9 @@ fun WordView(
     ) {
         // Main Scripture Word Text
         val textColor =
-            if (word.isRed) config.redWordsColor else if (config.primaryTextColor == Color.Unspecified) MaterialTheme.colorScheme.onBackground else config.primaryTextColor
+            if (word.isRed && config.showRedWords) config.redWordsColor 
+            else if (config.primaryTextColor == Color.Unspecified) MaterialTheme.colorScheme.onBackground 
+            else config.primaryTextColor
 
 
         if (word.isAdded) {
