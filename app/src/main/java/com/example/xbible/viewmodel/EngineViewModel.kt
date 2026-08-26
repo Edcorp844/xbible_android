@@ -1,6 +1,8 @@
 package com.example.xbible.viewmodel
 
 import android.app.Application
+import android.content.Context
+import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
@@ -152,8 +154,67 @@ class EngineViewModel @JvmOverloads constructor(
     private var currentBookIndex: Int = -1
     private var currentChapterIndex: Int = -1
 
+    private val prefs = application.getSharedPreferences("word_config", Context.MODE_PRIVATE)
+
     init {
+        loadConfig()
         setupEngine()
+    }
+
+    private fun loadConfig() {
+        val fontSize = prefs.getFloat("fontSize", 18f)
+        val fontFamilyName = prefs.getString("fontFamily", "Serif") ?: "Serif"
+        val fontFamily = when (fontFamilyName) {
+            "Serif" -> FontFamily.Serif
+            "SansSerif" -> FontFamily.SansSerif
+            "Monospace" -> FontFamily.Monospace
+            "Cursive" -> FontFamily.Cursive
+            else -> FontFamily.Default
+        }
+        val lineHeight = prefs.getFloat("lineHeight", 1.5f)
+        val wordSpacing = prefs.getFloat("wordSpacing", 0f)
+        val justify = prefs.getBoolean("justify", false)
+        val showRedWords = prefs.getBoolean("showRedWords", true)
+        val showLemma = prefs.getBoolean("showLemma", true)
+        val showMorph = prefs.getBoolean("showMorph", true)
+        val showVerseNotes = prefs.getBoolean("showVerseNotes", true)
+        val showWordNotes = prefs.getBoolean("showWordNotes", true)
+
+        _wordConfig.value = WordConfig(
+            fontSize = fontSize,
+            fontFamily = fontFamily,
+            lineHeight = lineHeight,
+            wordSpacing = wordSpacing,
+            justify = justify,
+            showRedWords = showRedWords,
+            showLemma = showLemma,
+            showMorph = showMorph,
+            showVerseNotes = showVerseNotes,
+            showWordNotes = showWordNotes
+        )
+    }
+
+    private fun saveConfig(config: WordConfig) {
+        val fontFamilyName = when (config.fontFamily) {
+            FontFamily.Serif -> "Serif"
+            FontFamily.SansSerif -> "SansSerif"
+            FontFamily.Monospace -> "Monospace"
+            FontFamily.Cursive -> "Cursive"
+            else -> "Default"
+        }
+        prefs.edit().apply {
+            putFloat("fontSize", config.fontSize)
+            putString("fontFamily", fontFamilyName)
+            putFloat("lineHeight", config.lineHeight)
+            putFloat("wordSpacing", config.wordSpacing)
+            putBoolean("justify", config.justify)
+            putBoolean("showRedWords", config.showRedWords)
+            putBoolean("showLemma", config.showLemma)
+            putBoolean("showMorph", config.showMorph)
+            putBoolean("showVerseNotes", config.showVerseNotes)
+            putBoolean("showWordNotes", config.showWordNotes)
+            apply()
+        }
     }
 
     private fun setupEngine() {
@@ -629,7 +690,15 @@ class EngineViewModel @JvmOverloads constructor(
     }
 
     fun updateWordConfig(update: (WordConfig) -> WordConfig) {
-        _wordConfig.value = update(_wordConfig.value)
+        val newConfig = update(_wordConfig.value)
+        _wordConfig.value = newConfig
+        saveConfig(newConfig)
+    }
+
+    fun resetWordConfig() {
+        val defaultConfig = WordConfig()
+        _wordConfig.value = defaultConfig
+        saveConfig(defaultConfig)
     }
 
     private fun loadParallelChapter(moduleName: String, reference: String) {

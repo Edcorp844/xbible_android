@@ -587,7 +587,8 @@ fun StudyScreen(
                                     showFontSettings -> {
                                         FontSettingsContent(
                                             config = wordConfig,
-                                            onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } }
+                                            onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } },
+                                            onResetConfig = { engineViewModel.resetWordConfig() }
                                         )
                                     }
                                     showParallelMode -> {
@@ -645,7 +646,8 @@ fun StudyScreen(
             ModalBottomSheet(onDismissRequest = { showFontSettings = false }, sheetState = fontSettingsSheetState) {
                 FontSettingsContent(
                     config = wordConfig,
-                    onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } }
+                    onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } },
+                    onResetConfig = { engineViewModel.resetWordConfig() }
                 )
             }
         }

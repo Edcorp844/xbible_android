@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,11 +21,14 @@ import uniffi.xbible_engine.SwordModule
 @Composable
 fun FontSettingsContent(
     config: WordConfig,
-    onConfigChange: (WordConfig) -> Unit
+    onConfigChange: (WordConfig) -> Unit,
+    onResetConfig: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(scrollState)
             .padding(bottom = 32.dp)
     ) {
         Text(
@@ -97,9 +102,14 @@ fun FontSettingsContent(
         SettingsGroup(title = "DISPLAY OPTIONS") {
             Column {
                 SwitchItem(
-                    label = "Show Lexicon",
-                    checked = config.showStrongsTags,
-                    onCheckedChange = { onConfigChange(config.copy(showStrongsTags = it)) }
+                    label = "Show Lemma",
+                    checked = config.showLemma,
+                    onCheckedChange = { onConfigChange(config.copy(showLemma = it)) }
+                )
+                SwitchItem(
+                    label = "Show Morph",
+                    checked = config.showMorph,
+                    onCheckedChange = { onConfigChange(config.copy(showMorph = it)) }
                 )
                 SwitchItem(
                     label = "Show Verse Notes",
@@ -147,6 +157,21 @@ fun FontSettingsContent(
                     onCheckedChange = { onConfigChange(config.copy(justify = it)) }
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = onResetConfig,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
+            )
+        ) {
+            Text("Reset to Defaults")
         }
     }
 }

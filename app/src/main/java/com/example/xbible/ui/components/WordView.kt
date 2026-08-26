@@ -100,7 +100,8 @@ fun WordView(
         }
 
         // Strong's Tag Metadata Container
-        if (config.showStrongsTags && word.lex != null && (word.lex!!.strongs.isNotEmpty() || word.lex!!.morph.isNotEmpty())) {
+        val hasLexContent = word.lex != null && (word.lex!!.strongs.isNotEmpty() || word.lex!!.morph.isNotEmpty())
+        if ((config.showLemma || config.showMorph) && hasLexContent) {
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
@@ -109,27 +110,31 @@ fun WordView(
                 horizontalArrangement = Arrangement.spacedBy(3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                word.lex!!.strongs.firstOrNull()?.let { strong ->
-                    val strongColor =
-                        if (config.strongsTagColor == Color.Unspecified) MaterialTheme.colorScheme.primary else config.strongsTagColor
-                    Text(
-                        text = strong,
-                        fontSize = config.strongsFontSize.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold,
-                        color = strongColor,
-                        modifier = Modifier.clickable { onStrongsClick?.invoke(strong) }
-                    )
+                if (config.showLemma) {
+                    word.lex!!.strongs.firstOrNull()?.let { strong ->
+                        val strongColor =
+                            if (config.strongsTagColor == Color.Unspecified) MaterialTheme.colorScheme.primary else config.strongsTagColor
+                        Text(
+                            text = strong,
+                            fontSize = config.strongsFontSize.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            color = strongColor,
+                            modifier = Modifier.clickable { onStrongsClick?.invoke(strong) }
+                        )
+                    }
                 }
-                word.lex!!.morph.firstOrNull()?.let { morph ->
-                    val morphColor =
-                        if (config.morphTagColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else config.morphTagColor
-                    Text(
-                        text = morph,
-                        fontSize = config.morphFontSize.sp,
-                        fontFamily = FontFamily.Default,
-                        color = morphColor
-                    )
+                if (config.showMorph) {
+                    word.lex!!.morph.firstOrNull()?.let { morph ->
+                        val morphColor =
+                            if (config.morphTagColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else config.morphTagColor
+                        Text(
+                            text = morph,
+                            fontSize = config.morphFontSize.sp,
+                            fontFamily = FontFamily.Default,
+                            color = morphColor
+                        )
+                    }
                 }
             }
         }
