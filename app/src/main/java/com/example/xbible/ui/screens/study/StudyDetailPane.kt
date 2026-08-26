@@ -58,24 +58,42 @@ import uniffi.xbible_engine.Word
 
 @Composable
 fun SplitDetailPane(
-    engineViewModel: EngineViewModel,
-    onDismiss: () -> Unit
+    engineViewModel: EngineViewModel
 ) {
     val selectedTab by engineViewModel.selectedTool.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Primary Tabs Header
-        StudyToolPicker(
-            selectedTab = selectedTab,
-            onTabSelected = { engineViewModel.selectTool(it) }
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 4.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp,
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Primary Tabs Header
+                StudyToolPicker(
+                    selectedTab = selectedTab,
+                    onTabSelected = { engineViewModel.selectTool(it) }
+                )
 
-        // Dynamic Content Pane
-        Box(modifier = Modifier.weight(1f)) {
-            when (selectedTab) {
-                StudyTool.Dictionary -> DictionaryTabContent(engineViewModel)
-                StudyTool.Lexicon -> LexiconTabContent(engineViewModel)
-                StudyTool.Commentary -> CommentaryTabContent(engineViewModel)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+
+                // Dynamic Content Pane
+                Box(modifier = Modifier.weight(1f)) {
+                    when (selectedTab) {
+                        StudyTool.Dictionary -> DictionaryTabContent(engineViewModel)
+                        StudyTool.Lexicon -> LexiconTabContent(engineViewModel)
+                        StudyTool.Commentary -> CommentaryTabContent(engineViewModel)
+                    }
+                }
             }
         }
     }
@@ -92,59 +110,66 @@ fun StudyToolPicker(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(vertical = 12.dp, horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                .padding(vertical = 8.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ButtonGroup(
-                overflowIndicator = { menuState ->
-                    IconButton(onClick = { menuState.show() }) {
-                        Icon(Icons.Filled.MoreVert, contentDescription = "More")
-                    }
-                },
-                modifier = Modifier.wrapContentWidth(),
-                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                toolList.forEachIndexed { index, tool ->
-                    val isSelected = selectedTab == tool
-
-                    customItem(
-                        buttonGroupContent = {
-                            val shapes = when {
-                                index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                                index == toolList.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                            }
-                            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                                OutlinedToggleButton(
-                                    checked = isSelected,
-                                    onCheckedChange = { if (it) onTabSelected(tool) },
-                                    shapes = shapes
-                                ) {
-                                    Text(
-                                        text = tool.name,
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                        maxLines = 1
-                                    )
-                                }
-                            }
-                        },
-                        menuContent = { menuState ->
-                            DropdownMenuItem(
-                                text = { Text(tool.name) },
-                                onClick = {
-                                    onTabSelected(tool)
-                                    menuState.dismiss()
-                                }
-                            )
+                ButtonGroup(
+                    overflowIndicator = { menuState ->
+                        IconButton(onClick = { menuState.show() }) {
+                            Icon(Icons.Filled.MoreVert, contentDescription = "More")
                         }
-                    )
+                    },
+                    modifier = Modifier.wrapContentWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+                ) {
+                    toolList.forEachIndexed { index, tool ->
+                        val isSelected = selectedTab == tool
+
+                        customItem(
+                            buttonGroupContent = {
+                                val shapes = when {
+                                    index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                    index == toolList.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                                }
+                                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                                    OutlinedToggleButton(
+                                        checked = isSelected,
+                                        onCheckedChange = { if (it) onTabSelected(tool) },
+                                        shapes = shapes,
+                                        modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = tool.name,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                            },
+                            menuContent = { menuState ->
+                                DropdownMenuItem(
+                                    text = { Text(tool.name) },
+                                    onClick = {
+                                        onTabSelected(tool)
+                                        menuState.dismiss()
+                                    }
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     }
 }
 
@@ -158,17 +183,17 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (selectedWord.isNotEmpty()) {
                 Column {
                     Text(
                         text = selectedWord,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
                     Box(
                         modifier = Modifier
                             .width(24.dp)
@@ -196,7 +221,7 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(32.dp),
+                    .padding(horizontal = 32.dp, vertical = 20.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -323,9 +348,9 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(8.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -412,7 +437,7 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -512,9 +537,9 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(8.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -578,7 +603,7 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -626,7 +651,7 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),

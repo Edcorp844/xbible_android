@@ -42,6 +42,7 @@ class BibleRepository(private val application: Application) {
 
             // Ensure expected Sword directories exist
             File(filesDir, "mods.d").mkdirs()
+            File(filesDir, "modules").mkdirs()
             initLogging()
             engine = XBibleEngine()
             Result.success(Unit)
@@ -122,6 +123,14 @@ class BibleRepository(private val application: Application) {
 
     fun lookupStrongsNumber(query: LexiconQuery): LexiconResponse {
         return engine?.lookupStrongsNumber(query) ?: LexiconResponse(emptyList())
+    }
+
+    fun search(moduleName: String, query: String, searchType: uniffi.xbible_engine.SearchType): uniffi.xbible_engine.SearchResults {
+        return engine?.search(moduleName, query, searchType) ?: uniffi.xbible_engine.SearchResults(query, moduleName, emptyList())
+    }
+
+    fun getSingleEntry(module: SwordModule, reference: String): List<Section> {
+        return engine?.getSingleEntry(module, reference) ?: emptyList()
     }
 
     // Add more methods here as needed to wrap XBibleEngine functionality

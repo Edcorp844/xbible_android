@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.xbible.viewmodel.StudyTab
+import com.example.xbible.viewmodel.TabType
 
 @Composable
 fun TabsPreview(
@@ -32,6 +34,7 @@ fun TabsPreview(
     activeTabIndex: Int,
     onTabSelected: (Int) -> Unit,
     onAddTab: () -> Unit,
+    onAddSearchTab: () -> Unit,
     onRemoveTab: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -83,14 +86,30 @@ fun TabsPreview(
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            Button(
-                onClick = onAddTab,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("New Bible Tab")
+                Button(
+                    onClick = onAddTab,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Bible")
+                }
+
+                Button(
+                    onClick = onAddSearchTab,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Search")
+                }
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -128,13 +147,19 @@ fun TabThumbnail(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = tab.module?.name ?: "Empty",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (tab.type == TabType.SEARCH) {
+                            Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                        Text(
+                            text = tab.module?.name ?: "Empty",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     IconButton(
                         onClick = onRemove,
                         modifier = Modifier.size(24.dp)
@@ -144,9 +169,10 @@ fun TabThumbnail(
                 }
                 
                 Text(
-                    text = tab.reference ?: "No Reference",
+                    text = if (tab.type == TabType.SEARCH) "Search: ${tab.searchQuery}" else tab.reference ?: "No Reference",
                     style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -160,15 +186,27 @@ fun TabThumbnail(
                         .padding(4.dp)
                 ) {
                     Column {
-                        tab.content.take(5).forEach { section ->
-                            val previewText = section.verses.firstOrNull()?.words?.joinToString(" ") { it.text } ?: ""
-                            Text(
-                                text = previewText,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontSize = 8.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                        if (tab.type == TabType.SEARCH) {
+                            tab.searchResults.take(5).forEach { hit ->
+                                Text(
+                                    text = hit.key,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 8.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        } else {
+                            tab.content.take(5).forEach { section ->
+                                val previewText = section.verses.firstOrNull()?.words?.joinToString(" ") { it.text } ?: ""
+                                Text(
+                                    text = previewText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 8.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         }
                     }
                 }

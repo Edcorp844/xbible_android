@@ -767,6 +767,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_xbibleengine_search(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_search_modules(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_set_global_options(
@@ -976,6 +978,8 @@ external fun uniffi_xbible_engine_fn_method_xbibleengine_lookup_dictionary(`ptr`
 external fun uniffi_xbible_engine_fn_method_xbibleengine_lookup_strongs_number(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_xbibleengine_refresh_installed_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_search(`ptr`: Long,`moduleName`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,`searchType`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_xbibleengine_search_modules(`ptr`: Long,`sourceName`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1296,6 +1300,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules() != 7357) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search() != 37446) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search_modules() != 64541) {
@@ -3915,6 +3922,8 @@ public interface XBibleEngineInterface {
      */
     fun `refreshInstalledModules`(): List<SwordModule>
     
+    fun `search`(`moduleName`: kotlin.String, `query`: kotlin.String, `searchType`: SearchType): SearchResults
+    
     /**
      * Search for modules matching a query across all sources
      */
@@ -4634,6 +4643,19 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_refresh_installed_modules(
         it,
         _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `search`(`moduleName`: kotlin.String, `query`: kotlin.String, `searchType`: SearchType): SearchResults {
+            return FfiConverterTypeSearchResults.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_search(
+        it,
+        FfiConverterString.lower(`moduleName`),FfiConverterString.lower(`query`),FfiConverterTypeSearchType.lower(`searchType`),_status)
 }
     }
     )
@@ -6036,6 +6058,92 @@ public object FfiConverterTypeRemoteAudioModuleInfo: FfiConverterRustBuffer<Remo
 
 
 
+data class SearchHit (
+    var `moduleName`: kotlin.String
+    , 
+    var `key`: kotlin.String
+    , 
+    var `score`: kotlin.Long
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchHit: FfiConverterRustBuffer<SearchHit> {
+    override fun read(buf: ByteBuffer): SearchHit {
+        return SearchHit(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterLong.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchHit) = (
+            FfiConverterString.allocationSize(value.`moduleName`) +
+            FfiConverterString.allocationSize(value.`key`) +
+            FfiConverterLong.allocationSize(value.`score`)
+    )
+
+    override fun write(value: SearchHit, buf: ByteBuffer) {
+            FfiConverterString.write(value.`moduleName`, buf)
+            FfiConverterString.write(value.`key`, buf)
+            FfiConverterLong.write(value.`score`, buf)
+    }
+}
+
+
+
+data class SearchResults (
+    var `query`: kotlin.String
+    , 
+    var `moduleName`: kotlin.String
+    , 
+    var `hits`: List<SearchHit>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchResults: FfiConverterRustBuffer<SearchResults> {
+    override fun read(buf: ByteBuffer): SearchResults {
+        return SearchResults(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeSearchHit.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchResults) = (
+            FfiConverterString.allocationSize(value.`query`) +
+            FfiConverterString.allocationSize(value.`moduleName`) +
+            FfiConverterSequenceTypeSearchHit.allocationSize(value.`hits`)
+    )
+
+    override fun write(value: SearchResults, buf: ByteBuffer) {
+            FfiConverterString.write(value.`query`, buf)
+            FfiConverterString.write(value.`moduleName`, buf)
+            FfiConverterSequenceTypeSearchHit.write(value.`hits`, buf)
+    }
+}
+
+
+
 data class Section (
     var `title`: List<Word>
     , 
@@ -6267,6 +6375,12 @@ data class Word (
     , 
     var `isBoldText`: kotlin.Boolean
     , 
+    var `isAdded`: kotlin.Boolean
+    , 
+    var `isFirstAdded`: kotlin.Boolean
+    , 
+    var `isLastAdded`: kotlin.Boolean
+    , 
     var `lex`: LexicalInfo?
     , 
     var `note`: kotlin.String?
@@ -6300,6 +6414,9 @@ public object FfiConverterTypeWord: FfiConverterRustBuffer<Word> {
             FfiConverterBoolean.read(buf),
             FfiConverterBoolean.read(buf),
             FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
             FfiConverterOptionalTypeLexicalInfo.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterBoolean.read(buf),
@@ -6315,6 +6432,9 @@ public object FfiConverterTypeWord: FfiConverterRustBuffer<Word> {
             FfiConverterBoolean.allocationSize(value.`isRed`) +
             FfiConverterBoolean.allocationSize(value.`isItalic`) +
             FfiConverterBoolean.allocationSize(value.`isBoldText`) +
+            FfiConverterBoolean.allocationSize(value.`isAdded`) +
+            FfiConverterBoolean.allocationSize(value.`isFirstAdded`) +
+            FfiConverterBoolean.allocationSize(value.`isLastAdded`) +
             FfiConverterOptionalTypeLexicalInfo.allocationSize(value.`lex`) +
             FfiConverterOptionalString.allocationSize(value.`note`) +
             FfiConverterBoolean.allocationSize(value.`isFirstInGroup`) +
@@ -6329,6 +6449,9 @@ public object FfiConverterTypeWord: FfiConverterRustBuffer<Word> {
             FfiConverterBoolean.write(value.`isRed`, buf)
             FfiConverterBoolean.write(value.`isItalic`, buf)
             FfiConverterBoolean.write(value.`isBoldText`, buf)
+            FfiConverterBoolean.write(value.`isAdded`, buf)
+            FfiConverterBoolean.write(value.`isFirstAdded`, buf)
+            FfiConverterBoolean.write(value.`isLastAdded`, buf)
             FfiConverterOptionalTypeLexicalInfo.write(value.`lex`, buf)
             FfiConverterOptionalString.write(value.`note`, buf)
             FfiConverterBoolean.write(value.`isFirstInGroup`, buf)
@@ -6580,6 +6703,41 @@ public object FfiConverterTypeRepeatMode: FfiConverterRustBuffer<RepeatMode> {
     override fun allocationSize(value: RepeatMode) = 4UL
 
     override fun write(value: RepeatMode, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+enum class SearchType {
+    
+    REGULAR_EXPRESSION,
+    PHRASE,
+    MULTI_WORD;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchType: FfiConverterRustBuffer<SearchType> {
+    override fun read(buf: ByteBuffer) = try {
+        SearchType.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: SearchType) = 4UL
+
+    override fun write(value: SearchType, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
     }
 }
@@ -7537,6 +7695,34 @@ public object FfiConverterSequenceTypeRemoteAudioModuleInfo: FfiConverterRustBuf
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeRemoteAudioModuleInfo.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeSearchHit: FfiConverterRustBuffer<List<SearchHit>> {
+    override fun read(buf: ByteBuffer): List<SearchHit> {
+        val len = buf.getInt()
+        return List<SearchHit>(len) {
+            FfiConverterTypeSearchHit.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<SearchHit>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeSearchHit.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<SearchHit>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeSearchHit.write(it, buf)
         }
     }
 }

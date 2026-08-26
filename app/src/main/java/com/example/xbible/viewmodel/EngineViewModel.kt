@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uniffi.xbible_engine.DictionaryQuery
@@ -15,9 +16,13 @@ import uniffi.xbible_engine.DictionaryResult
 import uniffi.xbible_engine.LexiconQuery
 import uniffi.xbible_engine.LexiconResult
 import uniffi.xbible_engine.ModuleBook
+import uniffi.xbible_engine.SearchHit
+import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.Word
+
+enum class TabType { READ, SEARCH }
 
 data class StudyTab(
     val id: String = java.util.UUID.randomUUID().toString(),
@@ -26,7 +31,14 @@ data class StudyTab(
     val content: List<Section> = emptyList(),
     val bookIndex: Int = -1,
     val chapterIndex: Int = -1,
-    val books: List<ModuleBook> = emptyList()
+    val books: List<ModuleBook> = emptyList(),
+    val type: TabType = TabType.READ,
+    val searchQuery: String = "",
+    val searchResults: List<SearchHit> = emptyList(),
+    val searchHitsContent: Map<String, List<Section>> = emptyMap(),
+    val isSearching: Boolean = false,
+    val searchLoadProgress: Float = 0f,
+    val searchType: SearchType = SearchType.MULTI_WORD
 )
 
 enum class StudyTool {
@@ -150,18 +162,18 @@ class EngineViewModel @JvmOverloads constructor(
         viewModelScope.launch {
             val modules = withContext(Dispatchers.IO) { repository.getBibleModules() }
             _installedBibles.value = modules
-            
+
             if (modules.isNotEmpty()) {
                 val firstModule = modules.first()
                 val books = withContext(Dispatchers.IO) { repository.getBooks(firstModule.name) }
-                
+
                 if (books.isNotEmpty()) {
                     val firstBook = books.first()
                     val chapters = firstBook.chapters
                     if (chapters.isNotEmpty()) {
                         val chapter = chapters[0]
                         val reference = "${firstBook.name} ${chapter.number}"
-                        
+
                         val initialTab = StudyTab(
                             module = firstModule,
                             reference = reference,
@@ -181,18 +193,18 @@ class EngineViewModel @JvmOverloads constructor(
         _currentModule.value = tab.module
         _currentReference.value = tab.reference
         _currentChapterContent.value = tab.content
-        
+
         currentBooks = tab.books
         _currentBooks.value = tab.books
         currentBookIndex = tab.bookIndex
         _currentBookIndex.value = tab.bookIndex
         currentChapterIndex = tab.chapterIndex
         _currentChapterIndex.value = tab.chapterIndex
-        
-        if (tab.content.isEmpty() && tab.module != null && tab.reference != null) {
+
+        if (tab.type == TabType.READ && tab.content.isEmpty() && tab.module != null && tab.reference != null) {
             loadChapter(tab.module.name, tab.reference)
         }
-        
+
         updateNavigationStatus()
     }
 
@@ -200,16 +212,19 @@ class EngineViewModel @JvmOverloads constructor(
         if (index in _tabs.value.indices) {
             // Save current state to the list before switching
             val currentTabs = _tabs.value.toMutableList()
-            currentTabs[_activeTabIndex.value] = currentTabs[_activeTabIndex.value].copy(
-                module = _currentModule.value,
-                reference = _currentReference.value,
-                content = _currentChapterContent.value,
-                bookIndex = currentBookIndex,
-                chapterIndex = currentChapterIndex,
-                books = currentBooks
-            )
+            val oldActiveIndex = _activeTabIndex.value
+            if (oldActiveIndex in currentTabs.indices) {
+                currentTabs[oldActiveIndex] = currentTabs[oldActiveIndex].copy(
+                    module = _currentModule.value,
+                    reference = _currentReference.value,
+                    content = _currentChapterContent.value,
+                    bookIndex = currentBookIndex,
+                    chapterIndex = currentChapterIndex,
+                    books = currentBooks
+                )
+            }
             _tabs.value = currentTabs
-            
+
             _activeTabIndex.value = index
             updateActiveTab(currentTabs[index])
         }
@@ -219,7 +234,7 @@ class EngineViewModel @JvmOverloads constructor(
         val newTab = StudyTab()
         _tabs.value = _tabs.value + newTab
         switchTab(_tabs.value.size - 1)
-        
+
         // If we have installed bibles, initialize the new tab with the first one
         if (_installedBibles.value.isNotEmpty()) {
             val firstModule = _installedBibles.value.first()
@@ -229,7 +244,7 @@ class EngineViewModel @JvmOverloads constructor(
                     val firstBook = books.first()
                     val firstChapter = firstBook.chapters.firstOrNull()?.number ?: 1
                     val reference = "${firstBook.name} $firstChapter"
-                    
+
                     val updatedTab = newTab.copy(
                         module = firstModule,
                         reference = reference,
@@ -243,6 +258,194 @@ class EngineViewModel @JvmOverloads constructor(
                     updateActiveTab(updatedTab)
                 }
             }
+        }
+    }
+
+    fun addSearchTab() {
+        val currentModule = _currentModule.value
+        val newTab = StudyTab(
+            type = TabType.SEARCH,
+            module = currentModule
+        )
+        _tabs.value = _tabs.value + newTab
+        switchTab(_tabs.value.size - 1)
+    }
+
+    private var searchContentLoadingJob: kotlinx.coroutines.Job? = null
+
+    fun performSearch(query: String) {
+        val tabIndex = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(tabIndex) ?: return
+        if (tab.type != TabType.SEARCH) return
+
+        val module = tab.module ?: _currentModule.value ?: return
+
+        searchContentLoadingJob?.cancel()
+        
+        viewModelScope.launch {
+            _tabs.update { tabs ->
+                tabs.mapIndexed { i, t ->
+                    if (i == tabIndex) t.copy(isSearching = true, searchQuery = query, searchResults = emptyList(), searchHitsContent = emptyMap(), searchLoadProgress = 0f) else t
+                }
+            }
+            
+            try {
+                val results = withContext(Dispatchers.IO) {
+                    repository.search(module.name, query, tab.searchType)
+                }
+
+                _tabs.update { tabs ->
+                    tabs.mapIndexed { i, t ->
+                        if (i == tabIndex) t.copy(searchResults = results.hits, module = module, isSearching = results.hits.isNotEmpty()) else t
+                    }
+                }
+
+                if (results.hits.isNotEmpty()) {
+                    loadSearchResultsSequentially(tabIndex, results.hits)
+                } else {
+                     _tabs.update { tabs ->
+                        tabs.mapIndexed { i, t -> if (i == tabIndex) t.copy(isSearching = false) else t }
+                    }
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Search error: ${e.message}"
+                _tabs.update { tabs ->
+                    tabs.mapIndexed { i, t -> if (i == tabIndex) t.copy(isSearching = false) else t }
+                }
+            }
+        }
+    }
+
+    private fun loadSearchResultsSequentially(tabIndex: Int, hits: List<SearchHit>) {
+        searchContentLoadingJob = viewModelScope.launch {
+            val module = _tabs.value[tabIndex].module ?: return@launch
+            
+            for ((index, hit) in hits.withIndex()) {
+                try {
+                    val content = withContext(Dispatchers.IO) {
+                        repository.getSingleEntry(module, hit.key)
+                    }
+                    
+                    _tabs.update { tabs ->
+                        if (tabIndex !in tabs.indices) return@update tabs
+                        tabs.mapIndexed { i, studyTab ->
+                            if (i == tabIndex) {
+                                studyTab.copy(
+                                    searchHitsContent = studyTab.searchHitsContent + (hit.key to content),
+                                    searchLoadProgress = (index + 1).toFloat() / hits.size,
+                                    isSearching = index < hits.size - 1
+                                )
+                            } else {
+                                studyTab
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Skip if one fails
+                }
+            }
+        }
+    }
+
+    fun openSearchHit(hit: SearchHit) {
+        val index = _activeTabIndex.value
+        val currentTabs = _tabs.value.toMutableList()
+        val tab = currentTabs.getOrNull(index) ?: return
+        if (tab.type != TabType.SEARCH || tab.module == null) return
+
+        viewModelScope.launch {
+            _isLoadingContent.value = true
+            try {
+                val module = tab.module
+                val reference = hit.key
+                val books = withContext(Dispatchers.IO) { repository.getBooks(module.name) }
+                
+                // Try to find book index
+                val bookName = reference.substringBeforeLast(" ")
+                val chapterStr = reference.substringAfterLast(" ")
+                val chapterNumber = chapterStr.toIntOrNull() ?: 1
+                
+                val bookIndex = books.indexOfFirst { it.name.contains(bookName, ignoreCase = true) || bookName.contains(it.name, ignoreCase = true) }
+                val chapterIndex = if (bookIndex != -1) {
+                    books[bookIndex].chapters.indexOfFirst { it.number == chapterNumber }
+                } else -1
+
+                val updatedTab = tab.copy(
+                    type = TabType.READ,
+                    reference = reference,
+                    content = emptyList(),
+                    books = books,
+                    bookIndex = bookIndex,
+                    chapterIndex = chapterIndex
+                )
+                currentTabs[index] = updatedTab
+                _tabs.value = currentTabs
+                updateActiveTab(updatedTab)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error opening search result: ${e.message}"
+            } finally {
+                _isLoadingContent.value = false
+            }
+        }
+    }
+
+    fun openSearchHitInNewTab(hit: SearchHit) {
+        val tabIndex = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(tabIndex) ?: return
+        if (tab.type != TabType.SEARCH || tab.module == null) return
+
+        viewModelScope.launch {
+            _isLoadingContent.value = true
+            try {
+                val module = tab.module
+                val reference = hit.key
+                val books = withContext(Dispatchers.IO) { repository.getBooks(module.name) }
+                
+                val bookName = reference.substringBeforeLast(" ")
+                val chapterStr = reference.substringAfterLast(" ")
+                val chapterNumber = chapterStr.toIntOrNull() ?: 1
+                
+                val bookIndex = books.indexOfFirst { it.name.contains(bookName, ignoreCase = true) || bookName.contains(it.name, ignoreCase = true) }
+                val chapterIndex = if (bookIndex != -1) {
+                    books[bookIndex].chapters.indexOfFirst { it.number == chapterNumber }
+                } else -1
+
+                val newTab = StudyTab(
+                    type = TabType.READ,
+                    module = module,
+                    reference = reference,
+                    books = books,
+                    bookIndex = bookIndex,
+                    chapterIndex = chapterIndex
+                )
+                
+                _tabs.update { it + newTab }
+                _activeTabIndex.value = _tabs.value.size - 1
+                updateActiveTab(newTab)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error opening search result in new tab: ${e.message}"
+            } finally {
+                _isLoadingContent.value = false
+            }
+        }
+    }
+
+    fun updateSearchType(searchType: SearchType) {
+        val tabIndex = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(tabIndex) ?: return
+        if (tab.type != TabType.SEARCH) return
+
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == tabIndex) {
+                    t.copy(searchType = searchType)
+                } else t
+            }
+        }
+        
+        // Re-run search if there's a query
+        if (tab.searchQuery.isNotEmpty()) {
+            performSearch(tab.searchQuery)
         }
     }
 
@@ -265,7 +468,7 @@ class EngineViewModel @JvmOverloads constructor(
         }
 
         val currentBook = currentBooks[currentBookIndex]
-        
+
         // Has Next?
         _hasNext.value = when {
             currentChapterIndex < currentBook.chapters.size - 1 -> true
@@ -286,7 +489,7 @@ class EngineViewModel @JvmOverloads constructor(
         if (currentBooks.isEmpty() || currentBookIndex < 0) return
 
         val currentBook = currentBooks[currentBookIndex]
-        
+
         if (currentChapterIndex < currentBook.chapters.size - 1) {
             currentChapterIndex++
         } else if (currentBookIndex < currentBooks.size - 1) {
@@ -422,11 +625,11 @@ class EngineViewModel @JvmOverloads constructor(
             viewModelScope.launch {
                 val modules = withContext(Dispatchers.IO) { repository.refreshModules() }
                 _installedBibles.value = repository.getBibleModules()
-                
+
                 // Load tool metadata
                 _availableLexicons.value = repository.getLexiconModules()
                 _availableCommentaries.value = repository.getCommentaryModules()
-                
+
                 if (_selectedLexiconModule.value == null && _availableLexicons.value.isNotEmpty()) {
                     _selectedLexiconModule.value = _availableLexicons.value.first()
                 }
@@ -517,7 +720,7 @@ class EngineViewModel @JvmOverloads constructor(
     fun loadCommentaryContent() {
         val module = _selectedCommentaryModule.value ?: return
         val reference = _currentReference.value ?: return
-        
+
         _isCommentaryLoading.value = true
         _currentCommentaryReference.value = reference
 

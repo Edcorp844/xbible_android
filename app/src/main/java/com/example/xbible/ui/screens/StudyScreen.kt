@@ -33,7 +33,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,9 +45,12 @@ import com.example.xbible.ui.components.PageView
 import com.example.xbible.ui.icons.tab_group
 import com.example.xbible.ui.screens.study.ModuleSelectionContent
 import com.example.xbible.ui.screens.study.ReferencePickerContent
+import com.example.xbible.ui.screens.study.SearchSettingsContent
+import com.example.xbible.ui.screens.study.SearchView
 import com.example.xbible.ui.screens.study.SplitDetailPane
 import com.example.xbible.ui.screens.study.TabsPreview
 import com.example.xbible.viewmodel.EngineViewModel
+import com.example.xbible.viewmodel.TabType
 import uniffi.xbible_engine.Word
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -57,6 +62,8 @@ fun StudyScreen(
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val isCompact = !adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     val isExpanded = adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+    
+    val clipboardManager = LocalClipboardManager.current
     
     val sections by engineViewModel.currentChapterContent.collectAsState()
     val installedBibles by engineViewModel.installedBibles.collectAsState()
@@ -74,10 +81,12 @@ fun StudyScreen(
     
     var showModuleSelection by remember { mutableStateOf(false) }
     var showReferencePicker by remember { mutableStateOf(false) }
+    var showSearchSettings by remember { mutableStateOf(false) }
     
     val moduleSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val referenceSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lexiconSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val searchSettingsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Outer navigator for Bible/Reference Drawer
     val drawerNavigator = rememberSupportingPaneScaffoldNavigator(
@@ -94,6 +103,7 @@ fun StudyScreen(
                         onClick = {
                             showModuleSelection = false
                             showReferencePicker = false
+                            showSearchSettings = false
                         }
                     )
                 }
@@ -102,7 +112,7 @@ fun StudyScreen(
     )
 
     // Handle Drawer Visibility
-    val isBibleDrawerVisible = (showModuleSelection || showReferencePicker) && !isCompact
+    val isBibleDrawerVisible = (showModuleSelection || showReferencePicker || showSearchSettings) && !isCompact
     LaunchedEffect(isBibleDrawerVisible) {
         if (isBibleDrawerVisible) {
             drawerNavigator.navigateTo(SupportingPaneScaffoldRole.Supporting)
@@ -199,21 +209,32 @@ fun StudyScreen(
                         }
                     },
                     trailingButton = {
-                        val isSelected = showReferencePicker && !isCompact
+                        val isSearchTab = tabs.getOrNull(activeTabIndex)?.type == TabType.SEARCH
+                        val isSelected = (if (isSearchTab) showSearchSettings else showReferencePicker) && !isCompact
                         SplitButtonDefaults.ElevatedTrailingButton(
                             checked = isSelected,
                             onCheckedChange = {
                                 if (isCompact) {
-                                    showReferencePicker = it
+                                    if (isSearchTab) showSearchSettings = it else showReferencePicker = it
                                     showLexicon = false
                                     showModuleSelection = false
                                 } else {
-                                    showReferencePicker = it
+                                    if (isSearchTab) {
+                                        showSearchSettings = it
+                                        showReferencePicker = false
+                                    } else {
+                                        showReferencePicker = it
+                                        showSearchSettings = false
+                                    }
                                     showModuleSelection = false
                                 }
                             }
                         ) {
-                            Text(text = currentReference ?: "Study")
+                            Text(
+                                text = if (isSearchTab) "Settings" else (currentReference ?: "Study"),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 )
@@ -230,7 +251,7 @@ fun StudyScreen(
                         )
                     }
                 }
-                IconButton(onClick = { }) {
+                IconButton(onClick = { engineViewModel.addSearchTab() }) {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
                 IconButton(onClick = { }) {
@@ -318,50 +339,82 @@ fun StudyScreen(
                             val minPaneWidth = 300.dp
                             
                             Row(modifier = Modifier.fillMaxSize()) {
-                                // 1. Bible Text Area
+                                // 1. Bible Text Area or Search Area
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight()
                                 ) {
-                                    when {
-                                        installedBibles.isEmpty() -> {
-                                            Column(
-                                                modifier = Modifier.fillMaxSize(),
-                                                verticalArrangement = Arrangement.Center,
-                                                horizontalAlignment = Alignment.CenterHorizontally
-                                            ) {
-                                                Text(text = "No Bibles installed.")
-                                                Spacer(modifier = Modifier.height(16.dp))
-                                                Button(onClick = onNavigateToStore) {
-                                                    Text("Go to Store")
+                                    val currentTab = tabs.getOrNull(activeTabIndex)
+                                    if (currentTab?.type == TabType.SEARCH) {
+                                        SearchView(
+                                            tab = currentTab,
+                                            onSearch = { query -> engineViewModel.performSearch(query) },
+                                            onReferenceClick = { hitKey -> 
+                                                // We can use openSearchHit here if we find the hit
+                                                currentTab.searchResults.find { it.key == hitKey }?.let {
+                                                    engineViewModel.openSearchHit(it)
                                                 }
-                                            }
-                                        }
-                                        isLoading -> {
-                                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                                CircularProgressIndicator()
-                                            }
-                                        }
-                                        sections.isEmpty() -> {
-                                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                                Text(text = "No content loaded. Select a chapter to study.")
-                                            }
-                                        }
-                                        else -> {
-                                            PageView(
-                                                sections = sections,
-                                                state = listState,
-                                                onWordClick = { word ->
-                                                    selectedWord = word
-                                                    engineViewModel.lookupWord(word)
-                                                    showLexicon = true
-                                                },
-                                                onStrongsClick = { strongs ->
-                                                    engineViewModel.lookupStrongs(strongs)
+                                            },
+                                            onCopyVerse = { ref, sections ->
+                                                val text = sections.flatMap { it.verses }.flatMap { it.words }.joinToString(" ") { it.text }
+                                                clipboardManager.setText(AnnotatedString("$ref: $text"))
+                                            },
+                                            onOpenInNewTab = { hit ->
+                                                engineViewModel.openSearchHitInNewTab(hit)
+                                            },
+                                            onPreviewChapter = { ref ->
+                                                currentTab.searchResults.find { it.key == ref }?.let {
+                                                    engineViewModel.openSearchHit(it)
+                                                }
+                                            },
+                                            onLexiconLookup = { ref ->
+                                                currentTab.searchResults.find { it.key == ref }?.let {
+                                                    engineViewModel.openSearchHit(it)
                                                     showLexicon = true
                                                 }
-                                            )
+                                            }
+                                        )
+                                    } else {
+                                        when {
+                                            installedBibles.isEmpty() -> {
+                                                Column(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    verticalArrangement = Arrangement.Center,
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    Text(text = "No Bibles installed.")
+                                                    Spacer(modifier = Modifier.height(16.dp))
+                                                    Button(onClick = onNavigateToStore) {
+                                                        Text("Go to Store")
+                                                    }
+                                                }
+                                            }
+                                            isLoading -> {
+                                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                    CircularProgressIndicator()
+                                                }
+                                            }
+                                            sections.isEmpty() -> {
+                                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                    Text(text = "No content loaded. Select a chapter to study.")
+                                                }
+                                            }
+                                            else -> {
+                                                PageView(
+                                                    sections = sections,
+                                                    state = listState,
+                                                    onWordClick = { word ->
+                                                        selectedWord = word
+                                                        engineViewModel.lookupWord(word)
+                                                        showLexicon = true
+                                                    },
+                                                    onStrongsClick = { strongs ->
+                                                        engineViewModel.lookupStrongs(strongs)
+                                                        showLexicon = true
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -397,8 +450,7 @@ fun StudyScreen(
                                             .fillMaxHeight()
                                     ) {
                                         SplitDetailPane(
-                                            engineViewModel = engineViewModel,
-                                            onDismiss = { showLexicon = false }
+                                            engineViewModel = engineViewModel
                                         )
                                     }
                                 }
@@ -433,13 +485,18 @@ fun StudyScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = if (showModuleSelection) "Bible Selection" else "Reference Picker",
+                                        text = when {
+                                            showModuleSelection -> "Bible Selection"
+                                            showSearchSettings -> "Search Settings"
+                                            else -> "Reference Picker"
+                                        },
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
                                     )
                                     IconButton(onClick = {
                                         showModuleSelection = false
                                         showReferencePicker = false
+                                        showSearchSettings = false
                                     }) {
                                         Icon(Icons.Default.Close, contentDescription = "Close Drawer")
                                     }
@@ -447,15 +504,27 @@ fun StudyScreen(
                                 
                                 Spacer(modifier = Modifier.height(8.dp))
 
-                                if (showModuleSelection) {
-                                    ModuleSelectionContent(installedBibles, currentModule) { module ->
-                                        engineViewModel.selectModule(module)
-                                        showModuleSelection = false
+                                when {
+                                    showModuleSelection -> {
+                                        ModuleSelectionContent(installedBibles, currentModule) { module ->
+                                            engineViewModel.selectModule(module)
+                                            showModuleSelection = false
+                                        }
                                     }
-                                } else if (showReferencePicker) {
-                                    ReferencePickerContent(currentBooks, currentBookIndex, currentChapterIndex, { index -> engineViewModel.selectBook(index) }) { chapter ->
-                                        engineViewModel.selectChapter(chapter)
-                                        showReferencePicker = false
+                                    showSearchSettings -> {
+                                        val currentTab = tabs.getOrNull(activeTabIndex)
+                                        if (currentTab != null) {
+                                            SearchSettingsContent(currentTab.searchType) { type ->
+                                                engineViewModel.updateSearchType(type)
+                                                showSearchSettings = false
+                                            }
+                                        }
+                                    }
+                                    showReferencePicker -> {
+                                        ReferencePickerContent(currentBooks, currentBookIndex, currentChapterIndex, { index -> engineViewModel.selectBook(index) }) { chapter ->
+                                            engineViewModel.selectChapter(chapter)
+                                            showReferencePicker = false
+                                        }
                                     }
                                 }
                             }
@@ -484,9 +553,20 @@ fun StudyScreen(
                 }
             }
         }
+        if (showSearchSettings) {
+            ModalBottomSheet(onDismissRequest = { showSearchSettings = false }, sheetState = searchSettingsSheetState) {
+                val currentTab = tabs.getOrNull(activeTabIndex)
+                if (currentTab != null) {
+                    SearchSettingsContent(currentTab.searchType) { type ->
+                        engineViewModel.updateSearchType(type)
+                        showSearchSettings = false
+                    }
+                }
+            }
+        }
         if (showLexicon) {
             ModalBottomSheet(onDismissRequest = { showLexicon = false }, sheetState = lexiconSheetState) {
-                SplitDetailPane(engineViewModel) { showLexicon = false }
+                SplitDetailPane(engineViewModel)
             }
         }
     }
@@ -502,6 +582,7 @@ fun StudyScreen(
             activeTabIndex = activeTabIndex,
             onTabSelected = { index -> engineViewModel.switchTab(index); showTabsPreview = false },
             onAddTab = { engineViewModel.addNewTab(); showTabsPreview = false },
+            onAddSearchTab = { engineViewModel.addSearchTab(); showTabsPreview = false },
             onRemoveTab = { index -> engineViewModel.removeTab(index) },
             onDismiss = { showTabsPreview = false }
         )

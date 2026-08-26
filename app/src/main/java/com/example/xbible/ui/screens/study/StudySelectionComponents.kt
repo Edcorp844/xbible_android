@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed as gridItemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import uniffi.xbible_engine.ModuleBook
+import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.SwordModule
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -60,14 +60,13 @@ fun ModuleSelectionContent(
                             ListItem(
                                 modifier = Modifier.clickable { onModuleSelected(module) },
                                 colors = ListItemDefaults.colors(
-                                    containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                                    else Color.Transparent
+                                    containerColor = Color.Transparent
                                 ),
                                 headlineContent = {
                                     Text(
                                         text = module.name,
                                         style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                     )
                                 },
                                 supportingContent = if (module.description.isNotEmpty()) {
@@ -80,21 +79,61 @@ fun ModuleSelectionContent(
                                         )
                                     }
                                 } else null,
-                                trailingContent = if (isSelected) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Default.Layers,
-                                            contentDescription = "Selected",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                } else null
+                                trailingContent = {
+                                    RadioButton(
+                                        selected = isSelected,
+                                        onClick = null
+                                    )
+                                }
                             )
                         }
                     }
                 }
                 item { Spacer(modifier = Modifier.height(8.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchSettingsContent(
+    currentSearchType: SearchType,
+    onSearchTypeSelected: (SearchType) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 32.dp)
+    ) {
+        Text(
+            text = "Search Settings",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp),
+            fontWeight = FontWeight.Bold
+        )
+
+        SettingsGroup(title = "SEARCH TYPE") {
+            SearchType.values().forEach { type ->
+                val isSelected = currentSearchType == type
+                ListItem(
+                    modifier = Modifier.clickable { onSearchTypeSelected(type) },
+                    colors = ListItemDefaults.colors(
+                        containerColor = Color.Transparent
+                    ),
+                    headlineContent = {
+                        Text(
+                            text = type.name.replace("_", " ").lowercase().replaceFirstChar { it.uppercase() },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                        )
+                    },
+                    trailingContent = {
+                        RadioButton(
+                            selected = isSelected,
+                            onClick = null
+                        )
+                    }
+                )
             }
         }
     }

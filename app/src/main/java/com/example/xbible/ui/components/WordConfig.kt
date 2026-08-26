@@ -16,5 +16,6 @@ data class WordConfig(
     val morphFontSize: Float = 8f,
     val strongsTagColor: Color = Color.Unspecified,
     val morphTagColor: Color = Color.Unspecified,
-    val tagBackgroundColor: Color = Color.LightGray.copy(alpha = 0.2f)
+    val tagBackgroundColor: Color = Color.LightGray.copy(alpha = 0.2f),
+    val addedWordsStyle: AddedWordStyle = AddedWordStyle.Brackets
 )

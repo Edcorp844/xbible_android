@@ -37,19 +37,65 @@ fun WordView(
         verticalArrangement = Arrangement.spacedBy(config.verticalSpacing)
     ) {
         // Main Scripture Word Text
-        val textColor = if (word.isRed) config.redWordsColor else if (config.primaryTextColor == Color.Unspecified) MaterialTheme.colorScheme.onBackground else config.primaryTextColor
+        val textColor =
+            if (word.isRed) config.redWordsColor else if (config.primaryTextColor == Color.Unspecified) MaterialTheme.colorScheme.onBackground else config.primaryTextColor
 
-        Text(
-            text = word.text,
-            fontSize = if (isTitle) config.fontSize.sp * 1.5 else config.fontSize.sp,
-            fontFamily = config.fontFamily,
-            fontWeight = if (word.isBoldText) FontWeight.Bold else FontWeight.Normal,
-            fontStyle = if (word.isItalic) FontStyle.Italic else FontStyle.Normal,
-            color = textColor,
-            modifier = Modifier.clickable(enabled = onWordClick != null) {
-                onWordClick?.invoke()
+
+        if (word.isAdded) {
+            when (config.addedWordsStyle) {
+                AddedWordStyle.Italics -> {
+                    Text(
+                        text = word.text,
+                        fontSize = if (isTitle) config.fontSize.sp * 1.5 else config.fontSize.sp,
+                        fontFamily = config.fontFamily,
+                        fontWeight = if (word.isBoldText) FontWeight.Bold else FontWeight.Normal,
+                        fontStyle = FontStyle.Italic,
+                        color = textColor,
+                        modifier = Modifier.clickable(enabled = onWordClick != null) {
+                            onWordClick?.invoke()
+                        }
+                    )
+                }
+
+                AddedWordStyle.Brackets -> {
+                    val text = if (word.isFirstAdded && word.isLastAdded) {
+                        "[" + word.text + "]"
+                    } else if (word.isFirstAdded) {
+                        "[" + word.text
+                    } else if (word.isLastAdded) {
+                        word.text + "]"
+                    } else {
+                        word.text
+                    }
+
+                    Text(
+                        text = text,
+                        fontSize = if (isTitle) config.fontSize.sp * 1.5 else config.fontSize.sp,
+                        fontFamily = config.fontFamily,
+                        fontWeight = if (word.isBoldText) FontWeight.Bold else FontWeight.Normal,
+                        fontStyle = if (word.isItalic) FontStyle.Italic else FontStyle.Normal,
+                        color = textColor,
+                        modifier = Modifier.clickable(enabled = onWordClick != null) {
+                            onWordClick?.invoke()
+                        }
+                    )
+
+                }
+
             }
-        )
+        } else {
+            Text(
+                text = word.text,
+                fontSize = if (isTitle) config.fontSize.sp * 1.5 else config.fontSize.sp,
+                fontFamily = config.fontFamily,
+                fontWeight = if (word.isBoldText) FontWeight.Bold else FontWeight.Normal,
+                fontStyle = if (word.isItalic) FontStyle.Italic else FontStyle.Normal,
+                color = textColor,
+                modifier = Modifier.clickable(enabled = onWordClick != null) {
+                    onWordClick?.invoke()
+                }
+            )
+        }
 
         // Strong's Tag Metadata Container
         if (config.showStrongsTags && word.lex != null && (word.lex!!.strongs.isNotEmpty() || word.lex!!.morph.isNotEmpty())) {
@@ -62,7 +108,8 @@ fun WordView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 word.lex!!.strongs.firstOrNull()?.let { strong ->
-                    val strongColor = if (config.strongsTagColor == Color.Unspecified) MaterialTheme.colorScheme.primary else config.strongsTagColor
+                    val strongColor =
+                        if (config.strongsTagColor == Color.Unspecified) MaterialTheme.colorScheme.primary else config.strongsTagColor
                     Text(
                         text = strong,
                         fontSize = config.strongsFontSize.sp,
@@ -73,7 +120,8 @@ fun WordView(
                     )
                 }
                 word.lex!!.morph.firstOrNull()?.let { morph ->
-                    val morphColor = if (config.morphTagColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else config.morphTagColor
+                    val morphColor =
+                        if (config.morphTagColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else config.morphTagColor
                     Text(
                         text = morph,
                         fontSize = config.morphFontSize.sp,
