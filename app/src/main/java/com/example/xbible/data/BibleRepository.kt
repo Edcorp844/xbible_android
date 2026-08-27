@@ -9,9 +9,11 @@ import uniffi.xbible_engine.DictionaryResponse
 import uniffi.xbible_engine.LexiconQuery
 import uniffi.xbible_engine.LexiconResponse
 import uniffi.xbible_engine.ModuleBook
+import uniffi.xbible_engine.Period
 import uniffi.xbible_engine.Section
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.TaskStatus
+import uniffi.xbible_engine.TimelineData
 import uniffi.xbible_engine.XBibleEngine
 import uniffi.xbible_engine.initLogging
 import java.io.File
@@ -134,6 +136,10 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     fun getSingleEntry(module: SwordModule, reference: String): List<Section> {
         return engine?.getSingleEntry(module, reference) ?: emptyList()
+    }
+
+    fun getTimelineData(): List<Period> {
+        return TimelineData().use { it.getData() }
     }
 
     // Add more methods here as needed to wrap XBibleEngine functionality

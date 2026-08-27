@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.coil.compose)
     // Using the Android AAR version of JNA which is 16KB page aligned.
     implementation("net.java.dev.jna:jna:5.19.1@aar")
     implementation(libs.kotlinx.coroutines.core)

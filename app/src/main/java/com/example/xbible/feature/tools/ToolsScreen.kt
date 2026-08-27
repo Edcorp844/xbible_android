@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -21,10 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -62,15 +64,22 @@ data class ToolItem(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ToolsScreen() {
-    val toolsList = listOf(
-        ToolItem(1, R.string.advanced_search, R.string.advanced_search_desc, XBibleIcons.TimeLine),
-        ToolItem(2, R.string.bookmarks_highlights, R.string.bookmarks_highlights_desc, Icons.Default.Bookmark),
-        ToolItem(3, R.string.reading_history, R.string.reading_history_desc, Icons.Default.History),
-        ToolItem(4, R.string.share_verses, R.string.share_verses_desc, Icons.Default.Share)
+fun ToolsScreen(
+    onNavigateToTimeline: () -> Unit
+) {
+    val studyAids = listOf(
+        ToolItem(1, R.string.timeline, R.string.timeline_desc, XBibleIcons.TimeLine),
+        ToolItem(5, R.string.biblical_maps, R.string.biblical_maps_desc, Icons.Default.Map)
     )
-
-    val count = toolsList.size
+    
+    val personalTools = listOf(
+        ToolItem(4, R.string.reading_plans, R.string.reading_plans_desc, Icons.AutoMirrored.Filled.Assignment),
+        ToolItem(3, R.string.notes, R.string.notes_desc, XBibleIcons.Notes)
+    )
+    
+    val mediaTools = listOf(
+        ToolItem(2, R.string.audio_bible, R.string.audio_bible_desc, Icons.Default.Headphones)
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -99,44 +108,73 @@ fun ToolsScreen() {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             
-            SectionTitle(stringResource(R.string.study_aids))
+            ToolSection(
+                title = stringResource(R.string.study_aids),
+                items = studyAids,
+                onNavigateToTimeline = onNavigateToTimeline
+            )
 
-            toolsList.forEachIndexed { index, tool ->
-                SegmentedListItem(
-                    onClick = { /* Handle click */ },
-                    shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
-                    colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                    leadingContent = { 
-                        SegmentIcon(tool.icon)
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outline
-                        )
-                    },
-                    supportingContent = { Text(stringResource(tool.descriptionRes)) }
-                ) {
-                    Text(stringResource(tool.titleRes), fontWeight = FontWeight.Bold)
-                }
-            }
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            SectionTitle(stringResource(R.string.general))
+            ToolSection(
+                title = stringResource(R.string.personal),
+                items = personalTools,
+                onNavigateToTimeline = onNavigateToTimeline
+            )
 
-            SegmentedListItem(
-                onClick = { /* Handle click */ },
-                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
-                colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                leadingContent = { SegmentIcon(Icons.Default.Share) }, 
-                supportingContent = { Text(stringResource(R.string.settings_tool_desc)) }
-            ) {
-                Text(stringResource(R.string.settings), fontWeight = FontWeight.Bold)
-            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            ToolSection(
+                title = stringResource(R.string.media),
+                items = mediaTools,
+                onNavigateToTimeline = onNavigateToTimeline
+            )
             
             Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ToolSection(
+    title: String,
+    items: List<ToolItem>,
+    onNavigateToTimeline: () -> Unit
+) {
+    SectionTitle(title)
+    val count = items.size
+    items.forEachIndexed { index, tool ->
+        SegmentedListItem(
+            onClick = { 
+                if (tool.id == 1) onNavigateToTimeline()
+            },
+            modifier = Modifier.height(IntrinsicSize.Min),
+            shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+            colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            leadingContent = { 
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    SegmentIcon(tool.icon)
+                }
+            },
+            trailingContent = {
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline
+                    )
+                }
+            },
+            supportingContent = { Text(stringResource(tool.descriptionRes)) }
+        ) {
+            Text(stringResource(tool.titleRes), fontWeight = FontWeight.Bold)
         }
     }
 }

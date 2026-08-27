@@ -57,17 +57,21 @@
     <string name="no_installed_modules_found">No installed modules found</string>
 
     <!-- Tools Screen -->
-    <string name="bible_tools">Bible Tools</string>
+    <string name="bible_tools">Tools</string>
     <string name="study_aids">Study Aids</string>
+    <string name="personal">Personal</string>
+    <string name="media">Media</string>
     <string name="general">General</string>
-    <string name="advanced_search">Advanced Search</string>
-    <string name="advanced_search_desc">Find specific words, phrases, or topics instantly.</string>
-    <string name="bookmarks_highlights">Bookmarks &amp; Highlights</string>
-    <string name="bookmarks_highlights_desc">Access your saved verses and personalized notes.</string>
-    <string name="reading_history">Reading History</string>
-    <string name="reading_history_desc">Pick up right where you left off in your study.</string>
-    <string name="share_verses">Share Verses</string>
-    <string name="share_verses_desc">Create and export beautiful verse images for social media.</string>
+    <string name="timeline">Timeline</string>
+    <string name="timeline_desc">Explore biblical events in chronological order.</string>
+    <string name="audio_bible">Audio Bible</string>
+    <string name="audio_bible_desc">Listen to the Word of God anytime, anywhere.</string>
+    <string name="notes">Notes</string>
+    <string name="notes_desc">Keep track of your thoughts and study reflections.</string>
+    <string name="reading_plans">Reading Plans</string>
+    <string name="reading_plans_desc">Stay consistent with structured Bible reading schedules.</string>
+    <string name="biblical_maps">Biblical Maps</string>
+    <string name="biblical_maps_desc">Visualize the geography of scriptural events and journeys.</string>
     <string name="settings_tool_desc">Configure app preferences and appearance.</string>
 
     <!-- Components -->

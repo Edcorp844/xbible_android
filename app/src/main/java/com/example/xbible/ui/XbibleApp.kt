@@ -24,6 +24,7 @@ import com.example.xbible.feature.library.LibraryScreen
 import com.example.xbible.feature.store.StoreScreen
 import com.example.xbible.feature.study.StudyScreen
 import com.example.xbible.feature.tools.ToolsScreen
+import com.example.xbible.feature.tools.timeline.TimelineScreen
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.EngineViewModel
 
@@ -49,7 +50,7 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
             navigationRailContainerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         navigationSuiteItems = {
-            AppDestinations.entries.forEach { destination ->
+            AppDestinations.entries.filter { it.showInNav }.forEach { destination ->
                 item(
                     icon = {
                         Icon(
@@ -84,11 +85,17 @@ fun MainContent(
         when (destination) {
             AppDestinations.STUDY -> StudyScreen(engineViewModel = engineViewModel, onNavigateToStore = { onNavigate(AppDestinations.STORE) })
             AppDestinations.STORE -> StoreScreen()
-            AppDestinations.TOOLS -> ToolsScreen()
+            AppDestinations.TOOLS -> ToolsScreen(onNavigateToTimeline = { onNavigate(AppDestinations.TIMELINE) })
             AppDestinations.LIBRARY -> LibraryScreen(
                 onOpenModule = { module ->
                     engineViewModel.selectModule(module)
                     onNavigate(AppDestinations.STUDY)
+                }
+            )
+            AppDestinations.TIMELINE -> TimelineScreen(
+                onBack = { onNavigate(AppDestinations.TOOLS) },
+                onEventClick = { event ->
+                    // Handle event click - navigate to study or show info
                 }
             )
         }
@@ -97,10 +104,12 @@ fun MainContent(
 
 enum class AppDestinations(
     val labelRes: Int,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val showInNav: Boolean = true
 ) {
     STUDY(R.string.study, XBibleIcons.Study),
     STORE(R.string.store, XBibleIcons.Store),
     TOOLS(R.string.tools, XBibleIcons.Tools),
     LIBRARY(R.string.library, XBibleIcons.Library),
+    TIMELINE(R.string.timeline, XBibleIcons.TimeLine, showInNav = false),
 }
