@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.xbible.R
@@ -95,7 +96,8 @@ fun LibraryScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.library_title)) },
+                title = { Text(stringResource(R.string.library_title), style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold) },
                 actions = {
                     if (showAppBarSearch) {
                         IconButton(onClick = {

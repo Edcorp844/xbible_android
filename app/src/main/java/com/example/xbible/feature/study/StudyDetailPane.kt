@@ -146,8 +146,14 @@ fun StudyToolPicker(
                                         checked = isSelected,
                                         onCheckedChange = { if (it) onTabSelected(tool) },
                                         shapes = shapes,
-                                        modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                                        modifier = Modifier.defaultMinSize(
+                                            minWidth = 1.dp,
+                                            minHeight = 1.dp
+                                        ),
+                                        contentPadding = PaddingValues(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        )
                                     ) {
                                         Text(
                                             text = tool.name,
@@ -381,7 +387,8 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                        ?: selectedModule?.name ?: stringResource(R.string.select_lexicon),
+                                        ?: selectedModule?.name
+                                        ?: stringResource(R.string.select_lexicon),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall)
@@ -455,7 +462,11 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.no_lexicon_entries_found, selectedStrongs, selectedModule?.name ?: ""),
+                    text = stringResource(
+                        R.string.no_lexicon_entries_found,
+                        selectedStrongs,
+                        selectedModule?.name ?: ""
+                    ),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -570,7 +581,8 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                        ?: selectedModule?.name ?: stringResource(R.string.select_commentary),
+                                        ?: selectedModule?.name
+                                        ?: stringResource(R.string.select_commentary),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         style = MaterialTheme.typography.labelSmall)
@@ -583,9 +595,16 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                             }
                             DropdownMenu(
                                 expanded = showModuleMenu,
-                                onDismissRequest = { showModuleMenu = false }) {
+                                onDismissRequest = { showModuleMenu = false },
+                                shape = RoundedCornerShape(24.dp)
+                            ) {
                                 availableCommentaries.forEach { module ->
                                     DropdownMenuItem(
+                                        contentPadding = PaddingValues(
+                                            start = 16.dp,
+                                            end = 16.dp,
+                                            top = 16.dp
+                                        ),
                                         text = { Text(module.description.ifEmpty { module.name }) },
                                         onClick = {
                                             engineViewModel.selectCommentaryModule(module); showModuleMenu =
@@ -647,7 +666,10 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                                 modifier = Modifier.size(12.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.copy), style = MaterialTheme.typography.labelSmall)
+                            Text(
+                                stringResource(R.string.copy),
+                                style = MaterialTheme.typography.labelSmall
+                            )
                         }
                     }
                 }
@@ -669,7 +691,11 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.no_commentary_found, currentReference, selectedModule?.name ?: ""),
+                    text = stringResource(
+                        R.string.no_commentary_found,
+                        currentReference,
+                        selectedModule?.name ?: ""
+                    ),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.outline
                 )

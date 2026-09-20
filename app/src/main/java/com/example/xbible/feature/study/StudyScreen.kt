@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -528,20 +529,20 @@ fun StudyScreen(
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    horizontalArrangement = Arrangement.End,//Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = when {
-                                            showModuleSelection -> stringResource(R.string.bible_selection)
-                                            showSearchSettings -> stringResource(R.string.search_settings)
-                                            showFontSettings -> stringResource(R.string.text_settings)
-                                            showParallelMode -> stringResource(R.string.parallel_display)
-                                            else -> stringResource(R.string.reference_picker)
-                                        },
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
+//                                    Text(
+//                                        text = when {
+//                                            showModuleSelection -> stringResource(R.string.bible_selection)
+//                                            showSearchSettings -> stringResource(R.string.search_settings)
+//                                            showFontSettings -> stringResource(R.string.text_settings)
+//                                            showParallelMode -> stringResource(R.string.parallel_display)
+//                                            else -> stringResource(R.string.reference_picker)
+//                                        },
+//                                        style = MaterialTheme.typography.titleMedium,
+//                                        fontWeight = FontWeight.Bold
+//                                    )
                                     IconButton(onClick = {
                                         showModuleSelection = false
                                         showReferencePicker = false
