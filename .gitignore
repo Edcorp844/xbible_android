@@ -16,3 +16,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/jni/arm64-v8a/*.so
+/app/src/main/jni/x86_64/*.so
