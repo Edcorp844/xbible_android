@@ -2,6 +2,7 @@ package com.example.xbible.feature.tools.audiobible
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -70,7 +71,7 @@ fun AudioBiblePlayerScreen(
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
+                                Icons.Default.KeyboardArrowDown,
                                 contentDescription = "Back",
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
@@ -99,14 +100,14 @@ fun AudioBiblePlayerScreen(
                         .padding(padding)
                         .padding(horizontal = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center // <--- Centers everything!
+                    verticalArrangement = Arrangement.Center
                 ) {
 
                     // 1. Large Artwork
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f, fill = false) // Allows it to shrink if screen is too small
+                            .weight(1f, fill = false)
                             .aspectRatio(1f)
                             .padding(vertical = 16.dp),
                         contentAlignment = Alignment.Center
@@ -117,7 +118,7 @@ fun AudioBiblePlayerScreen(
                                 contentDescription = "Album Art",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .fillMaxWidth(0.85f) // Slightly larger since we have more room now
+                                    .fillMaxWidth(0.85f)
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(20.dp))
                             )
@@ -168,14 +169,6 @@ fun AudioBiblePlayerScreen(
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-
-                        IconButton(onClick = { /* TODO: Favorite */ }) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = "Favorite",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
@@ -190,7 +183,8 @@ fun AudioBiblePlayerScreen(
                     var isDragging by remember { mutableStateOf(false) }
 
                     if (!isDragging) {
-                        val targetValue = (currentTimeMs.toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
+                        val targetValue =
+                            (currentTimeMs.toFloat() / durationMs.toFloat()).coerceIn(0f, 1f)
                         sliderState.value = targetValue
                     }
 
@@ -245,7 +239,7 @@ fun AudioBiblePlayerScreen(
                             onClick = { viewModel.skipBackward() },
                             modifier = Modifier.size(64.dp),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                containerColor = MaterialTheme.colorScheme.surfaceDim,
                                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         ) {
@@ -288,7 +282,7 @@ fun AudioBiblePlayerScreen(
                             onClick = { viewModel.skipForward() },
                             modifier = Modifier.size(64.dp),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                containerColor = MaterialTheme.colorScheme.surfaceDim,
                                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         ) {
@@ -298,6 +292,74 @@ fun AudioBiblePlayerScreen(
                                 modifier = Modifier.size(28.dp)
                             )
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // 5. Bottom Action Bar (Lyrics, Cast)
+                    // ... (rest of the file remains the same until the bottom action bar) ...
+
+                    // 5. Bottom Action Bar (Lyrics, Cast)
+                    // The Wrapping Background Container
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(28.dp)) // Outer container very rounded
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp), // Space between buttons
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Individual Button 1 (Lyrics)
+                        Box(
+                            modifier = Modifier
+                                .width(100.dp) // Increased length
+                                .height(50.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 20.dp,    // Very rounded outer left
+                                        bottomStart = 20.dp, // Very rounded outer left
+                                        topEnd = 8.dp,      // Slightly less rounded inner right
+                                        bottomEnd = 8.dp    // Slightly less rounded inner right
+                                    )
+                                )
+                                .background(MaterialTheme.colorScheme.surface) // Inner lighter background
+                                .clickable { /* TODO: Open Lyrics */ },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Lyrics,
+                                contentDescription = "Lyrics",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        // Individual Button 2 (Cast)
+                        Box(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(50.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 8.dp,
+                                        bottomStart = 8.dp,
+                                        topEnd = 20.dp,
+                                        bottomEnd = 20.dp
+                                    )
+                                )
+                                .background(MaterialTheme.colorScheme.surface)
+                                .clickable { /* TODO: Cast */ },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Cast,
+                                contentDescription = "Cast",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
             }

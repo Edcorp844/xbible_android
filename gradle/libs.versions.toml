@@ -34,6 +34,7 @@ mockk = "1.14.11"
 jna = "5.19.1"
 material = "1.14.0"
 media3 = "1.11.1"
+mediarouter = "1.8.1"
 
 [libraries]
 # Core & Lifecycle
@@ -84,6 +85,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
+androidx-mediarouter = { group = "androidx.mediarouter", name = "mediarouter", version.ref = "mediarouter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

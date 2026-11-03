@@ -2,21 +2,28 @@ package com.example.xbible.viewmodel
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
+import android.content.ComponentName
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
-import android.os.Build
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xbible.core.audio.AudioBiblePlayer
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.example.xbible.core.audio.PlaybackService
 import com.example.xbible.data.AudioBibleRepository
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uniffi.xbible_engine.AudioModuleInfo
 import uniffi.xbible_engine.AudioNode
@@ -102,10 +109,71 @@ class AudioBibleViewModel @Inject constructor(
 
     private var internalPlaybackState: PlaybackState? = null
     private var flattenedChaptersCache: List<AudioNode> = emptyList()
-    private var player: AudioBiblePlayer? = null
 
-    private var audioFocusRequest: AudioFocusRequest? = null
-    private var legacyFocusListener: AudioManager.OnAudioFocusChangeListener? = null
+    private var mediaController: MediaController? = null
+    private var controllerFuture: ListenableFuture<MediaController>? = null
+    private var timeUpdateJob: Job? = null
+
+    init {
+        audioRepo.initialize()
+        connectToService()
+    }
+
+    private fun connectToService() {
+        val sessionToken = SessionToken(
+            getApplication(),
+            ComponentName(getApplication(), PlaybackService::class.java)
+        )
+        controllerFuture = MediaController.Builder(getApplication(), sessionToken).buildAsync()
+        controllerFuture?.addListener({
+            try {
+                mediaController = controllerFuture?.get()
+                setupMediaControllerListener()
+                startTimeSync()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to connect to PlaybackService", e)
+            }
+        }, MoreExecutors.directExecutor())
+    }
+
+    private fun setupMediaControllerListener() {
+        mediaController?.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                _isPlaying.value = isPlaying
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    _isLoading.value = false
+                }
+                if (playbackState == Player.STATE_ENDED) {
+                    _isPlaying.value = false
+                }
+            }
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                mediaItem?.mediaMetadata?.title?.let {
+                    if (it.isNotEmpty() && it != "Unknown Title") {
+                        _currentActiveTitle.value = it.toString()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun startTimeSync() {
+        timeUpdateJob?.cancel()
+        timeUpdateJob = viewModelScope.launch {
+            while (true) {
+                delay(50)
+                mediaController?.let { controller ->
+                    _currentTimeMs.value = controller.currentPosition
+                    audioRepo.seekToTime(controller.currentPosition)
+                    syncActiveChapter(controller.currentPosition)
+                }
+            }
+        }
+    }
 
     val availableModules: List<AudioModuleInfo>
         get() = audioRepo.getAudioModules()
@@ -169,61 +237,7 @@ class AudioBibleViewModel @Inject constructor(
     val unorganizedModules: List<AudioModuleInfo>
         get() = availableModules.filter { it.metadata?.organization == null }
 
-    init {
-        audioRepo.initialize()
-        setupAudioFocus()
-    }
-
-    private fun setupAudioFocus() {
-        val context = getApplication<Application>()
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-        val focusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-            when (focusChange) {
-                AudioManager.AUDIOFOCUS_LOSS,
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                    player?.pause()
-                    _isPlaying.value = false
-                }
-                AudioManager.AUDIOFOCUS_GAIN -> { /* optionally resume */ }
-            }
-        }
-
-        val playbackAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-            .build()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setAudioAttributes(playbackAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener(focusChangeListener)
-                .build()
-        } else {
-            legacyFocusListener = focusChangeListener
-        }
-    }
-
-    private fun requestAudioFocus(): Boolean {
-        val context = getApplication<Application>()
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager.requestAudioFocus(audioFocusRequest!!) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-        } else {
-            @Suppress("DEPRECATION")
-            audioManager.requestAudioFocus(
-                legacyFocusListener,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN
-            ) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-        }
-    }
-
     fun selectModule(module: AudioModuleInfo) {
-        requestAudioFocus()
-
         flattenedChaptersCache = emptyList()
         _selectedNodeId.value = null
         _selectedNodeTitle.value = null
@@ -233,12 +247,10 @@ class AudioBibleViewModel @Inject constructor(
         _currentTimeMs.value = 0
         _activeText.value = ""
 
-        // 1. Decode Artwork AND extract colors from the Rust image bytes
         module.artwork.imageBytes()?.let { data ->
             val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
             _decodedArtwork.value = bitmap
 
-            // EXTRACT COLORS using the same logic as the Store
             try {
                 val artwork = module.artwork
                 val colors = artwork.extractColors(4u)
@@ -252,12 +264,9 @@ class AudioBibleViewModel @Inject constructor(
                         (a shl 24) or (r shl 16) or (g shl 8) or b
                     }
                     _backgroundGradientColors.value = extractedLongs
-                    Log.d(TAG, "🎨 Extracted colors from Rust: $extractedLongs")
-                } else {
-                    Log.w(TAG, "🎨 Rust returned 0 colors for ${module.fileName}")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "🎨 Failed to extract colors", e)
+                Log.e(TAG, "Failed to extract colors", e)
             }
         }
 
@@ -273,79 +282,59 @@ class AudioBibleViewModel @Inject constructor(
             return
         }
 
-        Log.d(TAG, "🎵 Found module at: ${finalURL.path}")
+        Log.d(TAG, "🎵 Loading module at: ${finalURL.path}")
 
-        player?.release()
+        // FIX: RequestMetadata is the only reliable way to pass the file URI
+        // across the IPC boundary from a MediaController to the MediaSessionService.
+        val mediaItem = MediaItem.Builder()
+            .setUri(Uri.fromFile(finalURL))
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle(module.metadata?.displayTitle ?: module.fileName)
+                    .setArtist(module.metadata?.contributor ?: "Unknown Artist")
+                    .build()
+            )
+            .setRequestMetadata(
+                MediaItem.RequestMetadata.Builder()
+                    .setMediaUri(Uri.fromFile(finalURL))
+                    .build()
+            )
+            .build()
 
-        val newPlayer = AudioBiblePlayer(
-            context = getApplication(),
-            moduleFilePath = finalURL.path,
-            audioRepo = audioRepo
-        )
-        player = newPlayer
+        mediaController?.setMediaItem(mediaItem)
+        mediaController?.prepare()
+        mediaController?.play()
 
         loadAndCacheNavigationTree()
-        setupStateListener()
-
         _isLoading.value = false
     }
 
-    private fun setupStateListener() {
-        viewModelScope.launch {
-            player?.playbackState
-                ?.filterNotNull()
-                ?.collect { state ->
-                    internalPlaybackState = state
-
-                    // KEY FIX: always publish time, not gated by isFullPlayerVisible
-                    _currentTimeMs.value = state.currentTimeMs
-                    _activeText.value = state.activeText
-
-                    if (_isPlaying.value != state.isPlaying) {
-                        _isPlaying.value = state.isPlaying
-                    }
-                    syncActiveChapter(state.currentTimeMs)
-                }
-        }
-    }
-
     fun togglePlayback() {
-        val p = player ?: return
-        if (_isPlaying.value) {
-            p.pause()
-            _isPlaying.value = false
-        } else {
-            p.play()
-            _isPlaying.value = true
-        }
-        audioRepo.getPlaybackState()?.let {
-            internalPlaybackState = it
-            _isPlaying.value = it.isPlaying
-        }
+        val controller = mediaController ?: return
+        if (controller.isPlaying) controller.pause() else controller.play()
     }
 
     fun skipForward() {
-        val p = player ?: return
+        val controller = mediaController ?: return
         val duration = _selectedModule.value?.metadata?.durationMs ?: Long.MAX_VALUE
-        val target = minOf(_currentTimeMs.value + forwardSkipMs, duration)
+        val target = minOf(controller.currentPosition + forwardSkipMs, duration)
+        controller.seekTo(target)
         _currentTimeMs.value = target
         syncActiveChapter(target)
-        p.seekTo(target)
     }
 
     fun skipBackward() {
-        val p = player ?: return
-        val target = maxOf(0L, _currentTimeMs.value - backwardSkipMs)
+        val controller = mediaController ?: return
+        val target = maxOf(0L, controller.currentPosition - backwardSkipMs)
+        controller.seekTo(target)
         _currentTimeMs.value = target
         syncActiveChapter(target)
-        p.seekTo(target)
     }
 
     fun seekToTime(ms: Long) {
-        val p = player ?: return
+        mediaController?.seekTo(ms)
         _currentTimeMs.value = ms
         syncActiveChapter(ms)
-        p.seekTo(ms)
     }
 
     fun seekToChapter(id: String) {
@@ -359,16 +348,17 @@ class AudioBibleViewModel @Inject constructor(
         _activeText.value = ""
 
         audioRepo.seekToChapter(chapterId = id)
-        player?.seekTo(startMs)
+        mediaController?.seekTo(startMs)
     }
 
     fun stopPlayback() {
-        player?.stop()
+        mediaController?.stop()
+        mediaController?.clearMediaItems()
         _selectedModule.value = null
         _isPlaying.value = false
         _currentTimeMs.value = 0
         _activeText.value = ""
-        audioRepo.getPlaybackState()?.let { internalPlaybackState = it }
+        audioRepo.stop()
     }
 
     fun setRepeatMode(mode: RepeatMode) {
@@ -417,15 +407,8 @@ class AudioBibleViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        player?.release()
-        val audioManager = getApplication<Application>()
-            .getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
-        } else {
-            @Suppress("DEPRECATION")
-            legacyFocusListener?.let { audioManager.abandonAudioFocus(it) }
-        }
+        timeUpdateJob?.cancel()
+        controllerFuture?.let { MediaController.releaseFuture(it) }
+        mediaController = null
     }
 }

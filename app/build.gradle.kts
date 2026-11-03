@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
+    implementation(libs.androidx.mediarouter)
     implementation("${libs.jna.get()}@aar")
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit)
