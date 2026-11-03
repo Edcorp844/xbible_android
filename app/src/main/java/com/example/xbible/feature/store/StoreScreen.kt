@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ButtonGroup
@@ -48,14 +49,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -85,37 +91,36 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun StoreScreen(
-    viewModel: StoreViewModel = hiltViewModel()
+    viewModel: StoreViewModel = hiltViewModel(),
+    onOpenAudioStore: (() -> Unit)? = null,
 ) {
+    var showAudioStore by remember { mutableStateOf(false) }
+
+    if (showAudioStore) {
+        AudioStoreScreen(
+            onExitToStudy = { showAudioStore = false }
+        )
+        return
+    }
+
     val isLoading by viewModel.isLoading.collectAsState()
-    val organizedModules by viewModel.organizedModules.collectAsState()
-    val installationStates by viewModel.installationStates.collectAsState()
-    val categories by viewModel.categories.collectAsState()
+    val filteredLanguages by viewModel.filteredLanguages.collectAsState()
+    val availableCategories by viewModel.availableCategories.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
     val remoteSources by viewModel.remoteSources.collectAsState()
     val selectedSource by viewModel.selectedSource.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    var selectedCategory by remember { mutableStateOf("") }
     var expandedLanguages by remember { mutableStateOf(setOf<String>()) }
     var showSourceDropdown by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Show search button in app bar if the primary search bar (item 0) is scrolled off
     val showAppBarSearch by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex > 0
-        }
-    }
-
-    // Auto-select first category when loaded or list changes
-    androidx.compose.runtime.LaunchedEffect(categories) {
-        if (categories.isNotEmpty() && (selectedCategory.isEmpty() || !categories.contains(
-                selectedCategory
-            ))
-        ) {
-            selectedCategory = categories.first()
         }
     }
 
@@ -141,33 +146,48 @@ fun StoreScreen(
                             Icon(Icons.Default.Search, contentDescription = stringResource(R.string.scroll_to_search))
                         }
                     }
-                    Box {
-                        SplitButtonLayout(
-                            leadingButton = {
-                                SplitButtonDefaults.ElevatedLeadingButton(
-                                    onClick = { }
-                                ) {
-                                    Text(
-                                        text = selectedSource ?: stringResource(R.string.source),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            },
-                            trailingButton = {
-                                SplitButtonDefaults.ElevatedTrailingButton(
-                                    checked = showSourceDropdown,
-                                    onCheckedChange = {
-                                        showSourceDropdown = it
-                                    }
-                                ) {
-                                    Icon(
-                                        Icons.Outlined.KeyboardArrowDown,
-                                        contentDescription = stringResource(R.string.source)
-                                    )
-                                }
+                    TooltipBox(
+                        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                        tooltip = {
+                            PlainTooltip {
+                                Text("Audio Store")
                             }
-                        )
+                        },
+                        state = rememberTooltipState()
+                    ) {
+                        IconButton(onClick = {
+                            onOpenAudioStore?.invoke() ?: run { showAudioStore = true }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Headphones,
+                                contentDescription = "Audio Store"
+                            )
+                        }
+                    }
+                    Box {
+                        SplitButtonLayout(leadingButton = {
+                            SplitButtonDefaults.ElevatedLeadingButton(
+                                onClick = { }
+                            ) {
+                                Text(
+                                    text = selectedSource ?: stringResource(R.string.source),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }, trailingButton = {
+                            SplitButtonDefaults.ElevatedTrailingButton(
+                                checked = showSourceDropdown,
+                                onCheckedChange = {
+                                    showSourceDropdown = it
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Outlined.KeyboardArrowDown,
+                                    contentDescription = stringResource(R.string.source)
+                                )
+                            }
+                        }, modifier = Modifier, spacing = SplitButtonDefaults.Spacing)
                     }
                     DropdownMenu(
                         expanded = showSourceDropdown,
@@ -185,19 +205,17 @@ fun StoreScreen(
                                     )
                                 },
                                 onClick = {
-                                    viewModel.selectSource(source)
                                     showSourceDropdown = false
-                                    selectedCategory = "" // Reset category selection for new source
+                                    // VM resets search + category internally in selectSource()
+                                    viewModel.selectSource(source)
                                 },
                                 leadingIcon = {
-                                    // M3 UX Expressive Guidelines: Use leading icons to visually confirm selected status
                                     if (isSelected) {
                                         Icon(
                                             imageVector = Icons.Outlined.Check,
                                             contentDescription = stringResource(R.string.selected_item)
                                         )
                                     } else {
-                                        // Provides consistent spacing/alignment for unselected items
                                         Spacer(modifier = Modifier.size(24.dp))
                                     }
                                 },
@@ -212,8 +230,6 @@ fun StoreScreen(
             )
         }
     ) { innerPadding ->
-        val languages = organizedModules[selectedCategory] ?: emptyMap()
-        
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -249,20 +265,19 @@ fun StoreScreen(
                 )
             }
 
-            // Item 1: Sticky Category Tab Bar
+            // Item 1: Sticky Category Tab Bar — look unchanged
             stickyHeader {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     CategoryTabBar(
-                        categories = categories,
+                        categories = availableCategories,
                         selectedCategory = selectedCategory,
                         onCategorySelected = {
-                            selectedCategory = it
+                            viewModel.setCategory(it)
                             expandedLanguages = emptySet()
                             coroutineScope.launch {
-                                // Scroll to just below search bar when category changes
                                 if (listState.firstVisibleItemIndex > 1) {
                                     listState.scrollToItem(1)
                                 }
@@ -272,18 +287,18 @@ fun StoreScreen(
                 }
             }
 
-            if (isLoading && organizedModules.isEmpty()) {
+            if (isLoading && filteredLanguages.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
                             .fillParentMaxSize()
-                            .padding(bottom = 100.dp), 
+                            .padding(bottom = 100.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         LoadingIndicator()
                     }
                 }
-            } else if (organizedModules[selectedCategory]?.isEmpty() != false && !isLoading) {
+            } else if (filteredLanguages.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
@@ -305,8 +320,8 @@ fun StoreScreen(
                     }
                 }
             } else {
-                languages.keys.sorted().forEach { langCode ->
-                    val modules = languages[langCode] ?: emptyList()
+                filteredLanguages.keys.sorted().forEach { langCode ->
+                    val modules = filteredLanguages[langCode] ?: emptyList()
                     val isExpanded = true
 
                     item(key = "header_$langCode") {
@@ -332,8 +347,7 @@ fun StoreScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 items(modules) { module ->
-                                    val status = installationStates[module.name]
-                                        ?: InstallationStatus.Idle
+                                    val status = viewModel.statusFor(module)
                                     BookCardView(
                                         module = module,
                                         status = status,
@@ -380,4 +394,3 @@ private fun handleModuleAction(
         }
     }
 }
-

@@ -109,6 +109,7 @@ fun PageViewPreview() {
                             ), emptyList(), false
                         )
                     ),
+                    notes = emptyList(),
                     textDirection = TextDirection.LTR
                 )
             )

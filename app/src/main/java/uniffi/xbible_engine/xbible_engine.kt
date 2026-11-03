@@ -653,6 +653,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_audioengine_get_module_artwork(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_audioengine_get_playback_state(
@@ -677,19 +679,77 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_album(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums_by_collection(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collection(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_by_language(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_with_albums(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributor(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors_by_role(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_language(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages_with_collections(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_narrators_for_collection(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_album(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums_by_collection(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collection(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_by_language(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_with_albums(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributor(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors_by_role(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_language(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages_with_collections(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog(
     ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_client(
-    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_install_module(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_is_module_installed(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_audio_modules(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_installed_modules(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_artwork_extract_colors(
     ): Int
@@ -728,6 +788,10 @@ internal object IntegrityCheckingUniffiLib {
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_genearl_book_content(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_general_book_structure(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules(
     ): Int
@@ -835,6 +899,8 @@ external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules(`ptr`:
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_audioengine_get_module_artwork(`ptr`: Long,`filePath`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_audioengine_get_navigation_tree(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_audioengine_get_playback_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -863,9 +929,37 @@ external fun uniffi_xbible_engine_fn_free_storeapiclient(`handle`: Long,uniffi_o
 ): Unit
 external fun uniffi_xbible_engine_fn_constructor_storeapiclient_new(`endpointUrl`: RustBuffer.ByValue,`authToken`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(`ptr`: Long,`module`: RustBuffer.ByValue,`targetDirPath`: RustBuffer.ByValue,`progressListener`: Long,
+external fun uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(`ptr`: Long,`module`: RustBuffer.ByValue,`modulesRootPath`: RustBuffer.ByValue,`location`: RustBuffer.ByValue,`collection`: RustBuffer.ByValue,`album`: RustBuffer.ByValue,`contributor`: RustBuffer.ByValue,`progressListener`: Long,
 ): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(`ptr`: Long,
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_album(`ptr`: Long,`id`: RustBuffer.ByValue,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums_by_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collection(`ptr`: Long,`id`: RustBuffer.ByValue,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_by_language(`ptr`: Long,`code`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_with_albums(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributor(`ptr`: Long,`id`: RustBuffer.ByValue,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors_by_role(`ptr`: Long,`role`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_language(`ptr`: Long,`id`: RustBuffer.ByValue,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages_with_collections(`ptr`: Long,`first`: Int,`skip`: Int,
+): Long
+external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_narrators_for_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_xbible_engine_fn_clone_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -881,15 +975,45 @@ external fun uniffi_xbible_engine_fn_free_storeapiservice(`handle`: Long,uniffi_
 ): Unit
 external fun uniffi_xbible_engine_fn_constructor_storeapiservice_new(uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_album(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums_by_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collection(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_by_language(`ptr`: Long,`code`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_with_albums(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributor(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors_by_role(`ptr`: Long,`role`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_language(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages_with_collections(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_storeapiservice_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_storeapiservice_get_cached_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_get_client(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
 external fun uniffi_xbible_engine_fn_method_storeapiservice_install_module(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`progressListener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_is_module_installed(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`version`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_storeapiservice_load_audio_modules(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_storeapiservice_load_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_storeapiservice_load_installed_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_clone_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -940,6 +1064,10 @@ external fun uniffi_xbible_engine_fn_method_xbibleengine_get_dictionary_modules(
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_download_progress(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Double
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_essay_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_genearl_book_content(`ptr`: Long,`bookModule`: RustBuffer.ByValue,`node`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_get_general_book_structure(`ptr`: Long,`bookModule`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_glossary_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1125,22 +1253,25 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id() != 7264) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules() != 15262) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules() != 22482) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path() != 23605) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_module_artwork() != 25093) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree() != 50914) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_playback_state() != 62968) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_playback_state() != 14626) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_load_audio_module() != 7872) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata() != 43550) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata() != 41593) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter() != 12491) {
@@ -1149,28 +1280,109 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_time() != 33296) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode() != 57587) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode() != 34845) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_backward() != 51523) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_backward() != 31543) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_forward() != 56965) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_forward() != 40871) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_stop() != 3892) {
+    if (lib.uniffi_xbible_engine_checksum_method_audioengine_stop() != 7988) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_audioengine_toggle_playback() != 54972) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module() != 4449) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module() != 38018) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules() != 13868) {
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_album() != 48753) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums() != 27310) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums_by_collection() != 40645) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules() != 39291) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collection() != 64733) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections() != 30236) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_by_language() != 59210) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_with_albums() != 40076) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributor() != 60714) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors() != 49760) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors_by_role() != 56129) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_language() != 31301) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages() != 63652) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages_with_collections() != 24062) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_narrators_for_collection() != 17321) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress() != 50095) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_album() != 12383) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums() != 47103) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums_by_collection() != 60008) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collection() != 59417) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections() != 49754) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_by_language() != 7686) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_with_albums() != 1697) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributor() != 55973) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors() != 26287) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors_by_role() != 62078) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_language() != 55210) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages() != 64140) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages_with_collections() != 44841) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path() != 17367) {
@@ -1179,13 +1391,19 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog() != 6199) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_client() != 56651) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
     if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_install_module() != 43943) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_is_module_installed() != 25678) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_audio_modules() != 60729) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog() != 18774) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_installed_modules() != 62599) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_artwork_extract_colors() != 50120) {
@@ -1245,6 +1463,12 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules() != 34865) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_genearl_book_content() != 34890) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_general_book_structure() != 62137) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules() != 34064) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1302,7 +1526,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules() != 7357) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search() != 37446) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search() != 60564) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search_modules() != 64541) {
@@ -2137,43 +2361,41 @@ public interface AudioEngineInterface {
     
     fun `findActiveNodeId`(`timeMs`: kotlin.Long): kotlin.String?
     
+    /**
+     * Walk the hierarchy root and return every stamped module.
+     * Unstamped archives are skipped — only app-blessed modules are visible.
+     */
     fun `getAudioModules`(): List<AudioModuleInfo>
     
     fun `getAudioModulesPath`(): kotlin.String
     
+    /**
+     * Read artwork bytes directly out of the archive.
+     * `kind` is "server" | "contributor" | "album".
+     */
+    fun `getModuleArtwork`(`filePath`: kotlin.String, `kind`: kotlin.String): kotlin.ByteArray
+    
     fun `getNavigationTree`(): AudioNode?
     
-    /**
-     * Unified state lookup pulling directly from current values managed inside Rust
-     */
     fun `getPlaybackState`(): PlaybackState?
     
     fun `loadAudioModule`(`filePath`: kotlin.String): kotlin.ByteArray
     
+    /**
+     * Read a single module's stamped metadata without loading audio.
+     */
     fun `peekModuleMetadata`(`filePath`: kotlin.String): ModuleMetadata
     
     fun `seekToChapter`(`chapterId`: kotlin.String)
     
     fun `seekToTime`(`targetMs`: kotlin.Long)
     
-    /**
-     * Assign alternate repeat constraints directly onto the system core
-     */
     fun `setRepeatMode`(`mode`: RepeatMode)
     
-    /**
-     * Backtracks cleanly by (seconds) seconds (seconds * 1,000 milliseconds) bounded at 0
-     */
     fun `skipBackward`(`seconds`: kotlin.Long)
     
-    /**
-     * Skips forward cleanly by (seconds) seconds ((seconds) * 1,000 milliseconds) capped to total duration
-     */
     fun `skipForward`(`seconds`: kotlin.Long)
     
-    /**
-     * Stop playback completely, resetting timestamps to 0 and dropping loaded audio references
-     */
     fun `stop`()
     
     fun `togglePlayback`()
@@ -2298,7 +2520,11 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     
 
-    override fun `getAudioModules`(): List<AudioModuleInfo> {
+    
+    /**
+     * Walk the hierarchy root and return every stamped module.
+     * Unstamped archives are skipped — only app-blessed modules are visible.
+     */override fun `getAudioModules`(): List<AudioModuleInfo> {
             return FfiConverterSequenceTypeAudioModuleInfo.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -2324,6 +2550,24 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     
 
+    
+    /**
+     * Read artwork bytes directly out of the archive.
+     * `kind` is "server" | "contributor" | "album".
+     */
+    @Throws(AudioEngineException::class)override fun `getModuleArtwork`(`filePath`: kotlin.String, `kind`: kotlin.String): kotlin.ByteArray {
+            return FfiConverterByteArray.lift(
+    callWithHandle {
+    uniffiRustCallWithError(AudioEngineException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_audioengine_get_module_artwork(
+        it,
+        FfiConverterString.lower(`filePath`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
     override fun `getNavigationTree`(): AudioNode? {
             return FfiConverterOptionalTypeAudioNode.lift(
     callWithHandle {
@@ -2337,10 +2581,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     }
     
 
-    
-    /**
-     * Unified state lookup pulling directly from current values managed inside Rust
-     */override fun `getPlaybackState`(): PlaybackState? {
+    override fun `getPlaybackState`(): PlaybackState? {
             return FfiConverterOptionalTypePlaybackState.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -2368,6 +2609,9 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     
 
     
+    /**
+     * Read a single module's stamped metadata without loading audio.
+     */
     @Throws(AudioEngineException::class)override fun `peekModuleMetadata`(`filePath`: kotlin.String): ModuleMetadata {
             return FfiConverterTypeModuleMetadata.lift(
     callWithHandle {
@@ -2405,10 +2649,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     
     
 
-    
-    /**
-     * Assign alternate repeat constraints directly onto the system core
-     */override fun `setRepeatMode`(`mode`: RepeatMode)
+    override fun `setRepeatMode`(`mode`: RepeatMode)
         = 
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -2420,10 +2661,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     
     
 
-    
-    /**
-     * Backtracks cleanly by (seconds) seconds (seconds * 1,000 milliseconds) bounded at 0
-     */override fun `skipBackward`(`seconds`: kotlin.Long)
+    override fun `skipBackward`(`seconds`: kotlin.Long)
         = 
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -2435,10 +2673,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     
     
 
-    
-    /**
-     * Skips forward cleanly by (seconds) seconds ((seconds) * 1,000 milliseconds) capped to total duration
-     */override fun `skipForward`(`seconds`: kotlin.Long)
+    override fun `skipForward`(`seconds`: kotlin.Long)
         = 
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -2450,10 +2685,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     
     
 
-    
-    /**
-     * Stop playback completely, resetting timestamps to 0 and dropping loaded audio references
-     */override fun `stop`()
+    override fun `stop`()
         = 
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -2613,9 +2845,37 @@ public object FfiConverterTypeAudioEngine: FfiConverter<AudioEngine, Long> {
 
 public interface StoreApiClientInterface {
     
-    suspend fun `downloadAndInstallModule`(`module`: RemoteAudioModuleInfo, `targetDirPath`: kotlin.String, `progressListener`: StoreDownloadProgressListener): kotlin.String
+    suspend fun `downloadAndInstallModule`(`module`: RemoteAudioModuleInfo, `modulesRootPath`: kotlin.String, `location`: ModuleLocation, `collection`: AudioCollection, `album`: AudioAlbum, `contributor`: AudioContributor?, `progressListener`: StoreDownloadProgressListener): kotlin.String
     
-    suspend fun `fetchAudioModules`(): List<RemoteAudioModuleInfo>
+    suspend fun `fetchAlbum`(`id`: kotlin.String): AudioAlbum
+    
+    suspend fun `fetchAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioAlbum>
+    
+    suspend fun `fetchAlbumsByCollection`(`collectionId`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioAlbum>
+    
+    suspend fun `fetchAudioModules`(`first`: kotlin.Int, `skip`: kotlin.Int): List<RemoteAudioModuleInfo>
+    
+    suspend fun `fetchCollection`(`id`: kotlin.String): AudioCollection
+    
+    suspend fun `fetchCollections`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection>
+    
+    suspend fun `fetchCollectionsByLanguage`(`code`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection>
+    
+    suspend fun `fetchCollectionsWithAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection>
+    
+    suspend fun `fetchContributor`(`id`: kotlin.String): AudioContributor
+    
+    suspend fun `fetchContributors`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioContributor>
+    
+    suspend fun `fetchContributorsByRole`(`role`: ContributorRole, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioContributor>
+    
+    suspend fun `fetchLanguage`(`id`: kotlin.String): AudioLanguage
+    
+    suspend fun `fetchLanguages`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioLanguage>
+    
+    suspend fun `fetchLanguagesWithCollections`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioLanguage>
+    
+    suspend fun `fetchNarratorsForCollection`(`collectionId`: kotlin.String): List<AudioContributor>
     
     companion object
 }
@@ -2727,12 +2987,12 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
     
     @Throws(StoreApiException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `downloadAndInstallModule`(`module`: RemoteAudioModuleInfo, `targetDirPath`: kotlin.String, `progressListener`: StoreDownloadProgressListener) : kotlin.String {
+    override suspend fun `downloadAndInstallModule`(`module`: RemoteAudioModuleInfo, `modulesRootPath`: kotlin.String, `location`: ModuleLocation, `collection`: AudioCollection, `album`: AudioAlbum, `contributor`: AudioContributor?, `progressListener`: StoreDownloadProgressListener) : kotlin.String {
         return uniffiRustCallAsync(
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(
                 uniffiHandle,
-                FfiConverterTypeRemoteAudioModuleInfo.lower(`module`),FfiConverterString.lower(`targetDirPath`),FfiConverterTypeStoreDownloadProgressListener.lower(`progressListener`),
+                FfiConverterTypeRemoteAudioModuleInfo.lower(`module`),FfiConverterString.lower(`modulesRootPath`),FfiConverterTypeModuleLocation.lower(`location`),FfiConverterTypeAudioCollection.lower(`collection`),FfiConverterTypeAudioAlbum.lower(`album`),FfiConverterOptionalTypeAudioContributor.lower(`contributor`),FfiConverterTypeStoreDownloadProgressListener.lower(`progressListener`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -2748,12 +3008,75 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
     
     @Throws(StoreApiException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `fetchAudioModules`() : List<RemoteAudioModuleInfo> {
+    override suspend fun `fetchAlbum`(`id`: kotlin.String) : AudioAlbum {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_album(
+                uniffiHandle,
+                FfiConverterString.lower(`id`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterTypeAudioAlbum.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioAlbum> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums(
+                uniffiHandle,
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioAlbum.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchAlbumsByCollection`(`collectionId`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioAlbum> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums_by_collection(
+                uniffiHandle,
+                FfiConverterString.lower(`collectionId`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioAlbum.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchAudioModules`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<RemoteAudioModuleInfo> {
         return uniffiRustCallAsync(
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(
                 uniffiHandle,
-                
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -2761,6 +3084,237 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
         // lift function
         { FfiConverterSequenceTypeRemoteAudioModuleInfo.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchCollection`(`id`: kotlin.String) : AudioCollection {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collection(
+                uniffiHandle,
+                FfiConverterString.lower(`id`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterTypeAudioCollection.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchCollections`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioCollection> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections(
+                uniffiHandle,
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioCollection.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchCollectionsByLanguage`(`code`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioCollection> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_by_language(
+                uniffiHandle,
+                FfiConverterString.lower(`code`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioCollection.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchCollectionsWithAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioCollection> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_with_albums(
+                uniffiHandle,
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioCollection.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchContributor`(`id`: kotlin.String) : AudioContributor {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributor(
+                uniffiHandle,
+                FfiConverterString.lower(`id`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterTypeAudioContributor.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchContributors`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioContributor> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors(
+                uniffiHandle,
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioContributor.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchContributorsByRole`(`role`: ContributorRole, `first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioContributor> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors_by_role(
+                uniffiHandle,
+                FfiConverterTypeContributorRole.lower(`role`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioContributor.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchLanguage`(`id`: kotlin.String) : AudioLanguage {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_language(
+                uniffiHandle,
+                FfiConverterString.lower(`id`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterTypeAudioLanguage.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchLanguages`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioLanguage> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages(
+                uniffiHandle,
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioLanguage.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchLanguagesWithCollections`(`first`: kotlin.Int, `skip`: kotlin.Int) : List<AudioLanguage> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages_with_collections(
+                uniffiHandle,
+                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioLanguage.lift(it) },
+        // Error FFI converter
+        StoreApiException.ErrorHandler,
+    )
+    }
+
+    
+    @Throws(StoreApiException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `fetchNarratorsForCollection`(`collectionId`: kotlin.String) : List<AudioContributor> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_narrators_for_collection(
+                uniffiHandle,
+                FfiConverterString.lower(`collectionId`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_xbible_engine_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_xbible_engine_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeAudioContributor.lift(it) },
         // Error FFI converter
         StoreApiException.ErrorHandler,
     )
@@ -2902,15 +3456,45 @@ public object FfiConverterTypeStoreApiClient: FfiConverter<StoreApiClient, Long>
 
 public interface StoreApiServiceInterface {
     
+    fun `fetchAlbum`(`id`: kotlin.String): AudioAlbum
+    
+    fun `fetchAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioAlbum>
+    
+    fun `fetchAlbumsByCollection`(`collectionId`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioAlbum>
+    
+    fun `fetchCollection`(`id`: kotlin.String): AudioCollection
+    
+    fun `fetchCollections`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection>
+    
+    fun `fetchCollectionsByLanguage`(`code`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection>
+    
+    fun `fetchCollectionsWithAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection>
+    
+    fun `fetchContributor`(`id`: kotlin.String): AudioContributor
+    
+    fun `fetchContributors`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioContributor>
+    
+    fun `fetchContributorsByRole`(`role`: ContributorRole, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioContributor>
+    
+    fun `fetchLanguage`(`id`: kotlin.String): AudioLanguage
+    
+    fun `fetchLanguages`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioLanguage>
+    
+    fun `fetchLanguagesWithCollections`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioLanguage>
+    
     fun `getAudioModulesPath`(): kotlin.String
     
     fun `getCachedCatalog`(): List<RemoteAudioModuleInfo>
     
-    fun `getClient`(): StoreApiClient
-    
     fun `installModule`(`moduleId`: kotlin.String, `progressListener`: StoreDownloadProgressListener): kotlin.String
     
+    fun `isModuleInstalled`(`moduleId`: kotlin.String, `version`: kotlin.Int): kotlin.Boolean
+    
+    fun `loadAudioModules`(`first`: kotlin.Int, `skip`: kotlin.Int): List<RemoteAudioModuleInfo>
+    
     fun `loadCatalog`(): List<RemoteAudioModuleInfo>
+    
+    fun `loadInstalledModules`(): List<RemoteAudioModuleInfo>
     
     companion object
 }
@@ -3019,6 +3603,188 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
         }
     }
 
+    
+    @Throws(StoreApiException::class)override fun `fetchAlbum`(`id`: kotlin.String): AudioAlbum {
+            return FfiConverterTypeAudioAlbum.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_album(
+        it,
+        FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioAlbum> {
+            return FfiConverterSequenceTypeAudioAlbum.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchAlbumsByCollection`(`collectionId`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioAlbum> {
+            return FfiConverterSequenceTypeAudioAlbum.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums_by_collection(
+        it,
+        FfiConverterString.lower(`collectionId`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchCollection`(`id`: kotlin.String): AudioCollection {
+            return FfiConverterTypeAudioCollection.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collection(
+        it,
+        FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchCollections`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection> {
+            return FfiConverterSequenceTypeAudioCollection.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchCollectionsByLanguage`(`code`: kotlin.String, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection> {
+            return FfiConverterSequenceTypeAudioCollection.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_by_language(
+        it,
+        FfiConverterString.lower(`code`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchCollectionsWithAlbums`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioCollection> {
+            return FfiConverterSequenceTypeAudioCollection.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_with_albums(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchContributor`(`id`: kotlin.String): AudioContributor {
+            return FfiConverterTypeAudioContributor.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributor(
+        it,
+        FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchContributors`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioContributor> {
+            return FfiConverterSequenceTypeAudioContributor.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchContributorsByRole`(`role`: ContributorRole, `first`: kotlin.Int, `skip`: kotlin.Int): List<AudioContributor> {
+            return FfiConverterSequenceTypeAudioContributor.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors_by_role(
+        it,
+        FfiConverterTypeContributorRole.lower(`role`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchLanguage`(`id`: kotlin.String): AudioLanguage {
+            return FfiConverterTypeAudioLanguage.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_language(
+        it,
+        FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchLanguages`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioLanguage> {
+            return FfiConverterSequenceTypeAudioLanguage.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `fetchLanguagesWithCollections`(`first`: kotlin.Int, `skip`: kotlin.Int): List<AudioLanguage> {
+            return FfiConverterSequenceTypeAudioLanguage.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages_with_collections(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
     override fun `getAudioModulesPath`(): kotlin.String {
             return FfiConverterString.lift(
     callWithHandle {
@@ -3045,19 +3811,6 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     
 
-    override fun `getClient`(): StoreApiClient {
-            return FfiConverterTypeStoreApiClient.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_get_client(
-        it,
-        _status)
-}
-    }
-    )
-    }
-    
-
     
     @Throws(StoreApiException::class)override fun `installModule`(`moduleId`: kotlin.String, `progressListener`: StoreDownloadProgressListener): kotlin.String {
             return FfiConverterString.lift(
@@ -3072,12 +3825,52 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     }
     
 
+    override fun `isModuleInstalled`(`moduleId`: kotlin.String, `version`: kotlin.Int): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_is_module_installed(
+        it,
+        FfiConverterString.lower(`moduleId`),FfiConverterInt.lower(`version`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(StoreApiException::class)override fun `loadAudioModules`(`first`: kotlin.Int, `skip`: kotlin.Int): List<RemoteAudioModuleInfo> {
+            return FfiConverterSequenceTypeRemoteAudioModuleInfo.lift(
+    callWithHandle {
+    uniffiRustCallWithError(StoreApiException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_load_audio_modules(
+        it,
+        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+}
+    }
+    )
+    }
+    
+
     
     @Throws(StoreApiException::class)override fun `loadCatalog`(): List<RemoteAudioModuleInfo> {
             return FfiConverterSequenceTypeRemoteAudioModuleInfo.lift(
     callWithHandle {
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_load_catalog(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `loadInstalledModules`(): List<RemoteAudioModuleInfo> {
+            return FfiConverterSequenceTypeRemoteAudioModuleInfo.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_load_installed_modules(
         it,
         _status)
 }
@@ -3830,6 +4623,13 @@ public interface XBibleEngineInterface {
      */
     fun `getEssayModules`(): List<SwordModule>
     
+    fun `getGenearlBookContent`(`bookModule`: SwordModule, `node`: TreeNode): List<Section>
+    
+    /**
+     * Get tree structure of a general book module
+     */
+    fun `getGeneralBookStructure`(`bookModule`: SwordModule): TreeNode
+    
     /**
      * Get all glossary modules (simple word definitions)
      */
@@ -3922,6 +4722,9 @@ public interface XBibleEngineInterface {
      */
     fun `refreshInstalledModules`(): List<SwordModule>
     
+    /**
+     * Search word from a bibble text module
+     */
     fun `search`(`moduleName`: kotlin.String, `query`: kotlin.String, `searchType`: SearchType): SearchResults
     
     /**
@@ -4348,6 +5151,35 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     
 
+    override fun `getGenearlBookContent`(`bookModule`: SwordModule, `node`: TreeNode): List<Section> {
+            return FfiConverterSequenceTypeSection.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_get_genearl_book_content(
+        it,
+        FfiConverterTypeSwordModule.lower(`bookModule`),FfiConverterTypeTreeNode.lower(`node`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Get tree structure of a general book module
+     */override fun `getGeneralBookStructure`(`bookModule`: SwordModule): TreeNode {
+            return FfiConverterTypeTreeNode.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_get_general_book_structure(
+        it,
+        FfiConverterTypeSwordModule.lower(`bookModule`),_status)
+}
+    }
+    )
+    }
+    
+
     
     /**
      * Get all glossary modules (simple word definitions)
@@ -4649,7 +5481,10 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     
 
-    override fun `search`(`moduleName`: kotlin.String, `query`: kotlin.String, `searchType`: SearchType): SearchResults {
+    
+    /**
+     * Search word from a bibble text module
+     */override fun `search`(`moduleName`: kotlin.String, `query`: kotlin.String, `searchType`: SearchType): SearchResults {
             return FfiConverterTypeSearchResults.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -4811,6 +5646,215 @@ public object FfiConverterTypeXBibleEngine: FfiConverter<XBibleEngine, Long> {
 
 
 
+data class AudioAlbum (
+    var `id`: kotlin.String
+    , 
+    var `title`: kotlin.String
+    , 
+    var `manifestVersion`: kotlin.String?
+    , 
+    var `order`: kotlin.Int
+    , 
+    var `collectionId`: IdRef?
+    , 
+    var `modules`: List<RemoteAudioModuleInfo>
+    , 
+    var `artwork`: RemoteArtworkFile?
+    , 
+    var `createdAt`: kotlin.String
+    , 
+    var `updatedAt`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeAudioAlbum: FfiConverterRustBuffer<AudioAlbum> {
+    override fun read(buf: ByteBuffer): AudioAlbum {
+        return AudioAlbum(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterOptionalTypeIdRef.read(buf),
+            FfiConverterSequenceTypeRemoteAudioModuleInfo.read(buf),
+            FfiConverterOptionalTypeRemoteArtworkFile.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: AudioAlbum) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`title`) +
+            FfiConverterOptionalString.allocationSize(value.`manifestVersion`) +
+            FfiConverterInt.allocationSize(value.`order`) +
+            FfiConverterOptionalTypeIdRef.allocationSize(value.`collectionId`) +
+            FfiConverterSequenceTypeRemoteAudioModuleInfo.allocationSize(value.`modules`) +
+            FfiConverterOptionalTypeRemoteArtworkFile.allocationSize(value.`artwork`) +
+            FfiConverterString.allocationSize(value.`createdAt`) +
+            FfiConverterString.allocationSize(value.`updatedAt`)
+    )
+
+    override fun write(value: AudioAlbum, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`title`, buf)
+            FfiConverterOptionalString.write(value.`manifestVersion`, buf)
+            FfiConverterInt.write(value.`order`, buf)
+            FfiConverterOptionalTypeIdRef.write(value.`collectionId`, buf)
+            FfiConverterSequenceTypeRemoteAudioModuleInfo.write(value.`modules`, buf)
+            FfiConverterOptionalTypeRemoteArtworkFile.write(value.`artwork`, buf)
+            FfiConverterString.write(value.`createdAt`, buf)
+            FfiConverterString.write(value.`updatedAt`, buf)
+    }
+}
+
+
+
+data class AudioCollection (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `description`: kotlin.String?
+    , 
+    var `manifestVersion`: kotlin.String?
+    , 
+    var `languageId`: IdRef?
+    , 
+    var `albums`: List<AudioAlbum>
+    , 
+    var `createdAt`: kotlin.String
+    , 
+    var `updatedAt`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeAudioCollection: FfiConverterRustBuffer<AudioCollection> {
+    override fun read(buf: ByteBuffer): AudioCollection {
+        return AudioCollection(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalTypeIdRef.read(buf),
+            FfiConverterSequenceTypeAudioAlbum.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: AudioCollection) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterOptionalString.allocationSize(value.`description`) +
+            FfiConverterOptionalString.allocationSize(value.`manifestVersion`) +
+            FfiConverterOptionalTypeIdRef.allocationSize(value.`languageId`) +
+            FfiConverterSequenceTypeAudioAlbum.allocationSize(value.`albums`) +
+            FfiConverterString.allocationSize(value.`createdAt`) +
+            FfiConverterString.allocationSize(value.`updatedAt`)
+    )
+
+    override fun write(value: AudioCollection, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterOptionalString.write(value.`description`, buf)
+            FfiConverterOptionalString.write(value.`manifestVersion`, buf)
+            FfiConverterOptionalTypeIdRef.write(value.`languageId`, buf)
+            FfiConverterSequenceTypeAudioAlbum.write(value.`albums`, buf)
+            FfiConverterString.write(value.`createdAt`, buf)
+            FfiConverterString.write(value.`updatedAt`, buf)
+    }
+}
+
+
+
+data class AudioContributor (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `bio`: RichTextValue?
+    , 
+    var `role`: ContributorRole
+    , 
+    var `photo`: RemoteArtworkFile?
+    , 
+    var `collections`: List<IdRef>
+    , 
+    var `createdAt`: kotlin.String
+    , 
+    var `updatedAt`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeAudioContributor: FfiConverterRustBuffer<AudioContributor> {
+    override fun read(buf: ByteBuffer): AudioContributor {
+        return AudioContributor(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalTypeRichTextValue.read(buf),
+            FfiConverterTypeContributorRole.read(buf),
+            FfiConverterOptionalTypeRemoteArtworkFile.read(buf),
+            FfiConverterSequenceTypeIdRef.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: AudioContributor) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterOptionalTypeRichTextValue.allocationSize(value.`bio`) +
+            FfiConverterTypeContributorRole.allocationSize(value.`role`) +
+            FfiConverterOptionalTypeRemoteArtworkFile.allocationSize(value.`photo`) +
+            FfiConverterSequenceTypeIdRef.allocationSize(value.`collections`) +
+            FfiConverterString.allocationSize(value.`createdAt`) +
+            FfiConverterString.allocationSize(value.`updatedAt`)
+    )
+
+    override fun write(value: AudioContributor, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterOptionalTypeRichTextValue.write(value.`bio`, buf)
+            FfiConverterTypeContributorRole.write(value.`role`, buf)
+            FfiConverterOptionalTypeRemoteArtworkFile.write(value.`photo`, buf)
+            FfiConverterSequenceTypeIdRef.write(value.`collections`, buf)
+            FfiConverterString.write(value.`createdAt`, buf)
+            FfiConverterString.write(value.`updatedAt`, buf)
+    }
+}
+
+
+
 data class AudioEngineRgbaColor (
     var `red`: kotlin.Double
     , 
@@ -4854,6 +5898,64 @@ public object FfiConverterTypeAudioEngineRGBAColor: FfiConverterRustBuffer<Audio
             FfiConverterDouble.write(value.`green`, buf)
             FfiConverterDouble.write(value.`blue`, buf)
             FfiConverterDouble.write(value.`alpha`, buf)
+    }
+}
+
+
+
+data class AudioLanguage (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `code`: kotlin.String
+    , 
+    var `collections`: List<AudioCollection>
+    , 
+    var `createdAt`: kotlin.String
+    , 
+    var `updatedAt`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeAudioLanguage: FfiConverterRustBuffer<AudioLanguage> {
+    override fun read(buf: ByteBuffer): AudioLanguage {
+        return AudioLanguage(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeAudioCollection.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: AudioLanguage) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`code`) +
+            FfiConverterSequenceTypeAudioCollection.allocationSize(value.`collections`) +
+            FfiConverterString.allocationSize(value.`createdAt`) +
+            FfiConverterString.allocationSize(value.`updatedAt`)
+    )
+
+    override fun write(value: AudioLanguage, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`code`, buf)
+            FfiConverterSequenceTypeAudioCollection.write(value.`collections`, buf)
+            FfiConverterString.write(value.`createdAt`, buf)
+            FfiConverterString.write(value.`updatedAt`, buf)
     }
 }
 
@@ -5113,6 +6215,8 @@ data class DownloadProgress (
     var `currentModule`: kotlin.String
     , 
     var `status`: kotlin.String
+    , 
+    var `message`: kotlin.String
     
 ){
     
@@ -5134,6 +6238,7 @@ public object FfiConverterTypeDownloadProgress: FfiConverterRustBuffer<DownloadP
             FfiConverterLong.read(buf),
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
         )
     }
 
@@ -5142,7 +6247,8 @@ public object FfiConverterTypeDownloadProgress: FfiConverterRustBuffer<DownloadP
             FfiConverterLong.allocationSize(value.`downloadedBytes`) +
             FfiConverterLong.allocationSize(value.`totalBytes`) +
             FfiConverterString.allocationSize(value.`currentModule`) +
-            FfiConverterString.allocationSize(value.`status`)
+            FfiConverterString.allocationSize(value.`status`) +
+            FfiConverterString.allocationSize(value.`message`)
     )
 
     override fun write(value: DownloadProgress, buf: ByteBuffer) {
@@ -5151,6 +6257,7 @@ public object FfiConverterTypeDownloadProgress: FfiConverterRustBuffer<DownloadP
             FfiConverterLong.write(value.`totalBytes`, buf)
             FfiConverterString.write(value.`currentModule`, buf)
             FfiConverterString.write(value.`status`, buf)
+            FfiConverterString.write(value.`message`, buf)
     }
 }
 
@@ -5333,6 +6440,39 @@ public object FfiConverterTypeHygraphFeatures: FfiConverterRustBuffer<HygraphFea
 
     override fun write(value: HygraphFeatures, buf: ByteBuffer) {
             FfiConverterSequenceString.write(value.`features`, buf)
+    }
+}
+
+
+
+data class IdRef (
+    var `id`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeIdRef: FfiConverterRustBuffer<IdRef> {
+    override fun read(buf: ByteBuffer): IdRef {
+        return IdRef(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: IdRef) = (
+            FfiConverterString.allocationSize(value.`id`)
+    )
+
+    override fun write(value: IdRef, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
     }
 }
 
@@ -5667,6 +6807,69 @@ public object FfiConverterTypeModuleColor: FfiConverterRustBuffer<ModuleColor> {
 
 
 
+data class ModuleLocation (
+    var `languageCode`: kotlin.String
+    , 
+    var `languageName`: kotlin.String
+    , 
+    var `contributorName`: kotlin.String?
+    , 
+    var `collectionName`: kotlin.String
+    , 
+    var `albumTitle`: kotlin.String
+    , 
+    var `moduleUniqueId`: kotlin.String
+    , 
+    var `moduleVersion`: kotlin.Int
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeModuleLocation: FfiConverterRustBuffer<ModuleLocation> {
+    override fun read(buf: ByteBuffer): ModuleLocation {
+        return ModuleLocation(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ModuleLocation) = (
+            FfiConverterString.allocationSize(value.`languageCode`) +
+            FfiConverterString.allocationSize(value.`languageName`) +
+            FfiConverterOptionalString.allocationSize(value.`contributorName`) +
+            FfiConverterString.allocationSize(value.`collectionName`) +
+            FfiConverterString.allocationSize(value.`albumTitle`) +
+            FfiConverterString.allocationSize(value.`moduleUniqueId`) +
+            FfiConverterInt.allocationSize(value.`moduleVersion`)
+    )
+
+    override fun write(value: ModuleLocation, buf: ByteBuffer) {
+            FfiConverterString.write(value.`languageCode`, buf)
+            FfiConverterString.write(value.`languageName`, buf)
+            FfiConverterOptionalString.write(value.`contributorName`, buf)
+            FfiConverterString.write(value.`collectionName`, buf)
+            FfiConverterString.write(value.`albumTitle`, buf)
+            FfiConverterString.write(value.`moduleUniqueId`, buf)
+            FfiConverterInt.write(value.`moduleVersion`, buf)
+    }
+}
+
+
+
 data class ModuleMetadata (
     var `uniqueId`: kotlin.String
     , 
@@ -5687,6 +6890,8 @@ data class ModuleMetadata (
     var `features`: List<kotlin.String>
     , 
     var `artworkFile`: kotlin.String?
+    , 
+    var `organization`: ModuleOrganization?
     
 ){
     
@@ -5713,6 +6918,7 @@ public object FfiConverterTypeModuleMetadata: FfiConverterRustBuffer<ModuleMetad
             FfiConverterLong.read(buf),
             FfiConverterSequenceString.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalTypeModuleOrganization.read(buf),
         )
     }
 
@@ -5726,7 +6932,8 @@ public object FfiConverterTypeModuleMetadata: FfiConverterRustBuffer<ModuleMetad
             FfiConverterString.allocationSize(value.`sourceUrl`) +
             FfiConverterLong.allocationSize(value.`durationMs`) +
             FfiConverterSequenceString.allocationSize(value.`features`) +
-            FfiConverterOptionalString.allocationSize(value.`artworkFile`)
+            FfiConverterOptionalString.allocationSize(value.`artworkFile`) +
+            FfiConverterOptionalTypeModuleOrganization.allocationSize(value.`organization`)
     )
 
     override fun write(value: ModuleMetadata, buf: ByteBuffer) {
@@ -5740,6 +6947,95 @@ public object FfiConverterTypeModuleMetadata: FfiConverterRustBuffer<ModuleMetad
             FfiConverterLong.write(value.`durationMs`, buf)
             FfiConverterSequenceString.write(value.`features`, buf)
             FfiConverterOptionalString.write(value.`artworkFile`, buf)
+            FfiConverterOptionalTypeModuleOrganization.write(value.`organization`, buf)
+    }
+}
+
+
+
+data class ModuleOrganization (
+    var `languageCode`: kotlin.String
+    , 
+    var `languageName`: kotlin.String
+    , 
+    var `contributorName`: kotlin.String?
+    , 
+    var `collectionId`: kotlin.String
+    , 
+    var `collectionName`: kotlin.String
+    , 
+    var `collectionDescription`: kotlin.String?
+    , 
+    var `albumId`: kotlin.String
+    , 
+    var `albumTitle`: kotlin.String
+    , 
+    var `albumManifestVersion`: kotlin.String?
+    , 
+    var `albumOrder`: kotlin.Int
+    , 
+    var `stampedAt`: kotlin.String
+    , 
+    var `stampedByVersion`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeModuleOrganization: FfiConverterRustBuffer<ModuleOrganization> {
+    override fun read(buf: ByteBuffer): ModuleOrganization {
+        return ModuleOrganization(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ModuleOrganization) = (
+            FfiConverterString.allocationSize(value.`languageCode`) +
+            FfiConverterString.allocationSize(value.`languageName`) +
+            FfiConverterOptionalString.allocationSize(value.`contributorName`) +
+            FfiConverterString.allocationSize(value.`collectionId`) +
+            FfiConverterString.allocationSize(value.`collectionName`) +
+            FfiConverterOptionalString.allocationSize(value.`collectionDescription`) +
+            FfiConverterString.allocationSize(value.`albumId`) +
+            FfiConverterString.allocationSize(value.`albumTitle`) +
+            FfiConverterOptionalString.allocationSize(value.`albumManifestVersion`) +
+            FfiConverterInt.allocationSize(value.`albumOrder`) +
+            FfiConverterString.allocationSize(value.`stampedAt`) +
+            FfiConverterString.allocationSize(value.`stampedByVersion`)
+    )
+
+    override fun write(value: ModuleOrganization, buf: ByteBuffer) {
+            FfiConverterString.write(value.`languageCode`, buf)
+            FfiConverterString.write(value.`languageName`, buf)
+            FfiConverterOptionalString.write(value.`contributorName`, buf)
+            FfiConverterString.write(value.`collectionId`, buf)
+            FfiConverterString.write(value.`collectionName`, buf)
+            FfiConverterOptionalString.write(value.`collectionDescription`, buf)
+            FfiConverterString.write(value.`albumId`, buf)
+            FfiConverterString.write(value.`albumTitle`, buf)
+            FfiConverterOptionalString.write(value.`albumManifestVersion`, buf)
+            FfiConverterInt.write(value.`albumOrder`, buf)
+            FfiConverterString.write(value.`stampedAt`, buf)
+            FfiConverterString.write(value.`stampedByVersion`, buf)
     }
 }
 
@@ -5786,6 +7082,59 @@ public object FfiConverterTypeModuleSource: FfiConverterRustBuffer<ModuleSource>
             FfiConverterString.write(value.`name`, buf)
             FfiConverterString.write(value.`description`, buf)
             FfiConverterString.write(value.`url`, buf)
+    }
+}
+
+
+
+data class Note (
+    var `noteType`: kotlin.String
+    , 
+    var `n`: kotlin.String?
+    , 
+    var `osisRef`: kotlin.String?
+    , 
+    var `text`: kotlin.String
+    , 
+    var `isSectionNote`: kotlin.Boolean
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeNote: FfiConverterRustBuffer<Note> {
+    override fun read(buf: ByteBuffer): Note {
+        return Note(
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: Note) = (
+            FfiConverterString.allocationSize(value.`noteType`) +
+            FfiConverterOptionalString.allocationSize(value.`n`) +
+            FfiConverterOptionalString.allocationSize(value.`osisRef`) +
+            FfiConverterString.allocationSize(value.`text`) +
+            FfiConverterBoolean.allocationSize(value.`isSectionNote`)
+    )
+
+    override fun write(value: Note, buf: ByteBuffer) {
+            FfiConverterString.write(value.`noteType`, buf)
+            FfiConverterOptionalString.write(value.`n`, buf)
+            FfiConverterOptionalString.write(value.`osisRef`, buf)
+            FfiConverterString.write(value.`text`, buf)
+            FfiConverterBoolean.write(value.`isSectionNote`, buf)
     }
 }
 
@@ -5961,6 +7310,8 @@ public object FfiConverterTypeRemoteArtworkFile: FfiConverterRustBuffer<RemoteAr
 
 
 data class RemoteAudioModuleInfo (
+    var `id`: kotlin.String?
+    , 
     var `uniqueId`: kotlin.String
     , 
     var `displayTitle`: kotlin.String
@@ -5973,11 +7324,11 @@ data class RemoteAudioModuleInfo (
     , 
     var `features`: HygraphFeatures
     , 
-    var `language`: kotlin.String
-    , 
     var `sourceUrl`: kotlin.String
     , 
     var `artworkFile`: RemoteArtworkFile?
+    , 
+    var `albumId`: IdRef?
     , 
     var `version`: kotlin.Int
     , 
@@ -5988,6 +7339,18 @@ data class RemoteAudioModuleInfo (
     var `isInstalled`: kotlin.Boolean
     , 
     var `status`: ModuleStatus
+    , 
+    var `artworkBytes`: kotlin.ByteArray?
+    , 
+    var `artworkMime`: kotlin.String?
+    , 
+    var `contributorArtworkBytes`: kotlin.ByteArray?
+    , 
+    var `contributorArtworkMime`: kotlin.String?
+    , 
+    var `albumArtworkBytes`: kotlin.ByteArray?
+    , 
+    var `albumArtworkMime`: kotlin.String?
     
 ){
     
@@ -6004,6 +7367,7 @@ data class RemoteAudioModuleInfo (
 public object FfiConverterTypeRemoteAudioModuleInfo: FfiConverterRustBuffer<RemoteAudioModuleInfo> {
     override fun read(buf: ByteBuffer): RemoteAudioModuleInfo {
         return RemoteAudioModuleInfo(
+            FfiConverterOptionalString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
@@ -6011,48 +7375,101 @@ public object FfiConverterTypeRemoteAudioModuleInfo: FfiConverterRustBuffer<Remo
             FfiConverterLong.read(buf),
             FfiConverterTypeHygraphFeatures.read(buf),
             FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
             FfiConverterOptionalTypeRemoteArtworkFile.read(buf),
+            FfiConverterOptionalTypeIdRef.read(buf),
             FfiConverterInt.read(buf),
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterBoolean.read(buf),
             FfiConverterTypeModuleStatus.read(buf),
+            FfiConverterOptionalByteArray.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalByteArray.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalByteArray.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
     override fun allocationSize(value: RemoteAudioModuleInfo) = (
+            FfiConverterOptionalString.allocationSize(value.`id`) +
             FfiConverterString.allocationSize(value.`uniqueId`) +
             FfiConverterString.allocationSize(value.`displayTitle`) +
             FfiConverterOptionalString.allocationSize(value.`contributor`) +
             FfiConverterOptionalString.allocationSize(value.`description`) +
             FfiConverterLong.allocationSize(value.`durationMs`) +
             FfiConverterTypeHygraphFeatures.allocationSize(value.`features`) +
-            FfiConverterString.allocationSize(value.`language`) +
             FfiConverterString.allocationSize(value.`sourceUrl`) +
             FfiConverterOptionalTypeRemoteArtworkFile.allocationSize(value.`artworkFile`) +
+            FfiConverterOptionalTypeIdRef.allocationSize(value.`albumId`) +
             FfiConverterInt.allocationSize(value.`version`) +
             FfiConverterString.allocationSize(value.`createdAt`) +
             FfiConverterString.allocationSize(value.`updatedAt`) +
             FfiConverterBoolean.allocationSize(value.`isInstalled`) +
-            FfiConverterTypeModuleStatus.allocationSize(value.`status`)
+            FfiConverterTypeModuleStatus.allocationSize(value.`status`) +
+            FfiConverterOptionalByteArray.allocationSize(value.`artworkBytes`) +
+            FfiConverterOptionalString.allocationSize(value.`artworkMime`) +
+            FfiConverterOptionalByteArray.allocationSize(value.`contributorArtworkBytes`) +
+            FfiConverterOptionalString.allocationSize(value.`contributorArtworkMime`) +
+            FfiConverterOptionalByteArray.allocationSize(value.`albumArtworkBytes`) +
+            FfiConverterOptionalString.allocationSize(value.`albumArtworkMime`)
     )
 
     override fun write(value: RemoteAudioModuleInfo, buf: ByteBuffer) {
+            FfiConverterOptionalString.write(value.`id`, buf)
             FfiConverterString.write(value.`uniqueId`, buf)
             FfiConverterString.write(value.`displayTitle`, buf)
             FfiConverterOptionalString.write(value.`contributor`, buf)
             FfiConverterOptionalString.write(value.`description`, buf)
             FfiConverterLong.write(value.`durationMs`, buf)
             FfiConverterTypeHygraphFeatures.write(value.`features`, buf)
-            FfiConverterString.write(value.`language`, buf)
             FfiConverterString.write(value.`sourceUrl`, buf)
             FfiConverterOptionalTypeRemoteArtworkFile.write(value.`artworkFile`, buf)
+            FfiConverterOptionalTypeIdRef.write(value.`albumId`, buf)
             FfiConverterInt.write(value.`version`, buf)
             FfiConverterString.write(value.`createdAt`, buf)
             FfiConverterString.write(value.`updatedAt`, buf)
             FfiConverterBoolean.write(value.`isInstalled`, buf)
             FfiConverterTypeModuleStatus.write(value.`status`, buf)
+            FfiConverterOptionalByteArray.write(value.`artworkBytes`, buf)
+            FfiConverterOptionalString.write(value.`artworkMime`, buf)
+            FfiConverterOptionalByteArray.write(value.`contributorArtworkBytes`, buf)
+            FfiConverterOptionalString.write(value.`contributorArtworkMime`, buf)
+            FfiConverterOptionalByteArray.write(value.`albumArtworkBytes`, buf)
+            FfiConverterOptionalString.write(value.`albumArtworkMime`, buf)
+    }
+}
+
+
+
+data class RichTextValue (
+    var `text`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeRichTextValue: FfiConverterRustBuffer<RichTextValue> {
+    override fun read(buf: ByteBuffer): RichTextValue {
+        return RichTextValue(
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: RichTextValue) = (
+            FfiConverterString.allocationSize(value.`text`)
+    )
+
+    override fun write(value: RichTextValue, buf: ByteBuffer) {
+            FfiConverterString.write(value.`text`, buf)
     }
 }
 
@@ -6149,6 +7566,8 @@ data class Section (
     , 
     var `verses`: List<Verse>
     , 
+    var `notes`: List<Note>
+    , 
     var `textDirection`: TextDirection
     
 ){
@@ -6168,6 +7587,7 @@ public object FfiConverterTypeSection: FfiConverterRustBuffer<Section> {
         return Section(
             FfiConverterSequenceTypeWord.read(buf),
             FfiConverterSequenceTypeVerse.read(buf),
+            FfiConverterSequenceTypeNote.read(buf),
             FfiConverterTypeTextDirection.read(buf),
         )
     }
@@ -6175,12 +7595,14 @@ public object FfiConverterTypeSection: FfiConverterRustBuffer<Section> {
     override fun allocationSize(value: Section) = (
             FfiConverterSequenceTypeWord.allocationSize(value.`title`) +
             FfiConverterSequenceTypeVerse.allocationSize(value.`verses`) +
+            FfiConverterSequenceTypeNote.allocationSize(value.`notes`) +
             FfiConverterTypeTextDirection.allocationSize(value.`textDirection`)
     )
 
     override fun write(value: Section, buf: ByteBuffer) {
             FfiConverterSequenceTypeWord.write(value.`title`, buf)
             FfiConverterSequenceTypeVerse.write(value.`verses`, buf)
+            FfiConverterSequenceTypeNote.write(value.`notes`, buf)
             FfiConverterTypeTextDirection.write(value.`textDirection`, buf)
     }
 }
@@ -6313,6 +7735,59 @@ public object FfiConverterTypeTaskStatus: FfiConverterRustBuffer<TaskStatus> {
 
 
 
+data class TreeNode (
+    var `id`: kotlin.UInt
+    , 
+    var `title`: kotlin.String
+    , 
+    var `path`: kotlin.String
+    , 
+    var `depth`: kotlin.Int
+    , 
+    var `children`: List<TreeNode>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeTreeNode: FfiConverterRustBuffer<TreeNode> {
+    override fun read(buf: ByteBuffer): TreeNode {
+        return TreeNode(
+            FfiConverterUInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeTreeNode.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: TreeNode) = (
+            FfiConverterUInt.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`title`) +
+            FfiConverterString.allocationSize(value.`path`) +
+            FfiConverterInt.allocationSize(value.`depth`) +
+            FfiConverterSequenceTypeTreeNode.allocationSize(value.`children`)
+    )
+
+    override fun write(value: TreeNode, buf: ByteBuffer) {
+            FfiConverterUInt.write(value.`id`, buf)
+            FfiConverterString.write(value.`title`, buf)
+            FfiConverterString.write(value.`path`, buf)
+            FfiConverterInt.write(value.`depth`, buf)
+            FfiConverterSequenceTypeTreeNode.write(value.`children`, buf)
+    }
+}
+
+
+
 data class Verse (
     var `osisId`: kotlin.String
     , 
@@ -6320,7 +7795,7 @@ data class Verse (
     , 
     var `words`: List<Word>
     , 
-    var `notes`: List<kotlin.String>
+    var `notes`: List<Note>
     , 
     var `isParagraphStart`: kotlin.Boolean
     
@@ -6342,7 +7817,7 @@ public object FfiConverterTypeVerse: FfiConverterRustBuffer<Verse> {
             FfiConverterString.read(buf),
             FfiConverterInt.read(buf),
             FfiConverterSequenceTypeWord.read(buf),
-            FfiConverterSequenceString.read(buf),
+            FfiConverterSequenceTypeNote.read(buf),
             FfiConverterBoolean.read(buf),
         )
     }
@@ -6351,7 +7826,7 @@ public object FfiConverterTypeVerse: FfiConverterRustBuffer<Verse> {
             FfiConverterString.allocationSize(value.`osisId`) +
             FfiConverterInt.allocationSize(value.`number`) +
             FfiConverterSequenceTypeWord.allocationSize(value.`words`) +
-            FfiConverterSequenceString.allocationSize(value.`notes`) +
+            FfiConverterSequenceTypeNote.allocationSize(value.`notes`) +
             FfiConverterBoolean.allocationSize(value.`isParagraphStart`)
     )
 
@@ -6359,7 +7834,7 @@ public object FfiConverterTypeVerse: FfiConverterRustBuffer<Verse> {
             FfiConverterString.write(value.`osisId`, buf)
             FfiConverterInt.write(value.`number`, buf)
             FfiConverterSequenceTypeWord.write(value.`words`, buf)
-            FfiConverterSequenceString.write(value.`notes`, buf)
+            FfiConverterSequenceTypeNote.write(value.`notes`, buf)
             FfiConverterBoolean.write(value.`isParagraphStart`, buf)
     }
 }
@@ -6589,6 +8064,43 @@ public object FfiConverterTypeAudioEngineError : FfiConverterRustBuffer<AudioEng
 
 
 
+
+enum class ContributorRole {
+    
+    NARRATOR,
+    AUTHOR,
+    PRODUCER,
+    TRANSLATOR,
+    EDITOR;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeContributorRole: FfiConverterRustBuffer<ContributorRole> {
+    override fun read(buf: ByteBuffer) = try {
+        ContributorRole.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: ContributorRole) = 4UL
+
+    override fun write(value: ContributorRole, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
 sealed class ModuleStatus {
     
     object Idle : ModuleStatus()
@@ -6774,6 +8286,22 @@ sealed class StoreApiException: kotlin.Exception() {
             get() = "errorMessage=${ `errorMessage` }"
     }
     
+    class QueryFailure(
+        
+        val `errorMessage`: kotlin.String
+        ) : StoreApiException() {
+        override val message
+            get() = "errorMessage=${ `errorMessage` }"
+    }
+    
+    class NotFound(
+        
+        val `id`: kotlin.String
+        ) : StoreApiException() {
+        override val message
+            get() = "id=${ `id` }"
+    }
+    
 
     
 
@@ -6802,6 +8330,12 @@ public object FfiConverterTypeStoreApiError : FfiConverterRustBuffer<StoreApiExc
             3 -> StoreApiException.IoFailure(
                 FfiConverterString.read(buf),
                 )
+            4 -> StoreApiException.QueryFailure(
+                FfiConverterString.read(buf),
+                )
+            5 -> StoreApiException.NotFound(
+                FfiConverterString.read(buf),
+                )
             else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
         }
     }
@@ -6823,6 +8357,16 @@ public object FfiConverterTypeStoreApiError : FfiConverterRustBuffer<StoreApiExc
                 4UL
                 + FfiConverterString.allocationSize(value.`errorMessage`)
             )
+            is StoreApiException.QueryFailure -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+                + FfiConverterString.allocationSize(value.`errorMessage`)
+            )
+            is StoreApiException.NotFound -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+                + FfiConverterString.allocationSize(value.`id`)
+            )
         }
     }
 
@@ -6841,6 +8385,16 @@ public object FfiConverterTypeStoreApiError : FfiConverterRustBuffer<StoreApiExc
             is StoreApiException.IoFailure -> {
                 buf.putInt(3)
                 FfiConverterString.write(value.`errorMessage`, buf)
+                Unit
+            }
+            is StoreApiException.QueryFailure -> {
+                buf.putInt(4)
+                FfiConverterString.write(value.`errorMessage`, buf)
+                Unit
+            }
+            is StoreApiException.NotFound -> {
+                buf.putInt(5)
+                FfiConverterString.write(value.`id`, buf)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -7149,6 +8703,38 @@ public object FfiConverterOptionalByteArray: FfiConverterRustBuffer<kotlin.ByteA
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeAudioContributor: FfiConverterRustBuffer<AudioContributor?> {
+    override fun read(buf: ByteBuffer): AudioContributor? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeAudioContributor.read(buf)
+    }
+
+    override fun allocationSize(value: AudioContributor?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeAudioContributor.allocationSize(value)
+        }
+    }
+
+    override fun write(value: AudioContributor?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeAudioContributor.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypeAudioNode: FfiConverterRustBuffer<AudioNode?> {
     override fun read(buf: ByteBuffer): AudioNode? {
         if (buf.get().toInt() == 0) {
@@ -7171,6 +8757,38 @@ public object FfiConverterOptionalTypeAudioNode: FfiConverterRustBuffer<AudioNod
         } else {
             buf.put(1)
             FfiConverterTypeAudioNode.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeIdRef: FfiConverterRustBuffer<IdRef?> {
+    override fun read(buf: ByteBuffer): IdRef? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeIdRef.read(buf)
+    }
+
+    override fun allocationSize(value: IdRef?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeIdRef.allocationSize(value)
+        }
+    }
+
+    override fun write(value: IdRef?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeIdRef.write(value, buf)
         }
     }
 }
@@ -7245,6 +8863,38 @@ public object FfiConverterOptionalTypeModuleMetadata: FfiConverterRustBuffer<Mod
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeModuleOrganization: FfiConverterRustBuffer<ModuleOrganization?> {
+    override fun read(buf: ByteBuffer): ModuleOrganization? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeModuleOrganization.read(buf)
+    }
+
+    override fun allocationSize(value: ModuleOrganization?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeModuleOrganization.allocationSize(value)
+        }
+    }
+
+    override fun write(value: ModuleOrganization?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeModuleOrganization.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypePlaybackState: FfiConverterRustBuffer<PlaybackState?> {
     override fun read(buf: ByteBuffer): PlaybackState? {
         if (buf.get().toInt() == 0) {
@@ -7299,6 +8949,38 @@ public object FfiConverterOptionalTypeRemoteArtworkFile: FfiConverterRustBuffer<
         } else {
             buf.put(1)
             FfiConverterTypeRemoteArtworkFile.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeRichTextValue: FfiConverterRustBuffer<RichTextValue?> {
+    override fun read(buf: ByteBuffer): RichTextValue? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeRichTextValue.read(buf)
+    }
+
+    override fun allocationSize(value: RichTextValue?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeRichTextValue.allocationSize(value)
+        }
+    }
+
+    override fun write(value: RichTextValue?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeRichTextValue.write(value, buf)
         }
     }
 }
@@ -7369,6 +9051,90 @@ public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.Str
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeAudioAlbum: FfiConverterRustBuffer<List<AudioAlbum>> {
+    override fun read(buf: ByteBuffer): List<AudioAlbum> {
+        val len = buf.getInt()
+        return List<AudioAlbum>(len) {
+            FfiConverterTypeAudioAlbum.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<AudioAlbum>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeAudioAlbum.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<AudioAlbum>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeAudioAlbum.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeAudioCollection: FfiConverterRustBuffer<List<AudioCollection>> {
+    override fun read(buf: ByteBuffer): List<AudioCollection> {
+        val len = buf.getInt()
+        return List<AudioCollection>(len) {
+            FfiConverterTypeAudioCollection.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<AudioCollection>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeAudioCollection.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<AudioCollection>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeAudioCollection.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeAudioContributor: FfiConverterRustBuffer<List<AudioContributor>> {
+    override fun read(buf: ByteBuffer): List<AudioContributor> {
+        val len = buf.getInt()
+        return List<AudioContributor>(len) {
+            FfiConverterTypeAudioContributor.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<AudioContributor>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeAudioContributor.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<AudioContributor>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeAudioContributor.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeAudioEngineRGBAColor: FfiConverterRustBuffer<List<AudioEngineRgbaColor>> {
     override fun read(buf: ByteBuffer): List<AudioEngineRgbaColor> {
         val len = buf.getInt()
@@ -7387,6 +9153,34 @@ public object FfiConverterSequenceTypeAudioEngineRGBAColor: FfiConverterRustBuff
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeAudioEngineRGBAColor.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeAudioLanguage: FfiConverterRustBuffer<List<AudioLanguage>> {
+    override fun read(buf: ByteBuffer): List<AudioLanguage> {
+        val len = buf.getInt()
+        return List<AudioLanguage>(len) {
+            FfiConverterTypeAudioLanguage.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<AudioLanguage>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeAudioLanguage.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<AudioLanguage>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeAudioLanguage.write(it, buf)
         }
     }
 }
@@ -7537,6 +9331,34 @@ public object FfiConverterSequenceTypeEvent: FfiConverterRustBuffer<List<Event>>
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeIdRef: FfiConverterRustBuffer<List<IdRef>> {
+    override fun read(buf: ByteBuffer): List<IdRef> {
+        val len = buf.getInt()
+        return List<IdRef>(len) {
+            FfiConverterTypeIdRef.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<IdRef>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeIdRef.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<IdRef>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeIdRef.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeLexiconResult: FfiConverterRustBuffer<List<LexiconResult>> {
     override fun read(buf: ByteBuffer): List<LexiconResult> {
         val len = buf.getInt()
@@ -7639,6 +9461,34 @@ public object FfiConverterSequenceTypeModuleSource: FfiConverterRustBuffer<List<
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeModuleSource.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeNote: FfiConverterRustBuffer<List<Note>> {
+    override fun read(buf: ByteBuffer): List<Note> {
+        val len = buf.getInt()
+        return List<Note>(len) {
+            FfiConverterTypeNote.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<Note>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeNote.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<Note>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeNote.write(it, buf)
         }
     }
 }
@@ -7779,6 +9629,34 @@ public object FfiConverterSequenceTypeSwordModule: FfiConverterRustBuffer<List<S
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeSwordModule.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeTreeNode: FfiConverterRustBuffer<List<TreeNode>> {
+    override fun read(buf: ByteBuffer): List<TreeNode> {
+        val len = buf.getInt()
+        return List<TreeNode>(len) {
+            FfiConverterTypeTreeNode.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<TreeNode>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeTreeNode.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<TreeNode>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeTreeNode.write(it, buf)
         }
     }
 }

@@ -111,7 +111,7 @@ fun CategoryTabBar(
                         ElevatedToggleButton(
                             checked = selectedCategory == category,
                             onCheckedChange = { if (it) onCategorySelected(category) },
-                            colors = ToggleButtonDefaults.toggleButtonColors(
+                            colors = ToggleButtonDefaults.colors(
                                 checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                                 checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
                             ),
