@@ -4,6 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,7 +19,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import uniffi.xbible_engine.Artwork
 import uniffi.xbible_engine.AudioAlbum
 import uniffi.xbible_engine.AudioCollection
 import uniffi.xbible_engine.AudioContributor
@@ -26,7 +28,6 @@ import uniffi.xbible_engine.ModuleStatus
 import uniffi.xbible_engine.RemoteAudioModuleInfo
 import uniffi.xbible_engine.StoreApiService
 import uniffi.xbible_engine.StoreDownloadProgressListener
-import java.io.File
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -45,6 +46,7 @@ class AudioStoreViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     private val storeService: StoreApiService = StoreApiService()
+    private val imageLoader = ImageLoader(application)
 
     // ── Catalog (flat modules list) ──────────────────────────────────
     private val _availableModules = MutableStateFlow<List<RemoteAudioModuleInfo>>(emptyList())
@@ -228,7 +230,11 @@ class AudioStoreViewModel @Inject constructor(
     fun reloadCatalog() {
         viewModelScope.launch {
             _isLoading.value = true
-            try { loadCatalogInternal() } finally { _isLoading.value = false }
+            try {
+                loadCatalogInternal()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -243,8 +249,11 @@ class AudioStoreViewModel @Inject constructor(
         _selectedLanguageId.value = languageId
         viewModelScope.launch {
             _isLoading.value = true
-            try { loadCollectionsForLanguage(languageId) }
-            finally { _isLoading.value = false }
+            try {
+                loadCollectionsForLanguage(languageId)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -276,8 +285,11 @@ class AudioStoreViewModel @Inject constructor(
         _selectedCollectionId.value = collectionId
         viewModelScope.launch {
             _isLoading.value = true
-            try { loadAlbumsForCollection(collectionId) }
-            finally { _isLoading.value = false }
+            try {
+                loadAlbumsForCollection(collectionId)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -306,8 +318,11 @@ class AudioStoreViewModel @Inject constructor(
         _selectedAlbumId.value = albumId
         viewModelScope.launch {
             _isLoading.value = true
-            try { loadModulesForAlbum(albumId) }
-            finally { _isLoading.value = false }
+            try {
+                loadModulesForAlbum(albumId)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -324,75 +339,160 @@ class AudioStoreViewModel @Inject constructor(
 
     // ── Search / filter setters ──────────────────────────────────────
 
-    fun updateSearchText(text: String) { _searchText.value = text }
-    fun setFilter(filter: ModuleFilter) { _selectedFilter.value = filter }
-    fun setSelectedModule(id: String?) { _selectedModuleId.value = id }
+    fun updateSearchText(text: String) {
+        _searchText.value = text
+    }
+
+    fun setFilter(filter: ModuleFilter) {
+        _selectedFilter.value = filter
+    }
+
+    fun setSelectedModule(id: String?) {
+        _selectedModuleId.value = id
+    }
 
     // ── Artwork gradient ─────────────────────────────────────────────
 
-    /**
-     * Mirrors Swift `extractArtworkColors(for:)`.
-     * Writes bytes to a temp cache file, runs Artwork extraction, and updates
-     * the gradient StateFlow.
-     */
     fun extractArtworkColors(module: RemoteAudioModuleInfo) {
         val requestId = module.uniqueId
         _backgroundGradientColors.value = listOf(DEFAULT_ACCENT_TINT, TRANSPARENT)
         gradientOwnerUniqueId = requestId
 
         viewModelScope.launch {
-            var bytes: ByteArray? = module.albumArtworkBytes ?: module.artworkBytes
-            Log.d(TAG, "🎨 [$requestId] localBytes = ${bytes?.size ?: 0}")
+            // 1. Determine the best image source
+            val model: Any? = run {
+                val albumBytes = module.albumArtworkBytes
+                val plainBytes = module.artworkBytes
+                val urlString = module.artworkFile?.url
 
-            if (bytes == null) {
-                val url = module.artworkFile?.url
-                if (!url.isNullOrBlank()) {
-                    try {
-                        bytes = withContext(Dispatchers.IO) {
-                            java.net.URL(url).openStream().use { it.readBytes() }
-                        }
-                        Log.d(TAG, "🎨 [$requestId] downloaded = ${bytes?.size ?: 0} bytes")
-                    } catch (e: Throwable) {
-                        Log.e(TAG, "🎨 [$requestId] download failed", e)
-                    }
+                when {
+                    albumBytes != null && albumBytes.isNotEmpty() -> albumBytes
+                    plainBytes != null && plainBytes.isNotEmpty() -> plainBytes
+                    !urlString.isNullOrBlank() -> urlString
+                    else -> null
                 }
             }
 
-            val data = bytes
-            if (data == null || data.isEmpty()) {
+            if (model == null) {
                 Log.d(TAG, "🎨 [$requestId] no artwork data → accent fallback")
                 return@launch
             }
 
-            val extracted: List<Long> = withContext(Dispatchers.IO) {
+            // 2. Ask Coil for the image (it will use the memory/disk cache if the UI already loaded it)
+            val request = ImageRequest.Builder(getApplication())
+                .data(model)
+                .allowHardware(false) // MUST be false to read pixels
+                .size(64, 64)         // Shrink to 64x64 for instant processing
+                .build()
+
+            val result = imageLoader.execute(request)
+
+            if (result !is SuccessResult) {
+                Log.e(TAG, "🎨 [$requestId] Coil failed to load image")
+                return@launch
+            }
+
+            val drawable = result.drawable
+            if (drawable !is android.graphics.drawable.BitmapDrawable) {
+                Log.e(TAG, "🎨 [$requestId] Coil returned non-bitmap drawable")
+                return@launch
+            }
+
+            val bitmap = drawable.bitmap
+
+            // 3. Extract using the Swift-equivalent Band Averaging logic
+            val extracted: List<Long> = withContext(Dispatchers.Default) {
                 try {
-                    // Write to temp file because uniffi Artwork expects a path
-                    val tempFile = File(getApplication<Application>().cacheDir, "art_$requestId.tmp")
-                    tempFile.writeBytes(data)
+                    val count = 4
+                    val width = bitmap.width
+                    val height = bitmap.height
+                    val bandHeight = height / count
+                    val colors = mutableListOf<Long>()
 
-                    val artwork = Artwork(tempFile.absolutePath)
-                    val colors = artwork.extractColors(4u)
+                    // Loop through 4 horizontal bands
+                    for (i in 0 until count) {
+                        val y = i * bandHeight
+                        val h = if (i == count - 1) height - y else bandHeight
 
-                    tempFile.delete() // clean up
+                        if (h <= 0) continue
 
-                    colors.map { rgbaToArgb(it) }
+                        // Get the average color of this band
+                        val avgColor = getAverageColor(bitmap, 0, y, width, h)
+
+                        val r = android.graphics.Color.red(avgColor) / 255.0
+                        val g = android.graphics.Color.green(avgColor) / 255.0
+                        val b = android.graphics.Color.blue(avgColor) / 255.0
+
+                        val brightness = (r + g + b) / 3.0
+
+                        // Skip near-white or near-black bands
+                        if (brightness > 0.92 || brightness < 0.05) {
+                            continue
+                        }
+
+                        colors.add(avgColor.toLong() or 0xFF000000L)
+                    }
+
+                    // If filtering left us with nothing, fall back to raw averages
+                    if (colors.isEmpty()) {
+                        for (i in 0 until count) {
+                            val y = i * bandHeight
+                            val h = if (i == count - 1) height - y else bandHeight
+                            if (h <= 0) continue
+                            val avgColor = getAverageColor(bitmap, 0, y, width, h)
+                            colors.add(avgColor.toLong() or 0xFF000000L)
+                        }
+                    }
+
+                    colors
                 } catch (e: Throwable) {
                     Log.e(TAG, "🎨 [$requestId] extraction failed", e)
                     emptyList()
                 }
             }
 
-            Log.d(TAG, "🎨 [$requestId] extracted ${extracted.size} colors")
-
+            // 4. Drop stale results
             if (gradientOwnerUniqueId != requestId) {
                 Log.d(TAG, "🎨 [$requestId] stale → dropped")
                 return@launch
             }
+
             if (extracted.isEmpty()) return@launch
 
             _backgroundGradientColors.value = extracted
-            Log.d(TAG, "🎨 [$requestId] published ${extracted.size} colors")
+            Log.d(TAG, "[$requestId] published ${extracted.size} colors")
         }
+    }
+
+    // Helper to compute the average color of a specific rectangle in a Bitmap
+    private fun getAverageColor(
+        bitmap: android.graphics.Bitmap,
+        x: Int,
+        y: Int,
+        w: Int,
+        h: Int
+    ): Int {
+        val pixels = IntArray(w * h)
+        bitmap.getPixels(pixels, 0, w, x, y, w, h)
+
+        var r = 0L
+        var g = 0L
+        var b = 0L
+
+        for (pixel in pixels) {
+            r += android.graphics.Color.red(pixel)
+            g += android.graphics.Color.green(pixel)
+            b += android.graphics.Color.blue(pixel)
+        }
+
+        val total = pixels.size.toLong()
+        if (total == 0L) return android.graphics.Color.BLACK
+
+        return android.graphics.Color.rgb(
+            (r / total).toInt(),
+            (g / total).toInt(),
+            (b / total).toInt()
+        )
     }
 
     fun resetArtworkColors() {
@@ -524,15 +624,5 @@ class AudioStoreViewModel @Inject constructor(
 
         private fun parseIso(s: String): Long =
             runCatching { java.time.Instant.parse(s).toEpochMilli() }.getOrDefault(0L)
-
-        private fun rgbaToArgb(c: uniffi.xbible_engine.AudioEngineRgbaColor): Long {
-            fun ch(v: Double): Long =
-                (v.coerceIn(0.0, 1.0) * 255.0).toLong().coerceIn(0L, 255L)
-            val a = ch(c.alpha)
-            val r = ch(c.red)
-            val g = ch(c.green)
-            val b = ch(c.blue)
-            return (a shl 24) or (r shl 16) or (g shl 8) or b
-        }
     }
 }

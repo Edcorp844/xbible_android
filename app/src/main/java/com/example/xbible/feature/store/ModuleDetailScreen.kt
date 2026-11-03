@@ -1,5 +1,7 @@
 package com.example.xbible.feature.store
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +24,6 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -42,52 +43,68 @@ fun ModuleDetailScreen(
     val gradient by viewModel.backgroundGradientColors.collectAsState()
     val live = catalog.firstOrNull { it.uniqueId == module.uniqueId } ?: module
 
-    // This triggers the Rust extraction (or fallback) you referenced
-    LaunchedEffect(live.uniqueId) { viewModel.extractArtworkColors(live) }
+    // Use the module ID so it doesn't restart when the install status updates
+    LaunchedEffect(module.uniqueId) {
+        viewModel.extractArtworkColors(module)
+    }
+
+    // Smoothly animate the gradient colors when they are extracted
+    val color1 by animateColorAsState(
+        targetValue = Color(gradient.getOrNull(0) ?: 0x1A000000L),
+        animationSpec = tween(600),
+        label = "color1"
+    )
+    val color2 by animateColorAsState(
+        targetValue = Color(gradient.getOrNull(1) ?: 0x00000000L),
+        animationSpec = tween(600),
+        label = "color2"
+    )
+
+    val pageBackground = MaterialTheme.colorScheme.background
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(pageBackground)
     ) {
-        // 1. Full-screen Background Gradient
-        Brush.verticalGradient(
-            colors = listOf(
-                Color(gradient.getOrNull(0) ?: 0x1A000000L).copy(alpha = 0.6f),
-                Color(gradient.getOrNull(1) ?: 0x00000000L).copy(alpha = 0.3f),
-                Color.Transparent,
-            ),
-            startY = 0f,
-            endY = 1200f, // Stretches the gradient down the screen
-        ).let { brush ->
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(brush)
-            )
-        }
+        // 1. Hero Gradient (Apple Music style)
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            // Fully opaque at the top (blows into the status bar)
+                            0.0f to color1.copy(alpha = 0.85f),
+                            // Hold the rich color behind the image
+                            0.4f to color1.copy(alpha = 0.6f),
+                            // Second color transition
+                            0.55f to color2.copy(alpha = 0.3f),
+                            // Smooth fade out to transparent so the page background takes over
+                            0.85f to Color.Transparent,
+                            1.0f to Color.Transparent
+                        )
+                    )
+                )
+        )
 
-        // 2. Main Scrollable Content
+        // 2. Scrollable Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 40.dp), // Space for bottom nav
+                .padding(bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Custom Top Bar (Clears status bar)
-            CustomTopBar(
-                title = live.displayTitle,
-                onBack = onBack,
-                modifier = Modifier.padding(top = 48.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-            )
+            Spacer(Modifier.height(64.dp)) // Space for sticky button
 
             // Artwork
             Box(
                 modifier = Modifier
                     .size(220.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant) // Shadow fallback
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 val bytes = live.albumArtworkBytes ?: live.artworkBytes
                 when {
@@ -105,13 +122,13 @@ fun ModuleDetailScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // Title with subtle shadow for readability over gradient
+            // Title
             Text(
                 text = live.displayTitle,
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    shadow = Shadow(color = Color.Black.copy(alpha = 0.2f), blurRadius = 4f)
+                    shadow = Shadow(color = Color.Black.copy(alpha = 0.2f), blurRadius = 6f)
                 ),
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(horizontal = 24.dp)
@@ -141,12 +158,14 @@ fun ModuleDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 MetadataGrid(live)
+
                 if (live.features.features.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             "Features",
                             style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -167,12 +186,14 @@ fun ModuleDetailScreen(
                         }
                     }
                 }
+
                 live.description?.takeIf { it.isNotBlank() }?.let { d ->
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             "About",
                             style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
                             d,
@@ -184,43 +205,30 @@ fun ModuleDetailScreen(
                 }
             }
         }
-    }
-}
 
-// Custom top bar to match the iOS design
-@Composable
-private fun CustomTopBar(
-    title: String,
-    onBack: (() -> Unit)?,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (onBack != null) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
+        // 3. Sticky Button
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .align(Alignment.TopStart)
+        ) {
+            if (onBack != null) {
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(Color.Black.copy(alpha = 0.2f), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
             }
-            Spacer(Modifier.width(16.dp))
         }
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
     }
 }
 
@@ -276,6 +284,7 @@ private fun MetadataGrid(live: RemoteAudioModuleInfo) {
             "Details",
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {

@@ -44,12 +44,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    sourceSets {
-        getByName("main") {
-            jniLibs.srcDirs("src/main/jni")
-        }
-    }
 }
 
 kotlin {
@@ -63,10 +57,7 @@ dependencies {
     implementation(libs.androidx.compose.adaptive)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
-
-    // Modern replacement for kapt(libs.hilt.compiler)
     ksp(libs.hilt.compiler)
-
     implementation(libs.androidx.adaptive.layout)
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.androidx.compose.foundation)
