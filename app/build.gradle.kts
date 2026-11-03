@@ -75,10 +75,9 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.coil.compose)
-
-    // Using the Android AAR version of JNA via string interpolation
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.session)
     implementation("${libs.jna.get()}@aar")
-
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,10 +1,13 @@
 package com.example.xbible.core.audio
 
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaDataSource
-import android.media.MediaPlayer
 import android.util.Log
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.ByteArrayDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.example.xbible.data.AudioBibleRepository
 import uniffi.xbible_engine.AudioNode
 import uniffi.xbible_engine.PlaybackState
@@ -26,7 +29,7 @@ class AudioBiblePlayer(
     moduleFilePath: String,
     private val audioRepo: AudioBibleRepository
 ) {
-    private var mediaPlayer: MediaPlayer? = null
+    private var exoPlayer: ExoPlayer? = null
     private var syncJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Main)
     private var isInteracting: Boolean = false
@@ -39,6 +42,11 @@ class AudioBiblePlayer(
     val navigationTree: StateFlow<AudioNode?> = _navigationTree.asStateFlow()
 
     init {
+        initializePlayer(context, moduleFilePath)
+    }
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    private fun initializePlayer(context: Context, moduleFilePath: String) {
         try {
             val rawAudioBytes = audioRepo.loadAudioModule(moduleFilePath)
             _navigationTree.value = audioRepo.getNavigationTree()
@@ -49,44 +57,42 @@ class AudioBiblePlayer(
                 Log.e(TAG, "Rust engine returned 0 bytes for audio module")
             }
 
-            val dataSource = ByteArrayMediaDataSource(rawAudioBytes)
+            // 1. Create a DataSource from the raw bytes
+            val dataSource = ByteArrayDataSource(rawAudioBytes)
 
-            mediaPlayer = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build()
-                )
-                setDataSource(dataSource)
+            // 2. Create a MediaSource using the DataSource
+            // We use a dummy URI since the data is already in memory.
+            val mediaSource = ProgressiveMediaSource.Factory { dataSource }
+                .createMediaSource(MediaItem.fromUri("asset:///audio.xba"))
 
-                setOnPreparedListener { mp ->
-                    Log.d(TAG, "MediaPlayer prepared. Duration: ${mp.duration}ms")
-                    isPrepared = true
-                    try {
-                        mp.setVolume(1f, 1f)
-                        mp.start()
-                        Log.d(TAG, "onPrepared: start() called, isPlaying=${mp.isPlaying}")
-                        if (!(audioRepo.getPlaybackState()?.isPlaying ?: false)) {
-                            audioRepo.togglePlayback()
+            // 3. Build ExoPlayer and set the MediaSource
+            exoPlayer = ExoPlayer.Builder(context).build().apply {
+                setMediaSource(mediaSource)
+                prepare()
+
+                addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        if (playbackState == Player.STATE_READY) {
+                            Log.d(TAG, "ExoPlayer READY. Duration: ${duration}ms")
+                            isPrepared = true
+                            play()
                         }
-                    } catch (e: IllegalStateException) {
-                        Log.e(TAG, "onPrepared: start() failed", e)
                     }
-                }
 
-                setOnCompletionListener {
-                    Log.d(TAG, "Playback completed")
-                    _playbackState.value = audioRepo.getPlaybackState()
-                }
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        if (!isInteracting) {
+                            val engineIsPlaying = audioRepo.getPlaybackState()?.isPlaying ?: false
+                            if (isPlaying != engineIsPlaying) {
+                                audioRepo.togglePlayback()
+                            }
+                        }
+                    }
 
-                setOnErrorListener { _, what, extra ->
-                    Log.e(TAG, "MediaPlayer error: what=$what, extra=$extra")
-                    isPrepared = false
-                    true
-                }
-
-                prepareAsync()
+                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                        Log.e(TAG, "ExoPlayer error", error)
+                        isPrepared = false
+                    }
+                })
             }
 
             audioRepo.seekToTime(0)
@@ -100,7 +106,7 @@ class AudioBiblePlayer(
     }
 
     fun play() {
-        val player = mediaPlayer
+        val player = exoPlayer
         if (player == null || !isPrepared) {
             Log.w(TAG, "play() ignored: not ready")
             return
@@ -109,28 +115,27 @@ class AudioBiblePlayer(
         withInteractionLock {
             try {
                 if (!player.isPlaying) {
-                    player.setVolume(1f, 1f)
-                    player.start()
+                    player.play()
                     Log.d(TAG, "play(): started, isPlaying=${player.isPlaying}")
                 }
                 if (!(audioRepo.getPlaybackState()?.isPlaying ?: false)) {
                     audioRepo.togglePlayback()
                 }
-            } catch (e: IllegalStateException) {
+            } catch (e: Exception) {
                 Log.e(TAG, "play() failed", e)
             }
         }
     }
 
     fun pause() {
-        val player = mediaPlayer ?: return
+        val player = exoPlayer ?: return
         withInteractionLock {
             try {
                 if (player.isPlaying) player.pause()
                 if (audioRepo.getPlaybackState()?.isPlaying ?: true) {
                     audioRepo.togglePlayback()
                 }
-            } catch (e: IllegalStateException) {
+            } catch (e: Exception) {
                 Log.e(TAG, "pause() failed", e)
             }
         }
@@ -139,12 +144,11 @@ class AudioBiblePlayer(
     fun stop() {
         withInteractionLock {
             try {
-                mediaPlayer?.stop()
-                mediaPlayer?.reset()
-                mediaPlayer?.release()
-                mediaPlayer = null
+                exoPlayer?.stop()
+                exoPlayer?.release()
+                exoPlayer = null
                 isPrepared = false
-            } catch (e: IllegalStateException) {
+            } catch (e: Exception) {
                 Log.e(TAG, "stop() failed", e)
             }
             audioRepo.stop()
@@ -152,14 +156,14 @@ class AudioBiblePlayer(
     }
 
     fun seekTo(ms: Long) {
-        val player = mediaPlayer
+        val player = exoPlayer
         if (player == null || !isPrepared) return
 
         withInteractionLock {
             try {
-                player.seekTo(ms.toInt())
+                player.seekTo(ms)
                 audioRepo.seekToTime(ms)
-            } catch (e: IllegalStateException) {
+            } catch (e: Exception) {
                 Log.e(TAG, "seekTo() failed", e)
             }
         }
@@ -188,12 +192,11 @@ class AudioBiblePlayer(
     }
 
     private fun executeTickSync() {
-        val player = mediaPlayer ?: return
+        val player = exoPlayer ?: return
         if (!isPrepared) return
 
         try {
-            // KEY FIX: read the actual position from MediaPlayer, not from the Rust engine
-            val timeMs = player.currentPosition.toLong()
+            val timeMs = player.currentPosition
 
             val engineIsPlaying = audioRepo.getPlaybackState()?.isPlaying ?: false
             if (player.isPlaying != engineIsPlaying && !isInteracting) {
@@ -202,11 +205,10 @@ class AudioBiblePlayer(
 
             audioRepo.seekToTime(timeMs)
 
-            // KEY FIX: override the engine's time with the actual player time
             audioRepo.getPlaybackState()?.let { state ->
                 _playbackState.value = state.copy(currentTimeMs = timeMs)
             }
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             // Player may be in a transient state, ignore
         }
     }
@@ -214,21 +216,9 @@ class AudioBiblePlayer(
     fun release() {
         syncJob?.cancel()
         try {
-            mediaPlayer?.release()
-        } catch (_: IllegalStateException) {}
-        mediaPlayer = null
+            exoPlayer?.release()
+        } catch (_: Exception) {}
+        exoPlayer = null
         isPrepared = false
     }
-}
-
-private class ByteArrayMediaDataSource(private val data: ByteArray) : MediaDataSource() {
-    override fun readAt(position: Long, buffer: ByteArray, offset: Int, size: Int): Int {
-        if (position >= data.size) return -1
-        val bytesToRead = minOf(size.toLong(), (data.size - position)).toInt()
-        System.arraycopy(data, position.toInt(), buffer, offset, bytesToRead)
-        return bytesToRead
-    }
-
-    override fun getSize(): Long = data.size.toLong()
-    override fun close() { /* No-op */ }
 }
