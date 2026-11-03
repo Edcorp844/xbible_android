@@ -60,11 +60,19 @@ class AudioBiblePlayer(
                 )
                 setDataSource(dataSource)
 
-                setOnPreparedListener {
-                    Log.d(TAG, "MediaPlayer prepared. Duration: ${it.duration}ms")
+                setOnPreparedListener { mp ->
+                    Log.d(TAG, "MediaPlayer prepared. Duration: ${mp.duration}ms")
                     isPrepared = true
-                    // Auto-play once ready
-                    it.start()
+                    try {
+                        mp.setVolume(1f, 1f)
+                        mp.start()
+                        Log.d(TAG, "onPrepared: start() called, isPlaying=${mp.isPlaying}")
+                        if (!(audioRepo.getPlaybackState()?.isPlaying ?: false)) {
+                            audioRepo.togglePlayback()
+                        }
+                    } catch (e: IllegalStateException) {
+                        Log.e(TAG, "onPrepared: start() failed", e)
+                    }
                 }
 
                 setOnCompletionListener {
@@ -94,14 +102,16 @@ class AudioBiblePlayer(
     fun play() {
         val player = mediaPlayer
         if (player == null || !isPrepared) {
-            Log.w(TAG, "play() called but player not prepared yet")
+            Log.w(TAG, "play() ignored: not ready")
             return
         }
 
         withInteractionLock {
             try {
                 if (!player.isPlaying) {
+                    player.setVolume(1f, 1f)
                     player.start()
+                    Log.d(TAG, "play(): started, isPlaying=${player.isPlaying}")
                 }
                 if (!(audioRepo.getPlaybackState()?.isPlaying ?: false)) {
                     audioRepo.togglePlayback()
@@ -116,9 +126,7 @@ class AudioBiblePlayer(
         val player = mediaPlayer ?: return
         withInteractionLock {
             try {
-                if (player.isPlaying) {
-                    player.pause()
-                }
+                if (player.isPlaying) player.pause()
                 if (audioRepo.getPlaybackState()?.isPlaying ?: true) {
                     audioRepo.togglePlayback()
                 }
@@ -161,7 +169,6 @@ class AudioBiblePlayer(
         isInteracting = true
         action()
         executeTickSync()
-
         scope.launch {
             delay(100.milliseconds)
             isInteracting = false
@@ -185,6 +192,7 @@ class AudioBiblePlayer(
         if (!isPrepared) return
 
         try {
+            // KEY FIX: read the actual position from MediaPlayer, not from the Rust engine
             val timeMs = player.currentPosition.toLong()
 
             val engineIsPlaying = audioRepo.getPlaybackState()?.isPlaying ?: false
@@ -194,8 +202,9 @@ class AudioBiblePlayer(
 
             audioRepo.seekToTime(timeMs)
 
+            // KEY FIX: override the engine's time with the actual player time
             audioRepo.getPlaybackState()?.let { state ->
-                _playbackState.value = state
+                _playbackState.value = state.copy(currentTimeMs = timeMs)
             }
         } catch (e: IllegalStateException) {
             // Player may be in a transient state, ignore
@@ -221,6 +230,5 @@ private class ByteArrayMediaDataSource(private val data: ByteArray) : MediaDataS
     }
 
     override fun getSize(): Long = data.size.toLong()
-
     override fun close() { /* No-op */ }
 }

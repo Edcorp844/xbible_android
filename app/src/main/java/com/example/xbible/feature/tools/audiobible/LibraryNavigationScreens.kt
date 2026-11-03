@@ -43,7 +43,7 @@ import com.example.xbible.viewmodel.InstalledCollectionNode
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsDirectoryScreen(
-    viewModel: AudioBibleViewModel = hiltViewModel(),
+    viewModel: AudioBibleViewModel,
     onBack: () -> Unit,
     onNavigateToAlbums: (InstalledCollectionNode) -> Unit
 ) {

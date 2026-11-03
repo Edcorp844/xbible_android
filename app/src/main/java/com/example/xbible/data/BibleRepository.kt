@@ -34,7 +34,7 @@ class BibleRepository @Inject constructor(private val application: Application) 
     suspend fun initialize(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             // Load native libraries
-            System.loadLibrary("c++_shared")
+           // System.loadLibrary("c++_shared")
             System.loadLibrary("xbible_engine")
 
             val filesDir = application.filesDir.absolutePath

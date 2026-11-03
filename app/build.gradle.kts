@@ -53,6 +53,8 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.material)
+    implementation(libs.materialKolor.material3)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.compose.adaptive)
     implementation(libs.hilt.android)

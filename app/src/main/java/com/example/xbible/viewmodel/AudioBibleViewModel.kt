@@ -1,5 +1,6 @@
 package com.example.xbible.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
@@ -15,7 +16,6 @@ import com.example.xbible.core.audio.AudioBiblePlayer
 import com.example.xbible.data.AudioBibleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import uniffi.xbible_engine.AudioModuleInfo
@@ -52,7 +52,6 @@ data class InstalledAlbumNode(
     val order: Int,
     val modules: List<AudioModuleInfo>
 ) {
-    // Artwork extracted from the first module in the album
     val artworkBitmap: Bitmap?
         get() = modules.firstOrNull { it.artwork.imageBytes() != null }?.let { module ->
             module.artwork.imageBytes()?.let { bytes ->
@@ -68,11 +67,9 @@ class AudioBibleViewModel @Inject constructor(
     private val audioRepo: AudioBibleRepository
 ) : AndroidViewModel(application) {
 
-    // ── Skip Constants ───────────────────────────────────────────────
     private val forwardSkipMs = 30_000L
     private val backwardSkipMs = 15_000L
 
-    // ── Published UI State (slow-updating) ───────────────────────────
     private val _selectedModule = MutableStateFlow<AudioModuleInfo?>(null)
     val selectedModule = _selectedModule.asStateFlow()
 
@@ -91,35 +88,25 @@ class AudioBibleViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _isFullPlayerPresented = MutableStateFlow(false)
-    val isFullPlayerPresented = _isFullPlayerPresented.asStateFlow()
-
     private val _decodedArtwork = MutableStateFlow<Bitmap?>(null)
     val decodedArtwork = _decodedArtwork.asStateFlow()
 
     private val _backgroundGradientColors = MutableStateFlow<List<Long>>(listOf(0xFF000000))
     val backgroundGradientColors = _backgroundGradientColors.asStateFlow()
 
-    // ── Published UI State (fast-updating) ──────────────────────────
     private val _currentTimeMs = MutableStateFlow(0L)
     val currentTimeMs = _currentTimeMs.asStateFlow()
 
     private val _activeText = MutableStateFlow("")
     val activeText = _activeText.asStateFlow()
 
-    private val _isFullPlayerVisible = MutableStateFlow(false)
-    val isFullPlayerVisible = _isFullPlayerVisible.asStateFlow()
-
-    // ── Private State ────────────────────────────────────────────────
     private var internalPlaybackState: PlaybackState? = null
     private var flattenedChaptersCache: List<AudioNode> = emptyList()
     private var player: AudioBiblePlayer? = null
 
-    // Audio Focus (Android equivalent of AVAudioSession)
     private var audioFocusRequest: AudioFocusRequest? = null
     private var legacyFocusListener: AudioManager.OnAudioFocusChangeListener? = null
 
-    // ── Public Computed ──────────────────────────────────────────────
     val availableModules: List<AudioModuleInfo>
         get() = audioRepo.getAudioModules()
 
@@ -135,7 +122,6 @@ class AudioBibleViewModel @Inject constructor(
     val cachedChaptersList: List<AudioNode>
         get() = flattenedChaptersCache
 
-    // ── Organisation (Same logic as Swift) ──────────────────────────
     val organizedLibrary: List<InstalledLanguageNode>
         get() {
             val organized = availableModules.mapNotNull { module ->
@@ -183,9 +169,7 @@ class AudioBibleViewModel @Inject constructor(
     val unorganizedModules: List<AudioModuleInfo>
         get() = availableModules.filter { it.metadata?.organization == null }
 
-    // ── Init ─────────────────────────────────────────────────────────
     init {
-        // Ensure the engine is ready before anything else
         audioRepo.initialize()
         setupAudioFocus()
     }
@@ -196,17 +180,12 @@ class AudioBibleViewModel @Inject constructor(
 
         val focusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
             when (focusChange) {
-                AudioManager.AUDIOFOCUS_LOSS -> {
-                    player?.pause()
-                    _isPlaying.value = false
-                }
+                AudioManager.AUDIOFOCUS_LOSS,
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                     player?.pause()
                     _isPlaying.value = false
                 }
-                AudioManager.AUDIOFOCUS_GAIN -> {
-                    // Optionally resume playback
-                }
+                AudioManager.AUDIOFOCUS_GAIN -> { /* optionally resume */ }
             }
         }
 
@@ -242,7 +221,6 @@ class AudioBibleViewModel @Inject constructor(
         }
     }
 
-    // ── Module Selection ─────────────────────────────────────────────
     fun selectModule(module: AudioModuleInfo) {
         requestAudioFocus()
 
@@ -255,19 +233,39 @@ class AudioBibleViewModel @Inject constructor(
         _currentTimeMs.value = 0
         _activeText.value = ""
 
-        // Decode Artwork
+        // 1. Decode Artwork AND extract colors from the Rust image bytes
         module.artwork.imageBytes()?.let { data ->
-            _decodedArtwork.value = BitmapFactory.decodeByteArray(data, 0, data.size)
+            val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+            _decodedArtwork.value = bitmap
+
+            // EXTRACT COLORS using the same logic as the Store
+            try {
+                val artwork = module.artwork
+                val colors = artwork.extractColors(4u)
+
+                if (colors.isNotEmpty()) {
+                    val extractedLongs = colors.map { color ->
+                        val r = (color.red * 255).toLong().coerceIn(0, 255)
+                        val g = (color.green * 255).toLong().coerceIn(0, 255)
+                        val b = (color.blue * 255).toLong().coerceIn(0, 255)
+                        val a = (color.alpha * 255).toLong().coerceIn(0, 255)
+                        (a shl 24) or (r shl 16) or (g shl 8) or b
+                    }
+                    _backgroundGradientColors.value = extractedLongs
+                    Log.d(TAG, "🎨 Extracted colors from Rust: $extractedLongs")
+                } else {
+                    Log.w(TAG, "🎨 Rust returned 0 colors for ${module.fileName}")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "🎨 Failed to extract colors", e)
+            }
         }
 
         val basePath = audioRepo.getAudioModulesPath()
         val directFile = File(basePath, module.fileName)
 
-        val finalURL = if (directFile.exists()) {
-            directFile
-        } else {
-            File(basePath).walkTopDown().firstOrNull { it.name == module.fileName }
-        }
+        val finalURL = if (directFile.exists()) directFile
+        else File(basePath).walkTopDown().firstOrNull { it.name == module.fileName }
 
         if (finalURL == null) {
             Log.e(TAG, "CRITICAL: Could not find ${module.fileName} in $basePath")
@@ -277,7 +275,6 @@ class AudioBibleViewModel @Inject constructor(
 
         Log.d(TAG, "🎵 Found module at: ${finalURL.path}")
 
-        // Clean up old player
         player?.release()
 
         val newPlayer = AudioBiblePlayer(
@@ -290,30 +287,20 @@ class AudioBibleViewModel @Inject constructor(
         loadAndCacheNavigationTree()
         setupStateListener()
 
-        viewModelScope.launch {
-            delay(50) // Match Swift delay
-            player?.play()
-            _isPlaying.value = true
-            _isLoading.value = false
-        }
+        _isLoading.value = false
     }
 
-    // ── State Listener (Throttled Flow) ──────────────────────────────
     private fun setupStateListener() {
         viewModelScope.launch {
             player?.playbackState
                 ?.filterNotNull()
-                ?.sample(30) // Throttle to ~30ms
                 ?.collect { state ->
                     internalPlaybackState = state
 
-                    // Fast updates (only when full player is visible)
-                    if (_isFullPlayerVisible.value) {
-                        _currentTimeMs.value = state.currentTimeMs
-                        _activeText.value = state.activeText
-                    }
+                    // KEY FIX: always publish time, not gated by isFullPlayerVisible
+                    _currentTimeMs.value = state.currentTimeMs
+                    _activeText.value = state.activeText
 
-                    // Slow updates
                     if (_isPlaying.value != state.isPlaying) {
                         _isPlaying.value = state.isPlaying
                     }
@@ -322,7 +309,6 @@ class AudioBibleViewModel @Inject constructor(
         }
     }
 
-    // ── Playback Controls ────────────────────────────────────────────
     fun togglePlayback() {
         val p = player ?: return
         if (_isPlaying.value) {
@@ -332,12 +318,9 @@ class AudioBibleViewModel @Inject constructor(
             p.play()
             _isPlaying.value = true
         }
-
         audioRepo.getPlaybackState()?.let {
             internalPlaybackState = it
-            if (_isPlaying.value != it.isPlaying) {
-                _isPlaying.value = it.isPlaying
-            }
+            _isPlaying.value = it.isPlaying
         }
     }
 
@@ -345,7 +328,6 @@ class AudioBibleViewModel @Inject constructor(
         val p = player ?: return
         val duration = _selectedModule.value?.metadata?.durationMs ?: Long.MAX_VALUE
         val target = minOf(_currentTimeMs.value + forwardSkipMs, duration)
-
         _currentTimeMs.value = target
         syncActiveChapter(target)
         p.seekTo(target)
@@ -354,7 +336,6 @@ class AudioBibleViewModel @Inject constructor(
     fun skipBackward() {
         val p = player ?: return
         val target = maxOf(0L, _currentTimeMs.value - backwardSkipMs)
-
         _currentTimeMs.value = target
         syncActiveChapter(target)
         p.seekTo(target)
@@ -387,20 +368,14 @@ class AudioBibleViewModel @Inject constructor(
         _isPlaying.value = false
         _currentTimeMs.value = 0
         _activeText.value = ""
-
-        audioRepo.getPlaybackState()?.let {
-            internalPlaybackState = it
-        }
+        audioRepo.getPlaybackState()?.let { internalPlaybackState = it }
     }
 
     fun setRepeatMode(mode: RepeatMode) {
         audioRepo.setRepeatMode(mode = mode)
-        audioRepo.getPlaybackState()?.let {
-            internalPlaybackState = it
-        }
+        audioRepo.getPlaybackState()?.let { internalPlaybackState = it }
     }
 
-    // ── Internal Helpers ─────────────────────────────────────────────
     private fun loadAndCacheNavigationTree() {
         val tree = audioRepo.getNavigationTree() ?: return
         flattenedChaptersCache = tree.children.flatMap { it.children }
@@ -423,18 +398,17 @@ class AudioBibleViewModel @Inject constructor(
             _selectedNodeId.value = matching.id
             _selectedNodeTitle.value = matching.title
         }
-
         if (_currentActiveTitle.value != matching.title) {
             _currentActiveTitle.value = matching.title
         }
     }
 
-    // ── Utilities ────────────────────────────────────────────────────
     fun getChapterIndex(chapterId: String): Int {
         val idx = flattenedChaptersCache.indexOfFirst { it.id == chapterId }
         return if (idx != -1) idx + 1 else 1
     }
 
+    @SuppressLint("DefaultLocale")
     fun formatTime(ms: Long): String {
         val totalSeconds = maxOf(0L, ms / 1000)
         val minutes = totalSeconds / 60
@@ -443,10 +417,9 @@ class AudioBibleViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        super.onCleared()
         player?.release()
-        val context = getApplication<Application>()
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val audioManager = getApplication<Application>()
+            .getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }

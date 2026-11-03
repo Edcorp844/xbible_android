@@ -13,7 +13,7 @@ import com.example.xbible.viewmodel.InstalledCollectionNode
 @Composable
 fun AudioBibleNavigation(
     onBackToTools: () -> Unit,
-    viewModel: AudioBibleViewModel = hiltViewModel()
+    viewModel: AudioBibleViewModel
 ) {
     var currentScreen by remember { mutableStateOf("home") }
     var selectedCollection by remember { mutableStateOf<InstalledCollectionNode?>(null) }

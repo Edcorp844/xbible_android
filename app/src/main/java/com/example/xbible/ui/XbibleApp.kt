@@ -1,7 +1,13 @@
 package com.example.xbible.ui
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -13,28 +19,44 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaul
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowSizeClass
 import com.example.xbible.R
+import com.example.xbible.core.ui.components.MiniPlayer
 import com.example.xbible.feature.library.LibraryScreen
 import com.example.xbible.feature.store.StoreScreen
 import com.example.xbible.feature.study.StudyScreen
 import com.example.xbible.feature.tools.ToolsScreen
+import com.example.xbible.feature.tools.audiobible.AudioBiblePlayerScreen
 import com.example.xbible.feature.tools.audiobible.AudioBibleNavigation
 import com.example.xbible.feature.tools.timeline.TimelineScreen
 import com.example.xbible.ui.icons.XBibleIcons
+import com.example.xbible.viewmodel.AudioBibleViewModel
 import com.example.xbible.viewmodel.EngineViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun XbibleApp(engineViewModel: EngineViewModel) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.STUDY) }
+
+    val activity = checkNotNull(LocalActivity.current as? ComponentActivity) {
+        "XbibleApp must be hosted inside a ComponentActivity"
+    }
+
+    val audioBibleViewModel: AudioBibleViewModel = hiltViewModel(viewModelStoreOwner = activity)
+    val selectedModule by audioBibleViewModel.selectedModule.collectAsState()
+
+    var showFullScreenPlayer by rememberSaveable { mutableStateOf(false) }
 
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
     val customNavSuiteType = with(adaptiveInfo) {
@@ -45,35 +67,64 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
         }
     }
 
-    NavigationSuiteScaffold(
-        layoutType = customNavSuiteType,
-        modifier = Modifier.fillMaxSize(),
-        navigationSuiteColors = NavigationSuiteDefaults.colors(
-            navigationBarContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-            navigationRailContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-        ),
-        navigationSuiteItems = {
-            AppDestinations.entries.filter { it.showInNav }.forEach { destination ->
-                item(
-                    icon = {
-                        Icon(
-                            imageVector = destination.icon,
-                            contentDescription = stringResource(destination.labelRes),
-                        )
-                    },
-                    label = { Text(stringResource(destination.labelRes)) },
-                    selected = destination == currentDestination,
-                    onClick = { currentDestination = destination }
-                )
-            }
-        }
-    ) {
-        MainContent(
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // 1. The Main App
+        NavigationSuiteScaffold(
+            layoutType = customNavSuiteType,
             modifier = Modifier.fillMaxSize(),
-            destination = currentDestination,
-            engineViewModel = engineViewModel,
-            onNavigate = { currentDestination = it }
-        )
+            navigationSuiteColors = NavigationSuiteDefaults.colors(
+                navigationBarContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                navigationRailContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            ),
+            navigationSuiteItems = {
+                AppDestinations.entries.filter { it.showInNav }.forEach { destination ->
+                    item(
+                        icon = {
+                            Icon(
+                                imageVector = destination.icon,
+                                contentDescription = stringResource(destination.labelRes),
+                            )
+                        },
+                        label = { Text(stringResource(destination.labelRes)) },
+                        selected = destination == currentDestination,
+                        onClick = { currentDestination = destination }
+                    )
+                }
+            }
+        ) {
+            MainContent(
+                modifier = Modifier.fillMaxSize(),
+                destination = currentDestination,
+                engineViewModel = engineViewModel,
+                audioBibleViewModel = audioBibleViewModel,
+                onNavigate = { currentDestination = it }
+            )
+        }
+
+        // 2. MiniPlayer Overlay
+        if (selectedModule != null && !showFullScreenPlayer) {
+            MiniPlayer(
+                viewModel = audioBibleViewModel,
+                onClick = { showFullScreenPlayer = true },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    // This applies the system navigation bar padding (the gesture pill)
+                    .padding(WindowInsets.navigationBars.asPaddingValues())
+                    // This pushes it up so it sits exactly on top of the app's NavigationBar
+                    // Note: 80.dp is the standard height of a M3 NavigationBar.
+                    // If it slightly overlaps, tweak this to 84.dp.
+                    .padding(bottom = 80.dp)
+            )
+        }
+
+        // 3. The Artwork Screen (Full Screen Overlay)
+        if (showFullScreenPlayer && selectedModule != null) {
+            AudioBiblePlayerScreen(
+                viewModel = audioBibleViewModel,
+                onBack = { showFullScreenPlayer = false }
+            )
+        }
     }
 }
 
@@ -82,6 +133,7 @@ fun MainContent(
     modifier: Modifier = Modifier,
     destination: AppDestinations,
     engineViewModel: EngineViewModel,
+    audioBibleViewModel: AudioBibleViewModel,
     onNavigate: (AppDestinations) -> Unit
 ) {
     Box(modifier = modifier) {
@@ -106,12 +158,11 @@ fun MainContent(
 
             AppDestinations.TIMELINE -> TimelineScreen(
                 onBack = { onNavigate(AppDestinations.TOOLS) },
-                onEventClick = { event ->
-                    // Handle event click - navigate to study or show info
-                }
+                onEventClick = { event -> }
             )
 
             AppDestinations.AUDIO_BIBLE -> AudioBibleNavigation(
+                viewModel = audioBibleViewModel,
                 onBackToTools = { onNavigate(AppDestinations.TOOLS) }
             )
         }

@@ -58,7 +58,7 @@ import uniffi.xbible_engine.AudioModuleInfo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioBibleHomeScreen(
-    viewModel: AudioBibleViewModel = hiltViewModel(),
+    viewModel: AudioBibleViewModel,
     onBack: () -> Unit,
     onNavigateToPlayer: () -> Unit,
     onNavigateToPlaylists: () -> Unit,
