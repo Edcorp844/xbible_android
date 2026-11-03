@@ -2,6 +2,8 @@ package com.example.xbible.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,7 @@ import com.example.xbible.feature.library.LibraryScreen
 import com.example.xbible.feature.store.StoreScreen
 import com.example.xbible.feature.study.StudyScreen
 import com.example.xbible.feature.tools.ToolsScreen
+import com.example.xbible.feature.tools.audiobible.AudioBibleNavigation
 import com.example.xbible.feature.tools.timeline.TimelineScreen
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.EngineViewModel
@@ -88,7 +91,12 @@ fun MainContent(
                 onNavigateToStore = { onNavigate(AppDestinations.STORE) })
 
             AppDestinations.STORE -> StoreScreen()
-            AppDestinations.TOOLS -> ToolsScreen(onNavigateToTimeline = { onNavigate(AppDestinations.TIMELINE) })
+
+            AppDestinations.TOOLS -> ToolsScreen(
+                onNavigateToTimeline = { onNavigate(AppDestinations.TIMELINE) },
+                onNavigateToAudioBible = { onNavigate(AppDestinations.AUDIO_BIBLE) }
+            )
+
             AppDestinations.LIBRARY -> LibraryScreen(
                 onOpenModule = { module ->
                     engineViewModel.selectModule(module)
@@ -101,6 +109,10 @@ fun MainContent(
                 onEventClick = { event ->
                     // Handle event click - navigate to study or show info
                 }
+            )
+
+            AppDestinations.AUDIO_BIBLE -> AudioBibleNavigation(
+                onBackToTools = { onNavigate(AppDestinations.TOOLS) }
             )
         }
     }
@@ -116,4 +128,5 @@ enum class AppDestinations(
     TOOLS(R.string.tools, XBibleIcons.Tools),
     LIBRARY(R.string.library, XBibleIcons.Library),
     TIMELINE(R.string.timeline, XBibleIcons.TimeLine, showInNav = false),
+    AUDIO_BIBLE(R.string.audio_bible, Icons.Default.Headphones, showInNav = false),
 }

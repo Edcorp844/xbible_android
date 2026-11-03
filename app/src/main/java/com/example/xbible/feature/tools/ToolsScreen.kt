@@ -1,23 +1,16 @@
 package com.example.xbible.feature.tools
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,12 +19,9 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,15 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.xbible.R
 import com.example.xbible.ui.icons.XBibleIcons
@@ -62,24 +49,42 @@ data class ToolItem(
     val icon: ImageVector
 )
 
+// Constants to avoid magic numbers
+object ToolIds {
+    const val TIMELINE = 1
+    const val AUDIO_BIBLE = 2
+    const val NOTES = 3
+    const val READING_PLANS = 4
+    const val BIBLICAL_MAPS = 5
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ToolsScreen(
-    onNavigateToTimeline: () -> Unit
+    onNavigateToTimeline: () -> Unit,
+    onNavigateToAudioBible: () -> Unit
 ) {
     val studyAids = listOf(
-        ToolItem(1, R.string.timeline, R.string.timeline_desc, XBibleIcons.TimeLine),
-        ToolItem(5, R.string.biblical_maps, R.string.biblical_maps_desc, Icons.Default.Map)
+        ToolItem(ToolIds.TIMELINE, R.string.timeline, R.string.timeline_desc, XBibleIcons.TimeLine),
+        ToolItem(ToolIds.BIBLICAL_MAPS, R.string.biblical_maps, R.string.biblical_maps_desc, Icons.Default.Map)
     )
-    
+
     val personalTools = listOf(
-        ToolItem(4, R.string.reading_plans, R.string.reading_plans_desc, Icons.AutoMirrored.Filled.Assignment),
-        ToolItem(3, R.string.notes, R.string.notes_desc, XBibleIcons.Notes)
+        ToolItem(ToolIds.READING_PLANS, R.string.reading_plans, R.string.reading_plans_desc, Icons.AutoMirrored.Filled.Assignment),
+        ToolItem(ToolIds.NOTES, R.string.notes, R.string.notes_desc, XBibleIcons.Notes)
     )
-    
+
     val mediaTools = listOf(
-        ToolItem(2, R.string.audio_bible, R.string.audio_bible_desc, Icons.Default.Headphones)
+        ToolItem(ToolIds.AUDIO_BIBLE, R.string.audio_bible, R.string.audio_bible_desc, Icons.Default.Headphones)
     )
+
+    // Single handler for all navigation
+    val onToolClick: (ToolItem) -> Unit = { tool ->
+        when (tool.id) {
+            ToolIds.TIMELINE -> onNavigateToTimeline()
+            ToolIds.AUDIO_BIBLE -> onNavigateToAudioBible()
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -87,12 +92,12 @@ fun ToolsScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         stringResource(R.string.bible_tools),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
-                    ) 
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
@@ -107,11 +112,11 @@ fun ToolsScreen(
             verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             ToolSection(
                 title = stringResource(R.string.study_aids),
                 items = studyAids,
-                onNavigateToTimeline = onNavigateToTimeline
+                onToolClick = onToolClick
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -119,7 +124,7 @@ fun ToolsScreen(
             ToolSection(
                 title = stringResource(R.string.personal),
                 items = personalTools,
-                onNavigateToTimeline = onNavigateToTimeline
+                onToolClick = onToolClick
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -127,9 +132,9 @@ fun ToolsScreen(
             ToolSection(
                 title = stringResource(R.string.media),
                 items = mediaTools,
-                onNavigateToTimeline = onNavigateToTimeline
+                onToolClick = onToolClick
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -140,19 +145,17 @@ fun ToolsScreen(
 fun ToolSection(
     title: String,
     items: List<ToolItem>,
-    onNavigateToTimeline: () -> Unit
+    onToolClick: (ToolItem) -> Unit
 ) {
     SectionTitle(title)
     val count = items.size
     items.forEachIndexed { index, tool ->
         SegmentedListItem(
-            onClick = { 
-                if (tool.id == 1) onNavigateToTimeline()
-            },
+            onClick = { onToolClick(tool) },
             modifier = Modifier.height(IntrinsicSize.Min),
             shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
             colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-            leadingContent = { 
+            leadingContent = {
                 Box(
                     modifier = Modifier.fillMaxHeight(),
                     contentAlignment = Alignment.Center
@@ -207,8 +210,3 @@ fun SegmentIcon(icon: ImageVector) {
         }
     }
 }
-
-/**
- * Extensions to ListItemDefaults to support the Segmented look.
- */
-val ListItemDefaults.SegmentedGap: Dp get() = 4.dp

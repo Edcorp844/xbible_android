@@ -121,4 +121,34 @@
     <string name="close_tab">Close Tab</string>
     <string name="no_reference">No Reference</string>
     <string name="search_label">Search: %1$s</string>
+
+    <!-- Audio Bible Library & Navigation -->
+    <string name="audio_bible_title">Audio Bible</string>
+    <string name="playlists">Playlists</string>
+    <string name="collections">Collections</string>
+    <string name="albums">Albums</string>
+    <string name="audio_modules">Audio Modules</string>
+    <string name="recently_added">Recently Added</string>
+    <string name="unknown_title">Unknown Title</string>
+    <string name="unknown_contributor">Unknown</string>
+
+    <!-- Audio Bible Player -->
+    <string name="now_playing">Now Playing</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="rewind_10">Rewind 10 seconds</string>
+    <string name="forward_10">Forward 10 seconds</string>
+    <string name="no_audio_modules">No audio modules installed.</string>
+    <string name="no_collections_found">No collections found.</string>
+    <string name="no_albums_found">No albums found.</string>
+
+    <!-- Audio Bible - Plurals -->
+    <plurals name="module_count">
+        <item quantity="one">%d module</item>
+        <item quantity="other">%d modules</item>
+    </plurals>
+    <plurals name="album_count">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
 </resources>
