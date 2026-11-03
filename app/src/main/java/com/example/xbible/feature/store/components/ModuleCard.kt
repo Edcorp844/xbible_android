@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Waves
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
@@ -31,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,7 +40,6 @@ import com.example.xbible.viewmodel.AudioStoreViewModel
 import uniffi.xbible_engine.ModuleStatus
 import uniffi.xbible_engine.RemoteAudioModuleInfo
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ModuleCard(
     module: RemoteAudioModuleInfo,
@@ -57,11 +55,11 @@ fun ModuleCard(
     Column(
         modifier = modifier.clickable(onClick = onClick),
     ) {
-        // 1:1 artwork
+        // ── 1:1 artwork — no overlays, no progress badge ──
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
+                .aspectRatio(1f),
         ) {
             val bytes = live.albumArtworkBytes ?: live.artworkBytes
             when {
@@ -73,7 +71,6 @@ fun ModuleCard(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp)),
                 )
-
                 !live.artworkFile?.url.isNullOrBlank() -> AsyncImage(
                     model = live.artworkFile!!.url,
                     contentDescription = live.displayTitle,
@@ -82,24 +79,7 @@ fun ModuleCard(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp)),
                 )
-
                 else -> ArtworkPlaceholder()
-            }
-            if (live.status is ModuleStatus.Downloading) {
-                val p = (live.status as ModuleStatus.Downloading).progress
-                AssistChip(
-                    onClick = {},
-                    label = {
-                        Text(
-                            "${(p * 100).toInt()}%",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                )
             }
         }
 
@@ -132,7 +112,7 @@ fun ModuleCard(
                 Spacer(Modifier.weight(1f))
             }
 
-            // Only show the control if it is NOT installed
+            // Only show the control when the module is NOT installed.
             if (live.status !is ModuleStatus.Installed) {
                 Spacer(Modifier.width(8.dp))
                 ModuleInstallControl(live, viewModel)
@@ -153,26 +133,47 @@ private fun ModuleInstallControl(
                 onClick = { viewModel.installModule(live.uniqueId) },
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp),
                 modifier = Modifier.height(32.dp),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
             ) {
                 Text(
                     "Get",
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
 
         is ModuleStatus.Downloading -> {
-            CircularWavyProgressIndicator(
-                progress = { status.progress.toFloat() },
-                modifier = Modifier.size(24.dp),
-            )
+            DownloadingRing(progress = status.progress)
         }
 
         is ModuleStatus.Installed -> {
-            // Do nothing, this is handled by the parent
+            // Handled by the parent (control is hidden).
         }
+    }
+}
+
+/**
+ * Small determinate ring with the percentage drawn inside it.
+ * This is the only place progress is shown on the card.
+ */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun DownloadingRing(progress: Double) {
+    Box(
+        modifier = Modifier.size(28.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularWavyProgressIndicator(
+            progress = { progress.toFloat() },
+            modifier = Modifier.size(28.dp),
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = "${(progress * 100).toInt()}",
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -182,11 +183,11 @@ fun ArtworkPlaceholder(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .background(
-                brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                brush = Brush.linearGradient(
                     listOf(
                         MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
                         MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
-                    )
+                    ),
                 ),
                 shape = RoundedCornerShape(12.dp),
             ),

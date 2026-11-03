@@ -107,6 +107,7 @@ class AudioBibleViewModel @Inject constructor(
     private val _activeText = MutableStateFlow("")
     val activeText = _activeText.asStateFlow()
 
+    // Kept as a plain List (matches existing usages in this class)
     private var internalPlaybackState: PlaybackState? = null
     private var flattenedChaptersCache: List<AudioNode> = emptyList()
 
@@ -145,6 +146,10 @@ class AudioBibleViewModel @Inject constructor(
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
                     _isLoading.value = false
+                    // FIX: Load the navigation tree only when the player is ready.
+                    // At this point the Rust engine has finished loading the module,
+                    // so getNavigationTree() will return real data.
+                    loadAndCacheNavigationTree()
                 }
                 if (playbackState == Player.STATE_ENDED) {
                     _isPlaying.value = false
@@ -284,8 +289,6 @@ class AudioBibleViewModel @Inject constructor(
 
         Log.d(TAG, "🎵 Loading module at: ${finalURL.path}")
 
-        // FIX: RequestMetadata is the only reliable way to pass the file URI
-        // across the IPC boundary from a MediaController to the MediaSessionService.
         val mediaItem = MediaItem.Builder()
             .setUri(Uri.fromFile(finalURL))
             .setMediaMetadata(
@@ -305,8 +308,8 @@ class AudioBibleViewModel @Inject constructor(
         mediaController?.prepare()
         mediaController?.play()
 
-        loadAndCacheNavigationTree()
-        _isLoading.value = false
+        // REMOVED: loadAndCacheNavigationTree() is now called from
+        // onPlaybackStateChanged(STATE_READY), once Rust has actually loaded the file.
     }
 
     fun togglePlayback() {
@@ -367,8 +370,13 @@ class AudioBibleViewModel @Inject constructor(
     }
 
     private fun loadAndCacheNavigationTree() {
-        val tree = audioRepo.getNavigationTree() ?: return
+        val tree = audioRepo.getNavigationTree()
+        Log.d("AudioBibleVM", "getNavigationTree() returned: ${tree != null}")
+        Log.d("AudioBibleVM", "tree.children size: ${tree?.children?.size}")
+
+        if (tree == null) return
         flattenedChaptersCache = tree.children.flatMap { it.children }
+        Log.d("AudioBibleVM", "flattenedChaptersCache size: ${flattenedChaptersCache.size}")
 
         if (_selectedNodeId.value == null && flattenedChaptersCache.isNotEmpty()) {
             val first = flattenedChaptersCache.first()
@@ -379,17 +387,29 @@ class AudioBibleViewModel @Inject constructor(
     }
 
     private fun syncActiveChapter(timeMs: Long) {
+        // 1. Ask Rust which node is currently "active" for this timestamp
         val activeId = audioRepo.findActiveNodeId(timeMs = timeMs) ?: return
+
+        // 2. Find the matching node in the flattened cache
         val matching = flattenedChaptersCache.firstOrNull {
             it.id == activeId || it.children.any { child -> child.id == activeId }
         } ?: return
 
+        // 3. Update the currently playing "chapter" (group) if it changed
         if (_selectedNodeId.value != matching.id) {
             _selectedNodeId.value = matching.id
             _selectedNodeTitle.value = matching.title
         }
         if (_currentActiveTitle.value != matching.title) {
             _currentActiveTitle.value = matching.title
+        }
+
+        // 4. THE MISSING PIECE: Publish the actual spoken text so the LyricsPane
+        //    can highlight and scroll to the correct verse.
+        val activeChild = matching.children.firstOrNull { it.id == activeId }
+        val spoken = (activeChild?.text ?: matching.text).orEmpty().trim()
+        if (spoken.isNotEmpty() && _activeText.value != spoken) {
+            _activeText.value = spoken
         }
     }
 

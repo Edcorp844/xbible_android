@@ -60,7 +60,6 @@ import uniffi.xbible_engine.AudioModuleInfo
 fun AudioBibleHomeScreen(
     viewModel: AudioBibleViewModel,
     onBack: () -> Unit,
-    onNavigateToPlayer: () -> Unit,
     onNavigateToPlaylists: () -> Unit,
     onNavigateToCollections: () -> Unit,
     onNavigateToAlbums: () -> Unit
@@ -137,7 +136,6 @@ fun AudioBibleHomeScreen(
             items(recentModules, key = { it.fileName }) { module ->
                 RecentModuleCard(module) {
                     viewModel.selectModule(module)
-                    onNavigateToPlayer()
                 }
             }
         }

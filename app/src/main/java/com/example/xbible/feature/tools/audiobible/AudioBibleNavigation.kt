@@ -22,7 +22,6 @@ fun AudioBibleNavigation(
         "home" -> AudioBibleHomeScreen(
             viewModel = viewModel,
             onBack = onBackToTools,
-            onNavigateToPlayer = { currentScreen = "player" },
             onNavigateToPlaylists = { /* TODO: Playlists Screen */ },
             onNavigateToCollections = { currentScreen = "collections" },
             onNavigateToAlbums = {
