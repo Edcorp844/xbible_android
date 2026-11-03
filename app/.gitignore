@@ -1,1 +1,3 @@
 /build
+/app/src/java/jniLibs/arm64-v8a/*.so
+/app/src/java/jniLibs/x86_64/*.so
