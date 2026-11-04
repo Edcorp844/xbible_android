@@ -151,4 +151,5 @@
         <item quantity="one">%d album</item>
         <item quantity="other">%d albums</item>
     </plurals>
+    <string name="no_results_for">No results for</string>
 </resources>

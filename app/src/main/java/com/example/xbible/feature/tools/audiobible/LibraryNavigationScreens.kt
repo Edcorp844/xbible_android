@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Album
-import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,16 +29,18 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.xbible.R
+import com.example.xbible.feature.store.components.CollectionThumbnail
 import com.example.xbible.viewmodel.AudioBibleViewModel
 import com.example.xbible.viewmodel.InstalledAlbumNode
 import com.example.xbible.viewmodel.InstalledCollectionNode
+import uniffi.xbible_engine.AudioModuleInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,15 +72,12 @@ fun CollectionsDirectoryScreen(
         ) {
             items(collections, key = { it.id }) { collection ->
                 Column(modifier = Modifier.clickable { onNavigateToAlbums(collection) }) {
-                    Box(
-                        Modifier
+                    CollectionThumbnail(
+                        collection, modifier = Modifier
                             .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
                             .aspectRatio(1f)
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Collections, null, Modifier.size(48.dp))
-                    }
+                    )
                     Text(collection.name, fontWeight = FontWeight.Bold)
                     Text(
                         "${collection.albums.size} albums",
@@ -96,7 +95,7 @@ fun AlbumsDirectoryScreen(
     albums: List<InstalledAlbumNode>,
     title: String,
     onBack: () -> Unit,
-    onPlay: (InstalledAlbumNode) -> Unit
+    onAlbumselected: (String, List<AudioModuleInfo>) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -118,11 +117,12 @@ fun AlbumsDirectoryScreen(
             modifier = Modifier.padding(padding)
         ) {
             items(albums, key = { it.id }) { album ->
-                Column(modifier = Modifier.clickable { onPlay(album) }) {
+                Column(modifier = Modifier.clickable { onAlbumselected(album.title, album.modules) }) {
                     Box(
                         Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f)
+                            .clip(RoundedCornerShape(10.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant),
                         contentAlignment = Alignment.Center
                     ) {

@@ -135,14 +135,6 @@ fun ToolsScreen(
                 onToolClick = onToolClick
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            ToolSection(
-                title = stringResource(R.string.media),
-                items = mediaTools,
-                onToolClick = onToolClick
-            )
-
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
