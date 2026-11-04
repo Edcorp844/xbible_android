@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.materialKolor.material3)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.compose.adaptive)
+    implementation(libs.androidx.material3.windowsizeclass)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
@@ -88,4 +89,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+
 }

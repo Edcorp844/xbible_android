@@ -3,11 +3,14 @@ package com.example.xbible.ui
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -33,12 +36,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowSizeClass
 import com.example.xbible.R
 import com.example.xbible.core.ui.components.MiniPlayer
+import com.example.xbible.core.ui.layout.LayoutMode
+import com.example.xbible.core.ui.layout.LocalLayoutInfo
 import com.example.xbible.feature.library.LibraryScreen
 import com.example.xbible.feature.store.StoreScreen
 import com.example.xbible.feature.study.StudyScreen
 import com.example.xbible.feature.tools.ToolsScreen
-import com.example.xbible.feature.tools.audiobible.AudioBiblePlayerScreen
 import com.example.xbible.feature.tools.audiobible.AudioBibleNavigation
+import com.example.xbible.feature.tools.audiobible.AudioBiblePlayerScreen
 import com.example.xbible.feature.tools.timeline.TimelineScreen
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.AudioBibleViewModel
@@ -67,6 +72,12 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
         }
     }
 
+    // Determine if we should use the side-by-side (landscape/tablet) layout
+    val layoutInfo = LocalLayoutInfo.current
+    val isWideLayout = layoutInfo.mode == LayoutMode.TabletLandscape ||
+            layoutInfo.mode == LayoutMode.TabletPortrait ||
+            layoutInfo.mode == LayoutMode.PhoneLandscape
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         // 1. The Main App
@@ -93,28 +104,44 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
                 }
             }
         ) {
-            MainContent(
-                modifier = Modifier.fillMaxSize(),
-                destination = currentDestination,
-                engineViewModel = engineViewModel,
-                audioBibleViewModel = audioBibleViewModel,
-                onNavigate = { currentDestination = it }
-            )
+            // Wrap content in a Row to allow the vertical MiniPlayer to sit
+            // nicely between the NavigationRail and the MainContent
+            Row(modifier = Modifier.fillMaxSize()) {
+
+                // If we are in landscape/tablet AND a song is selected, show the vertical sticker
+                if (isWideLayout && selectedModule != null && !showFullScreenPlayer) {
+                    MiniPlayer(
+                        viewModel = audioBibleViewModel,
+                        onClick = { showFullScreenPlayer = true },
+                        isVertical = true,
+                        modifier = Modifier
+                            .width(96.dp)
+                            .fillMaxHeight()
+                            .padding(vertical = 8.dp, horizontal = 4.dp)
+                    )
+                }
+
+                MainContent(
+                    modifier = Modifier.weight(1f), // Take up remaining space
+                    destination = currentDestination,
+                    engineViewModel = engineViewModel,
+                    audioBibleViewModel = audioBibleViewModel,
+                    onNavigate = { currentDestination = it }
+                )
+            }
         }
 
-        // 2. MiniPlayer Overlay
-        if (selectedModule != null && !showFullScreenPlayer) {
+        // 2. MiniPlayer Overlay (Portrait only)
+        // Only show the bottom bar if we are NOT in the wide layout
+        if (selectedModule != null && !showFullScreenPlayer && !isWideLayout) {
             MiniPlayer(
                 viewModel = audioBibleViewModel,
                 onClick = { showFullScreenPlayer = true },
+                isVertical = false,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    // This applies the system navigation bar padding (the gesture pill)
                     .padding(WindowInsets.navigationBars.asPaddingValues())
-                    // This pushes it up so it sits exactly on top of the app's NavigationBar
-                    // Note: 80.dp is the standard height of a M3 NavigationBar.
-                    // If it slightly overlaps, tweak this to 84.dp.
-                    .padding(bottom = 80.dp)
+                    .padding(bottom = 80.dp) // Position above the NavigationBar
             )
         }
 
