@@ -644,227 +644,353 @@ internal object IntegrityCheckingUniffiLib {
         uniffiCheckApiChecksums(this)
     }
     external fun uniffi_xbible_engine_checksum_func_init_logging(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_timelinedata_get_data(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_get_module_artwork(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_get_playback_state(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_load_audio_module(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_seek_to_time(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_skip_backward(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_skip_forward(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_stop(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_audioengine_toggle_playback(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_album(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums_by_collection(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collection(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_by_language(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_with_albums(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributor(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors_by_role(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_language(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages_with_collections(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_narrators_for_collection(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_album(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums_by_collection(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collection(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_by_language(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_with_albums(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributor(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors_by_role(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_language(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages_with_collections(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_install_module(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_is_module_installed(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_audio_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_installed_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_artwork_extract_colors(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_artwork_image_bytes(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_modules_async(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_multiple_sources_async(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_remote_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_available_categories(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_available_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_bible_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_book_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_books(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_chapter_content(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_commentary_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_content(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_cult_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_daily_devotional_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_dictionary_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_genearl_book_content(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_general_book_structure(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_image_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_by_category(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_size(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_lexicon_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_map_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_modules_by_language(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_module_info(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources_with_details(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_single_entry(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_source_description(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_source_url(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_module(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_module_async(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_module_installed(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_lookup_dictionary(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_lookup_strongs_number(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_search(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_search_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_set_global_options(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module_async(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_cancel_task(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_result_modules(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_timelinedata_new(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_audioengine_new(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_storeapiclient_new(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_storeapiservice_new(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_artwork_new(
-    ): Int
-    external fun uniffi_xbible_engine_checksum_constructor_xbibleengine_new(
-    ): Int
-    external fun ffi_xbible_engine_uniffi_contract_version(
-    ): Int
+): Int
+external fun uniffi_xbible_engine_checksum_method_timelinedata_get_data(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_get_module_artwork(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_get_playback_state(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_load_audio_module(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_seek_to_time(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_skip_backward(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_skip_forward(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_stop(
+): Int
+external fun uniffi_xbible_engine_checksum_method_audioengine_toggle_playback(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_album(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums_by_collection(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collection(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_by_language(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_with_albums(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributor(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors_by_role(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_language(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages_with_collections(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiclient_fetch_narrators_for_collection(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_album(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums_by_collection(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collection(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_by_language(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_with_albums(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributor(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors_by_role(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_language(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages_with_collections(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_install_module(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_is_module_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_audio_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog(
+): Int
+external fun uniffi_xbible_engine_checksum_method_storeapiservice_load_installed_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_artwork_extract_colors(
+): Int
+external fun uniffi_xbible_engine_checksum_method_artwork_image_bytes(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_books(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter_items(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_entities_for_verse(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_event(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_footnotes(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_group(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_person(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_place(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_related(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_verse(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_verse_refs(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_home_feed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_install_translation(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_is_entity_set_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_is_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_item(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_languages(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_events(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_groups(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_people(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_places(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_tasks(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_poll_task(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_refresh(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_search(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_search_entities(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_set_db_path(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_modules_async(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_multiple_sources_async(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_fetch_remote_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_available_categories(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_available_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_bible_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_book_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_books(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_chapter_content(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_commentary_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_content(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_cult_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_daily_devotional_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_dictionary_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_essay_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_genearl_book_content(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_general_book_structure(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_glossary_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_image_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_by_category(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_installed_modules_size(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_lexicon_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_map_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_modules_by_language(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_module_info(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_remote_sources_with_details(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_single_entry(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_source_description(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_source_url(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_module(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_module_async(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_module_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_lookup_dictionary(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_lookup_strongs_number(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_refresh_installed_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_search(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_search_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_set_global_options(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_module_async(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_cancel_task(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_result_modules(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_cancel_free_bible_task(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_entities_for_verse(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_books(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter_items(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_event(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_footnotes(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_group(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_person(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_place(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_verse(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_home_feed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_languages(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_events(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_groups(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_people(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_places(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_related_entities(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_search_entities(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_store_item(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_verse_refs(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_entity_set(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_translation(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_entity_set_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_list_free_bible_tasks(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_poll_free_bible_task(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_refresh_free_bible_catalog(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_search_free_bible_store(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_set_free_bible_db_path(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_free_bible_translation(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_timelinedata_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_audioengine_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_storeapiclient_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_storeapiservice_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_artwork_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_freebiblestore_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_xbibleengine_new(
+): Int
+external fun ffi_xbible_engine_uniffi_contract_version(
+): Int
 
-        
+    
 }
 
 internal object UniffiLib {
@@ -1025,6 +1151,74 @@ external fun uniffi_xbible_engine_fn_method_artwork_extract_colors(`ptr`: Long,`
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_artwork_image_bytes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_clone_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_free_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_constructor_freebiblestore_new(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_chapter_items(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_footnotes(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_related(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kindStr`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_install_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_is_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_freebiblestore_is_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_freebiblestore_item(`ptr`: Long,`id`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_languages(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_list_tasks(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_poll_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_refresh(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_freebiblestore_search(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_xbible_engine_fn_free_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -1122,6 +1316,68 @@ external fun uniffi_xbible_engine_fn_method_xbibleengine_cancel_task(`ptr`: Long
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_result_modules(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_status(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_cancel_free_bible_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter_items(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_footnotes(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_languages(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_related_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_store_item(`ptr`: Long,`id`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_entity_set(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_xbibleengine_list_free_bible_tasks(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_poll_free_bible_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_refresh_free_bible_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_xbibleengine_search_free_bible_store(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_xbibleengine_set_free_bible_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_xbibleengine_uninstall_free_bible_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_func_init_logging(uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
@@ -1412,6 +1668,99 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_artwork_image_bytes() != 35402) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task() != 25949) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_books() != 64543) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter() != 9299) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter_items() != 1101) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_entities_for_verse() != 50583) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_event() != 12024) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_footnotes() != 60875) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_group() != 589) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_person() != 56144) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_place() != 43910) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_related() != 65159) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_verse() != 50404) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_verse_refs() != 56606) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_home_feed() != 19050) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set() != 3659) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_translation() != 5227) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_is_entity_set_installed() != 8161) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_is_installed() != 41104) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_item() != 47960) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_languages() != 33532) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_events() != 19449) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_groups() != 29783) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_people() != 42817) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_places() != 35332) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_tasks() != 48491) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_poll_task() != 34218) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_refresh() != 36650) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_search() != 16495) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_search_entities() != 11513) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_set_db_path() != 14085) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation() != 22741) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details() != 32431) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1550,6 +1899,99 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status() != 39544) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_cancel_free_bible_task() != 28603) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_entities_for_verse() != 11903) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_books() != 27839) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter() != 16937) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter_items() != 59987) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_event() != 9453) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_footnotes() != 52145) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_group() != 36550) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_person() != 56549) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_place() != 55698) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_verse() != 56648) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_home_feed() != 37711) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_languages() != 10210) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_events() != 44024) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_groups() != 19927) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_people() != 15619) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_places() != 4379) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_related_entities() != 20791) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_search_entities() != 48845) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_store_item() != 45953) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_verse_refs() != 41798) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_entity_set() != 5757) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_translation() != 1858) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_entity_set_installed() != 63626) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_installed() != 17313) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_list_free_bible_tasks() != 33908) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_poll_free_bible_task() != 5809) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_refresh_free_bible_catalog() != 7719) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search_free_bible_store() != 24408) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_set_free_bible_db_path() != 64072) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_free_bible_translation() != 5432) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_constructor_timelinedata_new() != 19980) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1568,7 +2010,10 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_constructor_artwork_new() != 38662) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_xbibleengine_new() != 63190) {
+    if (lib.uniffi_xbible_engine_checksum_constructor_freebiblestore_new() != 54384) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_constructor_xbibleengine_new() != 14641) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -2743,6 +3188,716 @@ public object FfiConverterTypeAudioEngine: FfiConverter<AudioEngine, Long> {
     override fun allocationSize(value: AudioEngine) = 8UL
 
     override fun write(value: AudioEngine, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
+public interface FreeBibleStoreInterface {
+    
+    fun `cancelTask`(`taskId`: kotlin.String)
+    
+    fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook>
+    
+    fun `getChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse>
+    
+    fun `getChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem>
+    
+    fun `getEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef>
+    
+    fun `getEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail?
+    
+    fun `getFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote>
+    
+    fun `getGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail?
+    
+    fun `getPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail?
+    
+    fun `getPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail?
+    
+    fun `getRelated`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef>
+    
+    fun `getVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String?
+    
+    fun `getVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange>
+    
+    fun `homeFeed`(`language`: kotlin.String?): List<StoreShelf>
+    
+    fun `installEntitySet`(`datasetId`: kotlin.String, `kindStr`: kotlin.String): kotlin.String
+    
+    fun `installTranslation`(`translationId`: kotlin.String): kotlin.String
+    
+    fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean
+    
+    fun `isInstalled`(`translationId`: kotlin.String): kotlin.Boolean
+    
+    fun `item`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem?
+    
+    fun `languages`(): List<LanguageFacet>
+    
+    fun `listEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `listGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `listPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `listTasks`(): List<FreeBibleTaskStatus>
+    
+    fun `pollTask`(`taskId`: kotlin.String): FreeBibleTaskStatus?
+    
+    fun `refresh`()
+    
+    fun `search`(`query`: kotlin.String): List<StoreItem>
+    
+    fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
+    
+    fun `setDbPath`(`path`: kotlin.String)
+    
+    fun `uninstallTranslation`(`translationId`: kotlin.String): kotlin.String
+    
+    companion object
+}
+
+open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+    constructor() :
+        this(UniffiWithHandle, 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_constructor_freebiblestore_new(
+    
+        _status)
+}
+    )
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_xbible_engine_fn_free_freebiblestore(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_xbible_engine_fn_clone_freebiblestore(handle, status)
+        }
+    }
+
+    override fun `cancelTask`(`taskId`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(
+        it,
+        FfiConverterString.lower(`taskId`),_status)
+}
+    }
+    
+    
+
+    override fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
+            return FfiConverterSequenceTypeFreeBibleBook.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_books(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse> {
+            return FfiConverterSequenceTypeFreeBibleVerse.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_chapter(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem> {
+            return FfiConverterSequenceTypeFreeBibleChapterItem.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_chapter_items(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef> {
+            return FfiConverterSequenceTypeEntityRef.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_entities_for_verse(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`book`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail? {
+            return FfiConverterOptionalTypeEventDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_event(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote> {
+            return FfiConverterSequenceTypeFreeBibleFootnote.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_footnotes(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail? {
+            return FfiConverterOptionalTypeGroupDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_group(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail? {
+            return FfiConverterOptionalTypePersonDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_person(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail? {
+            return FfiConverterOptionalTypePlaceDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_place(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getRelated`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef> {
+            return FfiConverterSequenceTypeEntityRef.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_related(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),FfiConverterOptionalString.lower(`relation`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String? {
+            return FfiConverterOptionalString.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_verse(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange> {
+            return FfiConverterSequenceTypeVerseRange.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_verse_refs(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `homeFeed`(`language`: kotlin.String?): List<StoreShelf> {
+            return FfiConverterSequenceTypeStoreShelf.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_home_feed(
+        it,
+        FfiConverterOptionalString.lower(`language`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `installEntitySet`(`datasetId`: kotlin.String, `kindStr`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kindStr`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `installTranslation`(`translationId`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_install_translation(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_is_entity_set_installed(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `isInstalled`(`translationId`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_is_installed(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `item`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem? {
+            return FfiConverterOptionalTypeStoreItem.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_item(
+        it,
+        FfiConverterString.lower(`id`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `languages`(): List<LanguageFacet> {
+            return FfiConverterSequenceTypeLanguageFacet.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_languages(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_events(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_groups(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_people(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_places(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listTasks`(): List<FreeBibleTaskStatus> {
+            return FfiConverterSequenceTypeFreeBibleTaskStatus.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_tasks(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `pollTask`(`taskId`: kotlin.String): FreeBibleTaskStatus? {
+            return FfiConverterOptionalTypeFreeBibleTaskStatus.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_poll_task(
+        it,
+        FfiConverterString.lower(`taskId`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `refresh`()
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_refresh(
+        it,
+        _status)
+}
+    }
+    
+    
+
+    override fun `search`(`query`: kotlin.String): List<StoreItem> {
+            return FfiConverterSequenceTypeStoreItem.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_search(
+        it,
+        FfiConverterString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_search_entities(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `setDbPath`(`path`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_set_db_path(
+        it,
+        FfiConverterString.lower(`path`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `uninstallTranslation`(`translationId`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+
+    
+
+
+    
+    
+    /**
+     * @suppress
+     */
+    companion object
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleStore: FfiConverter<FreeBibleStore, Long> {
+    override fun lower(value: FreeBibleStore): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): FreeBibleStore {
+        return FreeBibleStore(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): FreeBibleStore {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: FreeBibleStore) = 8UL
+
+    override fun write(value: FreeBibleStore, buf: ByteBuffer) {
         buf.putLong(lower(value))
     }
 }
@@ -4529,8 +5684,8 @@ public object FfiConverterTypeTimelineData: FfiConverter<TimelineData, Long> {
 
 
 /**
- * High-level Bible API abstraction layer for UniFFI export
- * Provides a clean interface for Swift and other languages to interact with Bible modules
+ * High-level Bible API abstraction layer for UniFFI export.
+ * Provides a single handle the UI can call: SWORD engine + FreeBible store.
  */
 public interface XBibleEngineInterface {
     
@@ -4761,12 +5916,126 @@ public interface XBibleEngineInterface {
      */
     fun `getTaskStatus`(`taskId`: kotlin.String): TaskStatus?
     
+    fun `cancelFreeBibleTask`(`taskId`: kotlin.String)
+    
+    /**
+     * Every entity whose verse range covers `(book, chapter, verse)`.
+     * Powers "who's in this verse" in the reader.
+     */
+    fun `freeBibleEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef>
+    
+    fun `freeBibleGetBooks`(`translationId`: kotlin.String): List<FreeBibleBook>
+    
+    fun `freeBibleGetChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse>
+    
+    fun `freeBibleGetChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem>
+    
+    fun `freeBibleGetEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail?
+    
+    fun `freeBibleGetFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote>
+    
+    fun `freeBibleGetGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail?
+    
+    fun `freeBibleGetPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail?
+    
+    fun `freeBibleGetPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail?
+    
+    fun `freeBibleGetVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String?
+    
+    /**
+     * Home feed, App Store style. `language = None` shows everything.
+     */
+    fun `freeBibleHomeFeed`(`language`: kotlin.String?): List<StoreShelf>
+    
+    /**
+     * Language list for the sidebar.
+     */
+    fun `freeBibleLanguages`(): List<LanguageFacet>
+    
+    fun `freeBibleListEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `freeBibleListGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `freeBibleListPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    fun `freeBibleListPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
+    
+    /**
+     * All entities an entity points to, filtered by relation.
+     * E.g. `relation = Some("participant")` on an event gives its participants;
+     * `relation = None` gives every outgoing edge.
+     */
+    fun `freeBibleRelatedEntities`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef>
+    
+    fun `freeBibleSearchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
+    
+    /**
+     * Detail for one item: kind is "translation" | "commentary" | "dataset".
+     */
+    fun `freeBibleStoreItem`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem?
+    
+    /**
+     * All verse ranges for an entity.
+     */
+    fun `freeBibleVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange>
+    
+    /**
+     * Start installing an entity set.
+     * `kind` is one of "person" | "event" | "place" | "group".
+     * Returns a task ID for `poll_free_bible_task`.
+     */
+    fun `installFreeBibleEntitySet`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.String
+    
+    /**
+     * Start installing a translation. Returns a task ID for `poll_free_bible_task`.
+     */
+    fun `installFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String
+    
+    fun `isFreeBibleEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean
+    
+    fun `isFreeBibleInstalled`(`translationId`: kotlin.String): kotlin.Boolean
+    
+    fun `listFreeBibleTasks`(): List<FreeBibleTaskStatus>
+    
+    /**
+     * Poll a FreeBible task.
+     *
+     * While the task is `Running`, the returned status carries a full
+     * `InstallProgress`: fraction, chapters_done/total, verses_done,
+     * current book/chapter, and a human-readable message. Call this on a
+     * timer (250–500 ms is typical) and update your progress bar.
+     *
+     * Returns `None` if the task ID is unknown.
+     */
+    fun `pollFreeBibleTask`(`taskId`: kotlin.String): FreeBibleTaskStatus?
+    
+    /**
+     * Fetch/refresh the FreeBible catalog (translations, commentaries, datasets).
+     * Falls back to SQLite if the network is unavailable.
+     */
+    fun `refreshFreeBibleCatalog`()
+    
+    /**
+     * Search translations, commentaries, datasets.
+     */
+    fun `searchFreeBibleStore`(`query`: kotlin.String): List<StoreItem>
+    
+    /**
+     * Point the FreeBible store at a SQLite file. Call once at startup.
+     */
+    fun `setFreeBibleDbPath`(`path`: kotlin.String)
+    
+    /**
+     * Start uninstalling a translation. Returns a task ID for `poll_free_bible_task`.
+     */
+    fun `uninstallFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String
+    
     companion object
 }
 
 /**
- * High-level Bible API abstraction layer for UniFFI export
- * Provides a clean interface for Swift and other languages to interact with Bible modules
+ * High-level Bible API abstraction layer for UniFFI export.
+ * Provides a single handle the UI can call: SWORD engine + FreeBible store.
  */
 open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
 {
@@ -4793,7 +6062,7 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
         this.cleanable = null
     }
     /**
-     * Create a new BibleEngine instance
+     * Create a new BibleEngine instance.
      */
     constructor() :
         this(UniffiWithHandle, 
@@ -5606,6 +6875,463 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     }
     
 
+    override fun `cancelFreeBibleTask`(`taskId`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_cancel_free_bible_task(
+        it,
+        FfiConverterString.lower(`taskId`),_status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Every entity whose verse range covers `(book, chapter, verse)`.
+     * Powers "who's in this verse" in the reader.
+     */override fun `freeBibleEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef> {
+            return FfiConverterSequenceTypeEntityRef.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_entities_for_verse(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`book`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
+            return FfiConverterSequenceTypeFreeBibleBook.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_books(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse> {
+            return FfiConverterSequenceTypeFreeBibleVerse.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem> {
+            return FfiConverterSequenceTypeFreeBibleChapterItem.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter_items(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail? {
+            return FfiConverterOptionalTypeEventDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_event(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote> {
+            return FfiConverterSequenceTypeFreeBibleFootnote.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_footnotes(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail? {
+            return FfiConverterOptionalTypeGroupDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_group(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail? {
+            return FfiConverterOptionalTypePersonDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_person(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail? {
+            return FfiConverterOptionalTypePlaceDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_place(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleGetVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String? {
+            return FfiConverterOptionalString.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_verse(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Home feed, App Store style. `language = None` shows everything.
+     */override fun `freeBibleHomeFeed`(`language`: kotlin.String?): List<StoreShelf> {
+            return FfiConverterSequenceTypeStoreShelf.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_home_feed(
+        it,
+        FfiConverterOptionalString.lower(`language`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Language list for the sidebar.
+     */override fun `freeBibleLanguages`(): List<LanguageFacet> {
+            return FfiConverterSequenceTypeLanguageFacet.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_languages(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleListEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_events(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleListGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_groups(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleListPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_people(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleListPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_places(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * All entities an entity points to, filtered by relation.
+     * E.g. `relation = Some("participant")` on an event gives its participants;
+     * `relation = None` gives every outgoing edge.
+     */override fun `freeBibleRelatedEntities`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef> {
+            return FfiConverterSequenceTypeEntityRef.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_related_entities(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),FfiConverterOptionalString.lower(`relation`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `freeBibleSearchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_search_entities(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Detail for one item: kind is "translation" | "commentary" | "dataset".
+     */override fun `freeBibleStoreItem`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem? {
+            return FfiConverterOptionalTypeStoreItem.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_store_item(
+        it,
+        FfiConverterString.lower(`id`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * All verse ranges for an entity.
+     */override fun `freeBibleVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange> {
+            return FfiConverterSequenceTypeVerseRange.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_verse_refs(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Start installing an entity set.
+     * `kind` is one of "person" | "event" | "place" | "group".
+     * Returns a task ID for `poll_free_bible_task`.
+     */
+    @Throws(FreeBibleException::class)override fun `installFreeBibleEntitySet`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_entity_set(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Start installing a translation. Returns a task ID for `poll_free_bible_task`.
+     */
+    @Throws(FreeBibleException::class)override fun `installFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_translation(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `isFreeBibleEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_entity_set_installed(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `isFreeBibleInstalled`(`translationId`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_installed(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listFreeBibleTasks`(): List<FreeBibleTaskStatus> {
+            return FfiConverterSequenceTypeFreeBibleTaskStatus.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_list_free_bible_tasks(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Poll a FreeBible task.
+     *
+     * While the task is `Running`, the returned status carries a full
+     * `InstallProgress`: fraction, chapters_done/total, verses_done,
+     * current book/chapter, and a human-readable message. Call this on a
+     * timer (250–500 ms is typical) and update your progress bar.
+     *
+     * Returns `None` if the task ID is unknown.
+     */override fun `pollFreeBibleTask`(`taskId`: kotlin.String): FreeBibleTaskStatus? {
+            return FfiConverterOptionalTypeFreeBibleTaskStatus.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_poll_free_bible_task(
+        it,
+        FfiConverterString.lower(`taskId`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Fetch/refresh the FreeBible catalog (translations, commentaries, datasets).
+     * Falls back to SQLite if the network is unavailable.
+     */
+    @Throws(FreeBibleException::class)override fun `refreshFreeBibleCatalog`()
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_refresh_free_bible_catalog(
+        it,
+        _status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Search translations, commentaries, datasets.
+     */override fun `searchFreeBibleStore`(`query`: kotlin.String): List<StoreItem> {
+            return FfiConverterSequenceTypeStoreItem.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_search_free_bible_store(
+        it,
+        FfiConverterString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Point the FreeBible store at a SQLite file. Call once at startup.
+     */
+    @Throws(FreeBibleException::class)override fun `setFreeBibleDbPath`(`path`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_set_free_bible_db_path(
+        it,
+        FfiConverterString.lower(`path`),_status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Start uninstalling a translation. Returns a task ID for `poll_free_bible_task`.
+     */
+    @Throws(FreeBibleException::class)override fun `uninstallFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_uninstall_free_bible_translation(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
     
 
     
@@ -6083,6 +7809,49 @@ public object FfiConverterTypeAudioNode: FfiConverterRustBuffer<AudioNode> {
 
 
 
+data class CommentaryProfile (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `body`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCommentaryProfile: FfiConverterRustBuffer<CommentaryProfile> {
+    override fun read(buf: ByteBuffer): CommentaryProfile {
+        return CommentaryProfile(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CommentaryProfile) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`body`)
+    )
+
+    override fun write(value: CommentaryProfile, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`body`, buf)
+    }
+}
+
+
+
 data class DictionaryQuery (
     var `word`: kotlin.String
     , 
@@ -6301,6 +8070,116 @@ public object FfiConverterTypeEngineGlobalOption: FfiConverterRustBuffer<EngineG
 
 
 
+data class EntityRef (
+    var `kind`: kotlin.String
+    , 
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeEntityRef: FfiConverterRustBuffer<EntityRef> {
+    override fun read(buf: ByteBuffer): EntityRef {
+        return EntityRef(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: EntityRef) = (
+            FfiConverterString.allocationSize(value.`kind`) +
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`)
+    )
+
+    override fun write(value: EntityRef, buf: ByteBuffer) {
+            FfiConverterString.write(value.`kind`, buf)
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+    }
+}
+
+
+
+data class EntitySummary (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    /**
+     * people only — true if it's a proper name (e.g. "Aaron", not "the priest")
+     */
+    var `isProperName`: kotlin.Boolean?
+    , 
+    /**
+     * people only — "Male" | "Female"
+     */
+    var `gender`: kotlin.String?
+    , 
+    /**
+     * events only — the year the event started
+     */
+    var `startDate`: kotlin.String?
+    , 
+    var `numberOfReferences`: kotlin.Int
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeEntitySummary: FfiConverterRustBuffer<EntitySummary> {
+    override fun read(buf: ByteBuffer): EntitySummary {
+        return EntitySummary(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalBoolean.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: EntitySummary) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterOptionalBoolean.allocationSize(value.`isProperName`) +
+            FfiConverterOptionalString.allocationSize(value.`gender`) +
+            FfiConverterOptionalString.allocationSize(value.`startDate`) +
+            FfiConverterInt.allocationSize(value.`numberOfReferences`)
+    )
+
+    override fun write(value: EntitySummary, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterOptionalBoolean.write(value.`isProperName`, buf)
+            FfiConverterOptionalString.write(value.`gender`, buf)
+            FfiConverterOptionalString.write(value.`startDate`, buf)
+            FfiConverterInt.write(value.`numberOfReferences`, buf)
+    }
+}
+
+
+
 data class Event (
     var `id`: kotlin.ULong
     , 
@@ -6374,6 +8253,1042 @@ public object FfiConverterTypeEvent: FfiConverterRustBuffer<Event> {
             FfiConverterString.write(value.`type`, buf)
             FfiConverterOptionalBoolean.write(value.`approx`, buf)
             FfiConverterOptionalBoolean.write(value.`isFixed`, buf)
+    }
+}
+
+
+
+data class EventDetail (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `startDate`: kotlin.String?
+    , 
+    var `endDate`: kotlin.String?
+    , 
+    var `duration`: kotlin.String?
+    , 
+    var `description`: kotlin.String?
+    , 
+    var `participants`: List<EntityRef>
+    , 
+    var `locations`: List<EntityRef>
+    , 
+    var `predecessor`: EntityRef?
+    , 
+    var `successor`: EntityRef?
+    , 
+    var `parentEvent`: EntityRef?
+    , 
+    var `subEvents`: List<EntityRef>
+    , 
+    var `verses`: List<VerseRange>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeEventDetail: FfiConverterRustBuffer<EventDetail> {
+    override fun read(buf: ByteBuffer): EventDetail {
+        return EventDetail(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterOptionalTypeEntityRef.read(buf),
+            FfiConverterOptionalTypeEntityRef.read(buf),
+            FfiConverterOptionalTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeVerseRange.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: EventDetail) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterOptionalString.allocationSize(value.`startDate`) +
+            FfiConverterOptionalString.allocationSize(value.`endDate`) +
+            FfiConverterOptionalString.allocationSize(value.`duration`) +
+            FfiConverterOptionalString.allocationSize(value.`description`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`participants`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`locations`) +
+            FfiConverterOptionalTypeEntityRef.allocationSize(value.`predecessor`) +
+            FfiConverterOptionalTypeEntityRef.allocationSize(value.`successor`) +
+            FfiConverterOptionalTypeEntityRef.allocationSize(value.`parentEvent`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`subEvents`) +
+            FfiConverterSequenceTypeVerseRange.allocationSize(value.`verses`)
+    )
+
+    override fun write(value: EventDetail, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterOptionalString.write(value.`startDate`, buf)
+            FfiConverterOptionalString.write(value.`endDate`, buf)
+            FfiConverterOptionalString.write(value.`duration`, buf)
+            FfiConverterOptionalString.write(value.`description`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`participants`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`locations`, buf)
+            FfiConverterOptionalTypeEntityRef.write(value.`predecessor`, buf)
+            FfiConverterOptionalTypeEntityRef.write(value.`successor`, buf)
+            FfiConverterOptionalTypeEntityRef.write(value.`parentEvent`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`subEvents`, buf)
+            FfiConverterSequenceTypeVerseRange.write(value.`verses`, buf)
+    }
+}
+
+
+
+data class FreeBibleAudioTiming (
+    var `verse`: kotlin.Int
+    , 
+    var `startMs`: kotlin.Long?
+    , 
+    var `endMs`: kotlin.Long?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleAudioTiming: FfiConverterRustBuffer<FreeBibleAudioTiming> {
+    override fun read(buf: ByteBuffer): FreeBibleAudioTiming {
+        return FreeBibleAudioTiming(
+            FfiConverterInt.read(buf),
+            FfiConverterOptionalLong.read(buf),
+            FfiConverterOptionalLong.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleAudioTiming) = (
+            FfiConverterInt.allocationSize(value.`verse`) +
+            FfiConverterOptionalLong.allocationSize(value.`startMs`) +
+            FfiConverterOptionalLong.allocationSize(value.`endMs`)
+    )
+
+    override fun write(value: FreeBibleAudioTiming, buf: ByteBuffer) {
+            FfiConverterInt.write(value.`verse`, buf)
+            FfiConverterOptionalLong.write(value.`startMs`, buf)
+            FfiConverterOptionalLong.write(value.`endMs`, buf)
+    }
+}
+
+
+
+data class FreeBibleBook (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `numberOfChapters`: kotlin.Int
+    , 
+    var `commonName`: kotlin.String?
+    , 
+    var `title`: kotlin.String?
+    , 
+    var `bookOrder`: kotlin.Int?
+    , 
+    var `audioLinksJson`: kotlin.String?
+    , 
+    var `rawJson`: kotlin.String?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleBook: FfiConverterRustBuffer<FreeBibleBook> {
+    override fun read(buf: ByteBuffer): FreeBibleBook {
+        return FreeBibleBook(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalInt.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleBook) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterInt.allocationSize(value.`numberOfChapters`) +
+            FfiConverterOptionalString.allocationSize(value.`commonName`) +
+            FfiConverterOptionalString.allocationSize(value.`title`) +
+            FfiConverterOptionalInt.allocationSize(value.`bookOrder`) +
+            FfiConverterOptionalString.allocationSize(value.`audioLinksJson`) +
+            FfiConverterOptionalString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleBook, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterInt.write(value.`numberOfChapters`, buf)
+            FfiConverterOptionalString.write(value.`commonName`, buf)
+            FfiConverterOptionalString.write(value.`title`, buf)
+            FfiConverterOptionalInt.write(value.`bookOrder`, buf)
+            FfiConverterOptionalString.write(value.`audioLinksJson`, buf)
+            FfiConverterOptionalString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleChapter (
+    var `translationId`: kotlin.String
+    , 
+    var `bookId`: kotlin.String
+    , 
+    var `chapterNumber`: kotlin.Int
+    , 
+    var `content`: List<FreeBibleVerse>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleChapter: FfiConverterRustBuffer<FreeBibleChapter> {
+    override fun read(buf: ByteBuffer): FreeBibleChapter {
+        return FreeBibleChapter(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeFreeBibleVerse.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleChapter) = (
+            FfiConverterString.allocationSize(value.`translationId`) +
+            FfiConverterString.allocationSize(value.`bookId`) +
+            FfiConverterInt.allocationSize(value.`chapterNumber`) +
+            FfiConverterSequenceTypeFreeBibleVerse.allocationSize(value.`content`)
+    )
+
+    override fun write(value: FreeBibleChapter, buf: ByteBuffer) {
+            FfiConverterString.write(value.`translationId`, buf)
+            FfiConverterString.write(value.`bookId`, buf)
+            FfiConverterInt.write(value.`chapterNumber`, buf)
+            FfiConverterSequenceTypeFreeBibleVerse.write(value.`content`, buf)
+    }
+}
+
+
+
+data class FreeBibleChapterItem (
+    var `position`: kotlin.Int
+    , 
+    var `itemType`: kotlin.String
+    , 
+    var `verseNumber`: kotlin.Int?
+    , 
+    var `text`: kotlin.String?
+    , 
+    var `poem`: kotlin.Boolean
+    , 
+    var `wordsOfJesus`: kotlin.Boolean
+    , 
+    var `footnoteIds`: List<kotlin.String>
+    , 
+    var `rawJson`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleChapterItem: FfiConverterRustBuffer<FreeBibleChapterItem> {
+    override fun read(buf: ByteBuffer): FreeBibleChapterItem {
+        return FreeBibleChapterItem(
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalInt.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterSequenceString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleChapterItem) = (
+            FfiConverterInt.allocationSize(value.`position`) +
+            FfiConverterString.allocationSize(value.`itemType`) +
+            FfiConverterOptionalInt.allocationSize(value.`verseNumber`) +
+            FfiConverterOptionalString.allocationSize(value.`text`) +
+            FfiConverterBoolean.allocationSize(value.`poem`) +
+            FfiConverterBoolean.allocationSize(value.`wordsOfJesus`) +
+            FfiConverterSequenceString.allocationSize(value.`footnoteIds`) +
+            FfiConverterString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleChapterItem, buf: ByteBuffer) {
+            FfiConverterInt.write(value.`position`, buf)
+            FfiConverterString.write(value.`itemType`, buf)
+            FfiConverterOptionalInt.write(value.`verseNumber`, buf)
+            FfiConverterOptionalString.write(value.`text`, buf)
+            FfiConverterBoolean.write(value.`poem`, buf)
+            FfiConverterBoolean.write(value.`wordsOfJesus`, buf)
+            FfiConverterSequenceString.write(value.`footnoteIds`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleCommentary (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `englishName`: kotlin.String
+    , 
+    var `language`: kotlin.String
+    , 
+    var `licenseUrl`: kotlin.String?
+    , 
+    var `licenseNotes`: kotlin.String?
+    , 
+    var `numberOfBooks`: kotlin.Int
+    , 
+    var `totalNumberOfChapters`: kotlin.Int
+    , 
+    var `totalNumberOfVerses`: kotlin.Int
+    , 
+    var `rawJson`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleCommentary: FfiConverterRustBuffer<FreeBibleCommentary> {
+    override fun read(buf: ByteBuffer): FreeBibleCommentary {
+        return FreeBibleCommentary(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleCommentary) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`englishName`) +
+            FfiConverterString.allocationSize(value.`language`) +
+            FfiConverterOptionalString.allocationSize(value.`licenseUrl`) +
+            FfiConverterOptionalString.allocationSize(value.`licenseNotes`) +
+            FfiConverterInt.allocationSize(value.`numberOfBooks`) +
+            FfiConverterInt.allocationSize(value.`totalNumberOfChapters`) +
+            FfiConverterInt.allocationSize(value.`totalNumberOfVerses`) +
+            FfiConverterString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleCommentary, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`englishName`, buf)
+            FfiConverterString.write(value.`language`, buf)
+            FfiConverterOptionalString.write(value.`licenseUrl`, buf)
+            FfiConverterOptionalString.write(value.`licenseNotes`, buf)
+            FfiConverterInt.write(value.`numberOfBooks`, buf)
+            FfiConverterInt.write(value.`totalNumberOfChapters`, buf)
+            FfiConverterInt.write(value.`totalNumberOfVerses`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleCommentaryChapter (
+    var `commentaryId`: kotlin.String
+    , 
+    var `bookId`: kotlin.String
+    , 
+    var `chapterNumber`: kotlin.Int
+    , 
+    var `content`: List<FreeBibleVerse>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleCommentaryChapter: FfiConverterRustBuffer<FreeBibleCommentaryChapter> {
+    override fun read(buf: ByteBuffer): FreeBibleCommentaryChapter {
+        return FreeBibleCommentaryChapter(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeFreeBibleVerse.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleCommentaryChapter) = (
+            FfiConverterString.allocationSize(value.`commentaryId`) +
+            FfiConverterString.allocationSize(value.`bookId`) +
+            FfiConverterInt.allocationSize(value.`chapterNumber`) +
+            FfiConverterSequenceTypeFreeBibleVerse.allocationSize(value.`content`)
+    )
+
+    override fun write(value: FreeBibleCommentaryChapter, buf: ByteBuffer) {
+            FfiConverterString.write(value.`commentaryId`, buf)
+            FfiConverterString.write(value.`bookId`, buf)
+            FfiConverterInt.write(value.`chapterNumber`, buf)
+            FfiConverterSequenceTypeFreeBibleVerse.write(value.`content`, buf)
+    }
+}
+
+
+
+data class FreeBibleComplete (
+    var `translationId`: kotlin.String
+    , 
+    var `books`: List<FreeBibleCompleteBook>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleComplete: FfiConverterRustBuffer<FreeBibleComplete> {
+    override fun read(buf: ByteBuffer): FreeBibleComplete {
+        return FreeBibleComplete(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeFreeBibleCompleteBook.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleComplete) = (
+            FfiConverterString.allocationSize(value.`translationId`) +
+            FfiConverterSequenceTypeFreeBibleCompleteBook.allocationSize(value.`books`)
+    )
+
+    override fun write(value: FreeBibleComplete, buf: ByteBuffer) {
+            FfiConverterString.write(value.`translationId`, buf)
+            FfiConverterSequenceTypeFreeBibleCompleteBook.write(value.`books`, buf)
+    }
+}
+
+
+
+data class FreeBibleCompleteBook (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `numberOfChapters`: kotlin.Int
+    , 
+    var `commonName`: kotlin.String?
+    , 
+    var `title`: kotlin.String?
+    , 
+    var `bookOrder`: kotlin.Int?
+    , 
+    var `audioLinksJson`: kotlin.String?
+    , 
+    var `rawJson`: kotlin.String
+    , 
+    var `chapters`: List<FreeBibleCompleteChapter>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleCompleteBook: FfiConverterRustBuffer<FreeBibleCompleteBook> {
+    override fun read(buf: ByteBuffer): FreeBibleCompleteBook {
+        return FreeBibleCompleteBook(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalInt.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeFreeBibleCompleteChapter.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleCompleteBook) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterInt.allocationSize(value.`numberOfChapters`) +
+            FfiConverterOptionalString.allocationSize(value.`commonName`) +
+            FfiConverterOptionalString.allocationSize(value.`title`) +
+            FfiConverterOptionalInt.allocationSize(value.`bookOrder`) +
+            FfiConverterOptionalString.allocationSize(value.`audioLinksJson`) +
+            FfiConverterString.allocationSize(value.`rawJson`) +
+            FfiConverterSequenceTypeFreeBibleCompleteChapter.allocationSize(value.`chapters`)
+    )
+
+    override fun write(value: FreeBibleCompleteBook, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterInt.write(value.`numberOfChapters`, buf)
+            FfiConverterOptionalString.write(value.`commonName`, buf)
+            FfiConverterOptionalString.write(value.`title`, buf)
+            FfiConverterOptionalInt.write(value.`bookOrder`, buf)
+            FfiConverterOptionalString.write(value.`audioLinksJson`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+            FfiConverterSequenceTypeFreeBibleCompleteChapter.write(value.`chapters`, buf)
+    }
+}
+
+
+
+data class FreeBibleCompleteChapter (
+    var `number`: kotlin.Int
+    , 
+    var `verses`: List<FreeBibleVerse>
+    , 
+    var `items`: List<FreeBibleChapterItem>
+    , 
+    var `footnotes`: List<FreeBibleFootnote>
+    , 
+    var `audioTimings`: List<FreeBibleAudioTiming>
+    , 
+    var `rawJson`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleCompleteChapter: FfiConverterRustBuffer<FreeBibleCompleteChapter> {
+    override fun read(buf: ByteBuffer): FreeBibleCompleteChapter {
+        return FreeBibleCompleteChapter(
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeFreeBibleVerse.read(buf),
+            FfiConverterSequenceTypeFreeBibleChapterItem.read(buf),
+            FfiConverterSequenceTypeFreeBibleFootnote.read(buf),
+            FfiConverterSequenceTypeFreeBibleAudioTiming.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleCompleteChapter) = (
+            FfiConverterInt.allocationSize(value.`number`) +
+            FfiConverterSequenceTypeFreeBibleVerse.allocationSize(value.`verses`) +
+            FfiConverterSequenceTypeFreeBibleChapterItem.allocationSize(value.`items`) +
+            FfiConverterSequenceTypeFreeBibleFootnote.allocationSize(value.`footnotes`) +
+            FfiConverterSequenceTypeFreeBibleAudioTiming.allocationSize(value.`audioTimings`) +
+            FfiConverterString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleCompleteChapter, buf: ByteBuffer) {
+            FfiConverterInt.write(value.`number`, buf)
+            FfiConverterSequenceTypeFreeBibleVerse.write(value.`verses`, buf)
+            FfiConverterSequenceTypeFreeBibleChapterItem.write(value.`items`, buf)
+            FfiConverterSequenceTypeFreeBibleFootnote.write(value.`footnotes`, buf)
+            FfiConverterSequenceTypeFreeBibleAudioTiming.write(value.`audioTimings`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleDataset (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `englishName`: kotlin.String
+    , 
+    var `language`: kotlin.String
+    , 
+    var `licenseUrl`: kotlin.String?
+    , 
+    var `licenseNotes`: kotlin.String?
+    , 
+    var `totalNumberOfBooks`: kotlin.Int
+    , 
+    var `rawJson`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleDataset: FfiConverterRustBuffer<FreeBibleDataset> {
+    override fun read(buf: ByteBuffer): FreeBibleDataset {
+        return FreeBibleDataset(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleDataset) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`englishName`) +
+            FfiConverterString.allocationSize(value.`language`) +
+            FfiConverterOptionalString.allocationSize(value.`licenseUrl`) +
+            FfiConverterOptionalString.allocationSize(value.`licenseNotes`) +
+            FfiConverterInt.allocationSize(value.`totalNumberOfBooks`) +
+            FfiConverterString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleDataset, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`englishName`, buf)
+            FfiConverterString.write(value.`language`, buf)
+            FfiConverterOptionalString.write(value.`licenseUrl`, buf)
+            FfiConverterOptionalString.write(value.`licenseNotes`, buf)
+            FfiConverterInt.write(value.`totalNumberOfBooks`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleFootnote (
+    var `noteId`: kotlin.String
+    , 
+    var `caller`: kotlin.String?
+    , 
+    var `text`: kotlin.String
+    , 
+    var `reference`: kotlin.String?
+    , 
+    var `rawJson`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleFootnote: FfiConverterRustBuffer<FreeBibleFootnote> {
+    override fun read(buf: ByteBuffer): FreeBibleFootnote {
+        return FreeBibleFootnote(
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleFootnote) = (
+            FfiConverterString.allocationSize(value.`noteId`) +
+            FfiConverterOptionalString.allocationSize(value.`caller`) +
+            FfiConverterString.allocationSize(value.`text`) +
+            FfiConverterOptionalString.allocationSize(value.`reference`) +
+            FfiConverterString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleFootnote, buf: ByteBuffer) {
+            FfiConverterString.write(value.`noteId`, buf)
+            FfiConverterOptionalString.write(value.`caller`, buf)
+            FfiConverterString.write(value.`text`, buf)
+            FfiConverterOptionalString.write(value.`reference`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleLexiconEntry (
+    var `strongs`: kotlin.String
+    , 
+    var `lemma`: kotlin.String?
+    , 
+    var `transliteration`: kotlin.String?
+    , 
+    var `partOfSpeech`: kotlin.String?
+    , 
+    var `gloss`: kotlin.String?
+    , 
+    var `definition`: kotlin.String?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleLexiconEntry: FfiConverterRustBuffer<FreeBibleLexiconEntry> {
+    override fun read(buf: ByteBuffer): FreeBibleLexiconEntry {
+        return FreeBibleLexiconEntry(
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleLexiconEntry) = (
+            FfiConverterString.allocationSize(value.`strongs`) +
+            FfiConverterOptionalString.allocationSize(value.`lemma`) +
+            FfiConverterOptionalString.allocationSize(value.`transliteration`) +
+            FfiConverterOptionalString.allocationSize(value.`partOfSpeech`) +
+            FfiConverterOptionalString.allocationSize(value.`gloss`) +
+            FfiConverterOptionalString.allocationSize(value.`definition`)
+    )
+
+    override fun write(value: FreeBibleLexiconEntry, buf: ByteBuffer) {
+            FfiConverterString.write(value.`strongs`, buf)
+            FfiConverterOptionalString.write(value.`lemma`, buf)
+            FfiConverterOptionalString.write(value.`transliteration`, buf)
+            FfiConverterOptionalString.write(value.`partOfSpeech`, buf)
+            FfiConverterOptionalString.write(value.`gloss`, buf)
+            FfiConverterOptionalString.write(value.`definition`, buf)
+    }
+}
+
+
+
+data class FreeBibleTaskStatus (
+    var `taskId`: kotlin.String
+    , 
+    var `state`: FreeBibleTaskState
+    , 
+    var `progress`: InstallProgress
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleTaskStatus: FfiConverterRustBuffer<FreeBibleTaskStatus> {
+    override fun read(buf: ByteBuffer): FreeBibleTaskStatus {
+        return FreeBibleTaskStatus(
+            FfiConverterString.read(buf),
+            FfiConverterTypeFreeBibleTaskState.read(buf),
+            FfiConverterTypeInstallProgress.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleTaskStatus) = (
+            FfiConverterString.allocationSize(value.`taskId`) +
+            FfiConverterTypeFreeBibleTaskState.allocationSize(value.`state`) +
+            FfiConverterTypeInstallProgress.allocationSize(value.`progress`)
+    )
+
+    override fun write(value: FreeBibleTaskStatus, buf: ByteBuffer) {
+            FfiConverterString.write(value.`taskId`, buf)
+            FfiConverterTypeFreeBibleTaskState.write(value.`state`, buf)
+            FfiConverterTypeInstallProgress.write(value.`progress`, buf)
+    }
+}
+
+
+
+data class FreeBibleTranslation (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `englishName`: kotlin.String
+    , 
+    var `shortName`: kotlin.String
+    , 
+    var `language`: kotlin.String
+    , 
+    var `languageName`: kotlin.String?
+    , 
+    var `languageEnglishName`: kotlin.String?
+    , 
+    var `textDirection`: kotlin.String
+    , 
+    var `numberOfBooks`: kotlin.Int
+    , 
+    var `totalNumberOfChapters`: kotlin.Int
+    , 
+    var `totalNumberOfVerses`: kotlin.Int
+    , 
+    var `licenseUrl`: kotlin.String?
+    , 
+    var `licenseNotes`: kotlin.String?
+    , 
+    var `rawJson`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleTranslation: FfiConverterRustBuffer<FreeBibleTranslation> {
+    override fun read(buf: ByteBuffer): FreeBibleTranslation {
+        return FreeBibleTranslation(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleTranslation) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`englishName`) +
+            FfiConverterString.allocationSize(value.`shortName`) +
+            FfiConverterString.allocationSize(value.`language`) +
+            FfiConverterOptionalString.allocationSize(value.`languageName`) +
+            FfiConverterOptionalString.allocationSize(value.`languageEnglishName`) +
+            FfiConverterString.allocationSize(value.`textDirection`) +
+            FfiConverterInt.allocationSize(value.`numberOfBooks`) +
+            FfiConverterInt.allocationSize(value.`totalNumberOfChapters`) +
+            FfiConverterInt.allocationSize(value.`totalNumberOfVerses`) +
+            FfiConverterOptionalString.allocationSize(value.`licenseUrl`) +
+            FfiConverterOptionalString.allocationSize(value.`licenseNotes`) +
+            FfiConverterString.allocationSize(value.`rawJson`)
+    )
+
+    override fun write(value: FreeBibleTranslation, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`englishName`, buf)
+            FfiConverterString.write(value.`shortName`, buf)
+            FfiConverterString.write(value.`language`, buf)
+            FfiConverterOptionalString.write(value.`languageName`, buf)
+            FfiConverterOptionalString.write(value.`languageEnglishName`, buf)
+            FfiConverterString.write(value.`textDirection`, buf)
+            FfiConverterInt.write(value.`numberOfBooks`, buf)
+            FfiConverterInt.write(value.`totalNumberOfChapters`, buf)
+            FfiConverterInt.write(value.`totalNumberOfVerses`, buf)
+            FfiConverterOptionalString.write(value.`licenseUrl`, buf)
+            FfiConverterOptionalString.write(value.`licenseNotes`, buf)
+            FfiConverterString.write(value.`rawJson`, buf)
+    }
+}
+
+
+
+data class FreeBibleVerse (
+    var `number`: kotlin.Int
+    , 
+    var `text`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleVerse: FfiConverterRustBuffer<FreeBibleVerse> {
+    override fun read(buf: ByteBuffer): FreeBibleVerse {
+        return FreeBibleVerse(
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: FreeBibleVerse) = (
+            FfiConverterInt.allocationSize(value.`number`) +
+            FfiConverterString.allocationSize(value.`text`)
+    )
+
+    override fun write(value: FreeBibleVerse, buf: ByteBuffer) {
+            FfiConverterInt.write(value.`number`, buf)
+            FfiConverterString.write(value.`text`, buf)
+    }
+}
+
+
+
+data class GroupDetail (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `description`: kotlin.String?
+    , 
+    var `members`: List<EntityRef>
+    , 
+    var `leaders`: List<EntityRef>
+    , 
+    var `locatedAt`: List<EntityRef>
+    , 
+    var `verses`: List<VerseRange>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeGroupDetail: FfiConverterRustBuffer<GroupDetail> {
+    override fun read(buf: ByteBuffer): GroupDetail {
+        return GroupDetail(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeVerseRange.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: GroupDetail) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterOptionalString.allocationSize(value.`description`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`members`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`leaders`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`locatedAt`) +
+            FfiConverterSequenceTypeVerseRange.allocationSize(value.`verses`)
+    )
+
+    override fun write(value: GroupDetail, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterOptionalString.write(value.`description`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`members`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`leaders`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`locatedAt`, buf)
+            FfiConverterSequenceTypeVerseRange.write(value.`verses`, buf)
     }
 }
 
@@ -6478,6 +9393,106 @@ public object FfiConverterTypeIdRef: FfiConverterRustBuffer<IdRef> {
 
 
 
+data class InstallProgress (
+    /**
+     * 0.0 → 1.0, for the top-level progress bar
+     */
+    var `fraction`: kotlin.Double
+    , 
+    /**
+     * Chapters completed so far
+     */
+    var `chaptersDone`: kotlin.Int
+    , 
+    /**
+     * Total chapters in this translation
+     */
+    var `chaptersTotal`: kotlin.Int
+    , 
+    /**
+     * Current book being downloaded (e.g. "Genesis")
+     */
+    var `currentBookName`: kotlin.String
+    , 
+    /**
+     * Current book id (e.g. "GEN")
+     */
+    var `currentBookId`: kotlin.String
+    , 
+    /**
+     * Current chapter number being downloaded
+     */
+    var `currentChapter`: kotlin.Int
+    , 
+    /**
+     * Verses downloaded in the current chapter
+     */
+    var `currentChapterVerses`: kotlin.Int
+    , 
+    /**
+     * Verses downloaded so far, across the whole translation
+     */
+    var `versesDone`: kotlin.Int
+    , 
+    /**
+     * Human-readable summary the UI can display as-is
+     */
+    var `message`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeInstallProgress: FfiConverterRustBuffer<InstallProgress> {
+    override fun read(buf: ByteBuffer): InstallProgress {
+        return InstallProgress(
+            FfiConverterDouble.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: InstallProgress) = (
+            FfiConverterDouble.allocationSize(value.`fraction`) +
+            FfiConverterInt.allocationSize(value.`chaptersDone`) +
+            FfiConverterInt.allocationSize(value.`chaptersTotal`) +
+            FfiConverterString.allocationSize(value.`currentBookName`) +
+            FfiConverterString.allocationSize(value.`currentBookId`) +
+            FfiConverterInt.allocationSize(value.`currentChapter`) +
+            FfiConverterInt.allocationSize(value.`currentChapterVerses`) +
+            FfiConverterInt.allocationSize(value.`versesDone`) +
+            FfiConverterString.allocationSize(value.`message`)
+    )
+
+    override fun write(value: InstallProgress, buf: ByteBuffer) {
+            FfiConverterDouble.write(value.`fraction`, buf)
+            FfiConverterInt.write(value.`chaptersDone`, buf)
+            FfiConverterInt.write(value.`chaptersTotal`, buf)
+            FfiConverterString.write(value.`currentBookName`, buf)
+            FfiConverterString.write(value.`currentBookId`, buf)
+            FfiConverterInt.write(value.`currentChapter`, buf)
+            FfiConverterInt.write(value.`currentChapterVerses`, buf)
+            FfiConverterInt.write(value.`versesDone`, buf)
+            FfiConverterString.write(value.`message`, buf)
+    }
+}
+
+
+
 data class InternalPlaybackState (
     var `currentTimeMs`: kotlin.Long
     , 
@@ -6521,6 +9536,59 @@ public object FfiConverterTypeInternalPlaybackState: FfiConverterRustBuffer<Inte
             FfiConverterBoolean.write(value.`isPlaying`, buf)
             FfiConverterTypeRepeatMode.write(value.`repeatMode`, buf)
             FfiConverterLong.write(value.`currentDurationMs`, buf)
+    }
+}
+
+
+
+data class LanguageFacet (
+    var `code`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `englishName`: kotlin.String
+    , 
+    var `translationCount`: kotlin.Int
+    , 
+    var `commentaryCount`: kotlin.Int
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeLanguageFacet: FfiConverterRustBuffer<LanguageFacet> {
+    override fun read(buf: ByteBuffer): LanguageFacet {
+        return LanguageFacet(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: LanguageFacet) = (
+            FfiConverterString.allocationSize(value.`code`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`englishName`) +
+            FfiConverterInt.allocationSize(value.`translationCount`) +
+            FfiConverterInt.allocationSize(value.`commentaryCount`)
+    )
+
+    override fun write(value: LanguageFacet, buf: ByteBuffer) {
+            FfiConverterString.write(value.`code`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`englishName`, buf)
+            FfiConverterInt.write(value.`translationCount`, buf)
+            FfiConverterInt.write(value.`commentaryCount`, buf)
     }
 }
 
@@ -7223,6 +10291,237 @@ public object FfiConverterTypePeriod: FfiConverterRustBuffer<Period> {
 
 
 
+data class PersonDetail (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `alsoCalled`: List<kotlin.String>
+    , 
+    var `gender`: kotlin.String?
+    , 
+    var `birthYear`: kotlin.Long?
+    , 
+    var `deathYear`: kotlin.Long?
+    , 
+    var `minYear`: kotlin.Long?
+    , 
+    var `maxYear`: kotlin.Long?
+    , 
+    var `description`: kotlin.String?
+    , 
+    var `father`: List<EntityRef>
+    , 
+    var `mother`: List<EntityRef>
+    , 
+    var `partners`: List<EntityRef>
+    , 
+    var `children`: List<EntityRef>
+    , 
+    var `siblings`: List<EntityRef>
+    , 
+    var `halfSiblingsSameFather`: List<EntityRef>
+    , 
+    var `halfSiblingsSameMother`: List<EntityRef>
+    , 
+    var `memberOf`: List<EntityRef>
+    , 
+    var `birthPlace`: List<EntityRef>
+    , 
+    var `deathPlace`: List<EntityRef>
+    , 
+    var `events`: List<EntityRef>
+    , 
+    var `referencedByEvents`: List<EntityRef>
+    , 
+    var `verses`: List<VerseRange>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePersonDetail: FfiConverterRustBuffer<PersonDetail> {
+    override fun read(buf: ByteBuffer): PersonDetail {
+        return PersonDetail(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalLong.read(buf),
+            FfiConverterOptionalLong.read(buf),
+            FfiConverterOptionalLong.read(buf),
+            FfiConverterOptionalLong.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeVerseRange.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PersonDetail) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterSequenceString.allocationSize(value.`alsoCalled`) +
+            FfiConverterOptionalString.allocationSize(value.`gender`) +
+            FfiConverterOptionalLong.allocationSize(value.`birthYear`) +
+            FfiConverterOptionalLong.allocationSize(value.`deathYear`) +
+            FfiConverterOptionalLong.allocationSize(value.`minYear`) +
+            FfiConverterOptionalLong.allocationSize(value.`maxYear`) +
+            FfiConverterOptionalString.allocationSize(value.`description`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`father`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`mother`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`partners`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`children`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`siblings`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`halfSiblingsSameFather`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`halfSiblingsSameMother`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`memberOf`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`birthPlace`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`deathPlace`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`events`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`referencedByEvents`) +
+            FfiConverterSequenceTypeVerseRange.allocationSize(value.`verses`)
+    )
+
+    override fun write(value: PersonDetail, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterSequenceString.write(value.`alsoCalled`, buf)
+            FfiConverterOptionalString.write(value.`gender`, buf)
+            FfiConverterOptionalLong.write(value.`birthYear`, buf)
+            FfiConverterOptionalLong.write(value.`deathYear`, buf)
+            FfiConverterOptionalLong.write(value.`minYear`, buf)
+            FfiConverterOptionalLong.write(value.`maxYear`, buf)
+            FfiConverterOptionalString.write(value.`description`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`father`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`mother`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`partners`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`children`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`siblings`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`halfSiblingsSameFather`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`halfSiblingsSameMother`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`memberOf`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`birthPlace`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`deathPlace`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`events`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`referencedByEvents`, buf)
+            FfiConverterSequenceTypeVerseRange.write(value.`verses`, buf)
+    }
+}
+
+
+
+data class PlaceDetail (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `kjvName`: kotlin.String?
+    , 
+    var `esvName`: kotlin.String?
+    , 
+    var `featureType`: kotlin.String?
+    , 
+    var `latitude`: kotlin.Double?
+    , 
+    var `longitude`: kotlin.Double?
+    , 
+    var `description`: kotlin.String?
+    , 
+    var `events`: List<EntityRef>
+    , 
+    var `peopleBornHere`: List<EntityRef>
+    , 
+    var `peopleDiedHere`: List<EntityRef>
+    , 
+    var `peopleGroupsHere`: List<EntityRef>
+    , 
+    var `verses`: List<VerseRange>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePlaceDetail: FfiConverterRustBuffer<PlaceDetail> {
+    override fun read(buf: ByteBuffer): PlaceDetail {
+        return PlaceDetail(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalDouble.read(buf),
+            FfiConverterOptionalDouble.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeEntityRef.read(buf),
+            FfiConverterSequenceTypeVerseRange.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PlaceDetail) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterOptionalString.allocationSize(value.`kjvName`) +
+            FfiConverterOptionalString.allocationSize(value.`esvName`) +
+            FfiConverterOptionalString.allocationSize(value.`featureType`) +
+            FfiConverterOptionalDouble.allocationSize(value.`latitude`) +
+            FfiConverterOptionalDouble.allocationSize(value.`longitude`) +
+            FfiConverterOptionalString.allocationSize(value.`description`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`events`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`peopleBornHere`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`peopleDiedHere`) +
+            FfiConverterSequenceTypeEntityRef.allocationSize(value.`peopleGroupsHere`) +
+            FfiConverterSequenceTypeVerseRange.allocationSize(value.`verses`)
+    )
+
+    override fun write(value: PlaceDetail, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterOptionalString.write(value.`kjvName`, buf)
+            FfiConverterOptionalString.write(value.`esvName`, buf)
+            FfiConverterOptionalString.write(value.`featureType`, buf)
+            FfiConverterOptionalDouble.write(value.`latitude`, buf)
+            FfiConverterOptionalDouble.write(value.`longitude`, buf)
+            FfiConverterOptionalString.write(value.`description`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`events`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`peopleBornHere`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`peopleDiedHere`, buf)
+            FfiConverterSequenceTypeEntityRef.write(value.`peopleGroupsHere`, buf)
+            FfiConverterSequenceTypeVerseRange.write(value.`verses`, buf)
+    }
+}
+
+
+
 data class PlaybackState (
     var `currentTimeMs`: kotlin.Long
     , 
@@ -7609,6 +10908,147 @@ public object FfiConverterTypeSection: FfiConverterRustBuffer<Section> {
 
 
 
+data class StoreItem (
+    var `id`: kotlin.String
+    , 
+    var `kind`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `englishName`: kotlin.String
+    , 
+    var `shortName`: kotlin.String
+    , 
+    var `language`: kotlin.String
+    , 
+    var `languageName`: kotlin.String?
+    , 
+    var `description`: kotlin.String
+    , 
+    var `badge`: kotlin.String?
+    , 
+    var `installed`: kotlin.Boolean
+    , 
+    var `hasStrongs`: kotlin.Boolean
+    , 
+    var `bookCount`: kotlin.Int
+    , 
+    var `chapterCount`: kotlin.Int
+    , 
+    var `verseCount`: kotlin.Int
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeStoreItem: FfiConverterRustBuffer<StoreItem> {
+    override fun read(buf: ByteBuffer): StoreItem {
+        return StoreItem(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: StoreItem) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`kind`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`englishName`) +
+            FfiConverterString.allocationSize(value.`shortName`) +
+            FfiConverterString.allocationSize(value.`language`) +
+            FfiConverterOptionalString.allocationSize(value.`languageName`) +
+            FfiConverterString.allocationSize(value.`description`) +
+            FfiConverterOptionalString.allocationSize(value.`badge`) +
+            FfiConverterBoolean.allocationSize(value.`installed`) +
+            FfiConverterBoolean.allocationSize(value.`hasStrongs`) +
+            FfiConverterInt.allocationSize(value.`bookCount`) +
+            FfiConverterInt.allocationSize(value.`chapterCount`) +
+            FfiConverterInt.allocationSize(value.`verseCount`)
+    )
+
+    override fun write(value: StoreItem, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`kind`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`englishName`, buf)
+            FfiConverterString.write(value.`shortName`, buf)
+            FfiConverterString.write(value.`language`, buf)
+            FfiConverterOptionalString.write(value.`languageName`, buf)
+            FfiConverterString.write(value.`description`, buf)
+            FfiConverterOptionalString.write(value.`badge`, buf)
+            FfiConverterBoolean.write(value.`installed`, buf)
+            FfiConverterBoolean.write(value.`hasStrongs`, buf)
+            FfiConverterInt.write(value.`bookCount`, buf)
+            FfiConverterInt.write(value.`chapterCount`, buf)
+            FfiConverterInt.write(value.`verseCount`, buf)
+    }
+}
+
+
+
+data class StoreShelf (
+    var `title`: kotlin.String
+    , 
+    var `subtitle`: kotlin.String?
+    , 
+    var `items`: List<StoreItem>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeStoreShelf: FfiConverterRustBuffer<StoreShelf> {
+    override fun read(buf: ByteBuffer): StoreShelf {
+        return StoreShelf(
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterSequenceTypeStoreItem.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: StoreShelf) = (
+            FfiConverterString.allocationSize(value.`title`) +
+            FfiConverterOptionalString.allocationSize(value.`subtitle`) +
+            FfiConverterSequenceTypeStoreItem.allocationSize(value.`items`)
+    )
+
+    override fun write(value: StoreShelf, buf: ByteBuffer) {
+            FfiConverterString.write(value.`title`, buf)
+            FfiConverterOptionalString.write(value.`subtitle`, buf)
+            FfiConverterSequenceTypeStoreItem.write(value.`items`, buf)
+    }
+}
+
+
+
 data class SwordModule (
     var `name`: kotlin.String
     , 
@@ -7836,6 +11276,54 @@ public object FfiConverterTypeVerse: FfiConverterRustBuffer<Verse> {
             FfiConverterSequenceTypeWord.write(value.`words`, buf)
             FfiConverterSequenceTypeNote.write(value.`notes`, buf)
             FfiConverterBoolean.write(value.`isParagraphStart`, buf)
+    }
+}
+
+
+
+data class VerseRange (
+    var `book`: kotlin.String
+    , 
+    var `chapter`: kotlin.Int
+    , 
+    var `verse`: kotlin.Int
+    , 
+    var `endVerse`: kotlin.Int?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeVerseRange: FfiConverterRustBuffer<VerseRange> {
+    override fun read(buf: ByteBuffer): VerseRange {
+        return VerseRange(
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterOptionalInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: VerseRange) = (
+            FfiConverterString.allocationSize(value.`book`) +
+            FfiConverterInt.allocationSize(value.`chapter`) +
+            FfiConverterInt.allocationSize(value.`verse`) +
+            FfiConverterOptionalInt.allocationSize(value.`endVerse`)
+    )
+
+    override fun write(value: VerseRange, buf: ByteBuffer) {
+            FfiConverterString.write(value.`book`, buf)
+            FfiConverterInt.write(value.`chapter`, buf)
+            FfiConverterInt.write(value.`verse`, buf)
+            FfiConverterOptionalInt.write(value.`endVerse`, buf)
     }
 }
 
@@ -8094,6 +11582,183 @@ public object FfiConverterTypeContributorRole: FfiConverterRustBuffer<Contributo
 
     override fun write(value: ContributorRole, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+
+sealed class FreeBibleException: kotlin.Exception() {
+    
+    class Generic(
+        
+        val `errorMessage`: kotlin.String
+        ) : FreeBibleException() {
+        override val message
+            get() = "errorMessage=${ `errorMessage` }"
+    }
+    
+
+    
+
+
+    companion object ErrorHandler : UniffiRustCallStatusErrorHandler<FreeBibleException> {
+        override fun lift(error_buf: RustBuffer.ByValue): FreeBibleException = FfiConverterTypeFreeBibleError.lift(error_buf)
+    }
+
+    
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleError : FfiConverterRustBuffer<FreeBibleException> {
+    override fun read(buf: ByteBuffer): FreeBibleException {
+        
+
+        return when(buf.getInt()) {
+            1 -> FreeBibleException.Generic(
+                FfiConverterString.read(buf),
+                )
+            else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: FreeBibleException): ULong {
+        return when(value) {
+            is FreeBibleException.Generic -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+                + FfiConverterString.allocationSize(value.`errorMessage`)
+            )
+        }
+    }
+
+    override fun write(value: FreeBibleException, buf: ByteBuffer) {
+        when(value) {
+            is FreeBibleException.Generic -> {
+                buf.putInt(1)
+                FfiConverterString.write(value.`errorMessage`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+
+}
+
+
+
+sealed class FreeBibleTaskState {
+    
+    object Queued : FreeBibleTaskState()
+    
+    
+    object Running : FreeBibleTaskState()
+    
+    
+    object Completed : FreeBibleTaskState()
+    
+    
+    data class Failed(
+        val `error`: kotlin.String) : FreeBibleTaskState()
+        
+    {
+        
+
+        companion object
+    }
+    
+    object Cancelled : FreeBibleTaskState()
+    
+    
+
+    
+
+    
+    
+
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleTaskState : FfiConverterRustBuffer<FreeBibleTaskState>{
+    override fun read(buf: ByteBuffer): FreeBibleTaskState {
+        return when(buf.getInt()) {
+            1 -> FreeBibleTaskState.Queued
+            2 -> FreeBibleTaskState.Running
+            3 -> FreeBibleTaskState.Completed
+            4 -> FreeBibleTaskState.Failed(
+                FfiConverterString.read(buf),
+                )
+            5 -> FreeBibleTaskState.Cancelled
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: FreeBibleTaskState) = when(value) {
+        is FreeBibleTaskState.Queued -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is FreeBibleTaskState.Running -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is FreeBibleTaskState.Completed -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is FreeBibleTaskState.Failed -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`error`)
+            )
+        }
+        is FreeBibleTaskState.Cancelled -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+    }
+
+    override fun write(value: FreeBibleTaskState, buf: ByteBuffer) {
+        when(value) {
+            is FreeBibleTaskState.Queued -> {
+                buf.putInt(1)
+                Unit
+            }
+            is FreeBibleTaskState.Running -> {
+                buf.putInt(2)
+                Unit
+            }
+            is FreeBibleTaskState.Completed -> {
+                buf.putInt(3)
+                Unit
+            }
+            is FreeBibleTaskState.Failed -> {
+                buf.putInt(4)
+                FfiConverterString.write(value.`error`, buf)
+                Unit
+            }
+            is FreeBibleTaskState.Cancelled -> {
+                buf.putInt(5)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 }
 
@@ -8543,6 +12208,38 @@ public object FfiConverterTypeTextDirection: FfiConverterRustBuffer<TextDirectio
 /**
  * @suppress
  */
+public object FfiConverterOptionalInt: FfiConverterRustBuffer<kotlin.Int?> {
+    override fun read(buf: ByteBuffer): kotlin.Int? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterInt.read(buf)
+    }
+
+    override fun allocationSize(value: kotlin.Int?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterInt.allocationSize(value)
+        }
+    }
+
+    override fun write(value: kotlin.Int?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterInt.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalULong: FfiConverterRustBuffer<kotlin.ULong?> {
     override fun read(buf: ByteBuffer): kotlin.ULong? {
         if (buf.get().toInt() == 0) {
@@ -8597,6 +12294,38 @@ public object FfiConverterOptionalLong: FfiConverterRustBuffer<kotlin.Long?> {
         } else {
             buf.put(1)
             FfiConverterLong.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalDouble: FfiConverterRustBuffer<kotlin.Double?> {
+    override fun read(buf: ByteBuffer): kotlin.Double? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterDouble.read(buf)
+    }
+
+    override fun allocationSize(value: kotlin.Double?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterDouble.allocationSize(value)
+        }
+    }
+
+    override fun write(value: kotlin.Double?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterDouble.write(value, buf)
         }
     }
 }
@@ -8767,6 +12496,134 @@ public object FfiConverterOptionalTypeAudioNode: FfiConverterRustBuffer<AudioNod
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeEntityRef: FfiConverterRustBuffer<EntityRef?> {
+    override fun read(buf: ByteBuffer): EntityRef? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeEntityRef.read(buf)
+    }
+
+    override fun allocationSize(value: EntityRef?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeEntityRef.allocationSize(value)
+        }
+    }
+
+    override fun write(value: EntityRef?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeEntityRef.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeEventDetail: FfiConverterRustBuffer<EventDetail?> {
+    override fun read(buf: ByteBuffer): EventDetail? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeEventDetail.read(buf)
+    }
+
+    override fun allocationSize(value: EventDetail?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeEventDetail.allocationSize(value)
+        }
+    }
+
+    override fun write(value: EventDetail?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeEventDetail.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeFreeBibleTaskStatus: FfiConverterRustBuffer<FreeBibleTaskStatus?> {
+    override fun read(buf: ByteBuffer): FreeBibleTaskStatus? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeFreeBibleTaskStatus.read(buf)
+    }
+
+    override fun allocationSize(value: FreeBibleTaskStatus?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeFreeBibleTaskStatus.allocationSize(value)
+        }
+    }
+
+    override fun write(value: FreeBibleTaskStatus?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeFreeBibleTaskStatus.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeGroupDetail: FfiConverterRustBuffer<GroupDetail?> {
+    override fun read(buf: ByteBuffer): GroupDetail? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeGroupDetail.read(buf)
+    }
+
+    override fun allocationSize(value: GroupDetail?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeGroupDetail.allocationSize(value)
+        }
+    }
+
+    override fun write(value: GroupDetail?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeGroupDetail.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypeIdRef: FfiConverterRustBuffer<IdRef?> {
     override fun read(buf: ByteBuffer): IdRef? {
         if (buf.get().toInt() == 0) {
@@ -8895,6 +12752,70 @@ public object FfiConverterOptionalTypeModuleOrganization: FfiConverterRustBuffer
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypePersonDetail: FfiConverterRustBuffer<PersonDetail?> {
+    override fun read(buf: ByteBuffer): PersonDetail? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypePersonDetail.read(buf)
+    }
+
+    override fun allocationSize(value: PersonDetail?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypePersonDetail.allocationSize(value)
+        }
+    }
+
+    override fun write(value: PersonDetail?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypePersonDetail.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypePlaceDetail: FfiConverterRustBuffer<PlaceDetail?> {
+    override fun read(buf: ByteBuffer): PlaceDetail? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypePlaceDetail.read(buf)
+    }
+
+    override fun allocationSize(value: PlaceDetail?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypePlaceDetail.allocationSize(value)
+        }
+    }
+
+    override fun write(value: PlaceDetail?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypePlaceDetail.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypePlaybackState: FfiConverterRustBuffer<PlaybackState?> {
     override fun read(buf: ByteBuffer): PlaybackState? {
         if (buf.get().toInt() == 0) {
@@ -8981,6 +12902,38 @@ public object FfiConverterOptionalTypeRichTextValue: FfiConverterRustBuffer<Rich
         } else {
             buf.put(1)
             FfiConverterTypeRichTextValue.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeStoreItem: FfiConverterRustBuffer<StoreItem?> {
+    override fun read(buf: ByteBuffer): StoreItem? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeStoreItem.read(buf)
+    }
+
+    override fun allocationSize(value: StoreItem?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeStoreItem.allocationSize(value)
+        }
+    }
+
+    override fun write(value: StoreItem?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeStoreItem.write(value, buf)
         }
     }
 }
@@ -9303,6 +13256,62 @@ public object FfiConverterSequenceTypeEngineGlobalOption: FfiConverterRustBuffer
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeEntityRef: FfiConverterRustBuffer<List<EntityRef>> {
+    override fun read(buf: ByteBuffer): List<EntityRef> {
+        val len = buf.getInt()
+        return List<EntityRef>(len) {
+            FfiConverterTypeEntityRef.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<EntityRef>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeEntityRef.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<EntityRef>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeEntityRef.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeEntitySummary: FfiConverterRustBuffer<List<EntitySummary>> {
+    override fun read(buf: ByteBuffer): List<EntitySummary> {
+        val len = buf.getInt()
+        return List<EntitySummary>(len) {
+            FfiConverterTypeEntitySummary.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<EntitySummary>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeEntitySummary.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<EntitySummary>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeEntitySummary.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeEvent: FfiConverterRustBuffer<List<Event>> {
     override fun read(buf: ByteBuffer): List<Event> {
         val len = buf.getInt()
@@ -9331,6 +13340,230 @@ public object FfiConverterSequenceTypeEvent: FfiConverterRustBuffer<List<Event>>
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeFreeBibleAudioTiming: FfiConverterRustBuffer<List<FreeBibleAudioTiming>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleAudioTiming> {
+        val len = buf.getInt()
+        return List<FreeBibleAudioTiming>(len) {
+            FfiConverterTypeFreeBibleAudioTiming.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleAudioTiming>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleAudioTiming.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleAudioTiming>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleAudioTiming.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleBook: FfiConverterRustBuffer<List<FreeBibleBook>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleBook> {
+        val len = buf.getInt()
+        return List<FreeBibleBook>(len) {
+            FfiConverterTypeFreeBibleBook.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleBook>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleBook.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleBook>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleBook.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleChapterItem: FfiConverterRustBuffer<List<FreeBibleChapterItem>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleChapterItem> {
+        val len = buf.getInt()
+        return List<FreeBibleChapterItem>(len) {
+            FfiConverterTypeFreeBibleChapterItem.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleChapterItem>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleChapterItem.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleChapterItem>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleChapterItem.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleCompleteBook: FfiConverterRustBuffer<List<FreeBibleCompleteBook>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleCompleteBook> {
+        val len = buf.getInt()
+        return List<FreeBibleCompleteBook>(len) {
+            FfiConverterTypeFreeBibleCompleteBook.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleCompleteBook>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleCompleteBook.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleCompleteBook>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleCompleteBook.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleCompleteChapter: FfiConverterRustBuffer<List<FreeBibleCompleteChapter>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleCompleteChapter> {
+        val len = buf.getInt()
+        return List<FreeBibleCompleteChapter>(len) {
+            FfiConverterTypeFreeBibleCompleteChapter.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleCompleteChapter>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleCompleteChapter.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleCompleteChapter>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleCompleteChapter.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleFootnote: FfiConverterRustBuffer<List<FreeBibleFootnote>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleFootnote> {
+        val len = buf.getInt()
+        return List<FreeBibleFootnote>(len) {
+            FfiConverterTypeFreeBibleFootnote.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleFootnote>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleFootnote.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleFootnote>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleFootnote.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleTaskStatus: FfiConverterRustBuffer<List<FreeBibleTaskStatus>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleTaskStatus> {
+        val len = buf.getInt()
+        return List<FreeBibleTaskStatus>(len) {
+            FfiConverterTypeFreeBibleTaskStatus.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleTaskStatus>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleTaskStatus.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleTaskStatus>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleTaskStatus.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeFreeBibleVerse: FfiConverterRustBuffer<List<FreeBibleVerse>> {
+    override fun read(buf: ByteBuffer): List<FreeBibleVerse> {
+        val len = buf.getInt()
+        return List<FreeBibleVerse>(len) {
+            FfiConverterTypeFreeBibleVerse.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<FreeBibleVerse>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeFreeBibleVerse.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<FreeBibleVerse>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeFreeBibleVerse.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeIdRef: FfiConverterRustBuffer<List<IdRef>> {
     override fun read(buf: ByteBuffer): List<IdRef> {
         val len = buf.getInt()
@@ -9349,6 +13582,34 @@ public object FfiConverterSequenceTypeIdRef: FfiConverterRustBuffer<List<IdRef>>
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeIdRef.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeLanguageFacet: FfiConverterRustBuffer<List<LanguageFacet>> {
+    override fun read(buf: ByteBuffer): List<LanguageFacet> {
+        val len = buf.getInt()
+        return List<LanguageFacet>(len) {
+            FfiConverterTypeLanguageFacet.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<LanguageFacet>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeLanguageFacet.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<LanguageFacet>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeLanguageFacet.write(it, buf)
         }
     }
 }
@@ -9611,6 +13872,62 @@ public object FfiConverterSequenceTypeSection: FfiConverterRustBuffer<List<Secti
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeStoreItem: FfiConverterRustBuffer<List<StoreItem>> {
+    override fun read(buf: ByteBuffer): List<StoreItem> {
+        val len = buf.getInt()
+        return List<StoreItem>(len) {
+            FfiConverterTypeStoreItem.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<StoreItem>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeStoreItem.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<StoreItem>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeStoreItem.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeStoreShelf: FfiConverterRustBuffer<List<StoreShelf>> {
+    override fun read(buf: ByteBuffer): List<StoreShelf> {
+        val len = buf.getInt()
+        return List<StoreShelf>(len) {
+            FfiConverterTypeStoreShelf.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<StoreShelf>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeStoreShelf.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<StoreShelf>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeStoreShelf.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeSwordModule: FfiConverterRustBuffer<List<SwordModule>> {
     override fun read(buf: ByteBuffer): List<SwordModule> {
         val len = buf.getInt()
@@ -9685,6 +14002,34 @@ public object FfiConverterSequenceTypeVerse: FfiConverterRustBuffer<List<Verse>>
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeVerse.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeVerseRange: FfiConverterRustBuffer<List<VerseRange>> {
+    override fun read(buf: ByteBuffer): List<VerseRange> {
+        val len = buf.getInt()
+        return List<VerseRange>(len) {
+            FfiConverterTypeVerseRange.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<VerseRange>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeVerseRange.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<VerseRange>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeVerseRange.write(it, buf)
         }
     }
 }

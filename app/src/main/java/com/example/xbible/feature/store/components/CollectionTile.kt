@@ -11,6 +11,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.xbible.viewmodel.InstalledCollectionNode
 import uniffi.xbible_engine.AudioCollection
+import uniffi.xbible_engine.StoreItem
 
 @Composable
 fun CollectionTile(
@@ -85,6 +86,22 @@ fun CollectionTile(
     thumbnail = { CollectionThumbnail(node, Modifier.fillMaxSize()) }, // see note
     onClick = onClick,
     modifier = modifier,
+)
+
+// From a derived StoreItem (store list).
+@Composable
+fun CollectionTile(
+    item: StoreItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    trailing: (@Composable RowScope.() -> Unit)? = null,
+) = CollectionTile(
+    title = item.name,
+    subtitle = item.description ?: "Store Item",
+    thumbnail = { CollectionThumbnail(item, Modifier.fillMaxSize()) }, // see note
+    onClick = onClick,
+    modifier = modifier,
+    trailing= trailing
 )
 
 

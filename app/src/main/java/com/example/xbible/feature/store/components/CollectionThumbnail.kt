@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.xbible.core.ui.components.utils.AudioCollectionColorPalate
 import com.example.xbible.viewmodel.InstalledCollectionNode
 import uniffi.xbible_engine.AudioCollection
+import uniffi.xbible_engine.StoreItem
 
 @Composable
 fun CollectionThumbnail(
@@ -50,3 +51,7 @@ fun CollectionThumbnail(collection: AudioCollection, modifier: Modifier = Modifi
 @Composable
 fun CollectionThumbnail(node: InstalledCollectionNode, modifier: Modifier = Modifier) =
     CollectionThumbnail(seed = node.id, name = node.name, modifier = modifier)
+
+@Composable
+fun CollectionThumbnail(item: StoreItem, modifier: Modifier = Modifier) =
+    CollectionThumbnail(seed = item.id, name = item.name, modifier = modifier)

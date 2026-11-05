@@ -1,6 +1,7 @@
 package com.example.xbible.ui
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -22,9 +23,12 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaul
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,13 +37,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import com.example.xbible.R
 import com.example.xbible.core.ui.components.MiniPlayer
 import com.example.xbible.core.ui.layout.LayoutMode
 import com.example.xbible.core.ui.layout.LocalLayoutInfo
 import com.example.xbible.feature.library.LibraryScreen
-import com.example.xbible.feature.store.StoreScreen
+import com.example.xbible.feature.store.FreeBibleStoreScreen
+import com.example.xbible.feature.store.LanguageSectionScreen
+import com.example.xbible.feature.store.StoreItemDetailScreen
+import com.example.xbible.feature.store.StoreRoute
+import com.example.xbible.feature.store.StoreSectionScreen
 import com.example.xbible.feature.study.StudyScreen
 import com.example.xbible.feature.tools.ToolsScreen
 import com.example.xbible.feature.tools.audiobible.AudioBibleNavigation
@@ -48,11 +57,22 @@ import com.example.xbible.feature.tools.timeline.TimelineScreen
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.AudioBibleViewModel
 import com.example.xbible.viewmodel.EngineViewModel
+import com.example.xbible.viewmodel.FreeBibleStoreViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun XbibleApp(engineViewModel: EngineViewModel) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.STUDY) }
+
+    // Store sub-navigation state. Null = the main store screen.
+    var storeRoute by rememberSaveable(stateSaver = StoreRouteSaver) {
+        mutableStateOf<StoreRoute?>(null)
+    }
+
+    // Hardware back pops the store sub-stack first.
+    BackHandler(enabled = storeRoute != null) {
+        storeRoute = null
+    }
 
     val activity = checkNotNull(LocalActivity.current as? ComponentActivity) {
         "XbibleApp must be hosted inside a ComponentActivity"
@@ -60,6 +80,9 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
 
     val audioBibleViewModel: AudioBibleViewModel = hiltViewModel(viewModelStoreOwner = activity)
     val selectedModule by audioBibleViewModel.selectedModule.collectAsState()
+
+    val freeBibleStoreViewModel: FreeBibleStoreViewModel =
+        hiltViewModel(viewModelStoreOwner = activity)
 
     var showFullScreenPlayer by rememberSaveable { mutableStateOf(false) }
 
@@ -72,7 +95,6 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
         }
     }
 
-    // Determine if we should use the side-by-side (landscape/tablet) layout
     val layoutInfo = LocalLayoutInfo.current
     val isWideLayout = layoutInfo.mode == LayoutMode.TabletLandscape ||
             layoutInfo.mode == LayoutMode.TabletPortrait ||
@@ -80,7 +102,6 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // 1. The Main App
         NavigationSuiteScaffold(
             layoutType = customNavSuiteType,
             modifier = Modifier.fillMaxSize(),
@@ -99,16 +120,19 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
                         },
                         label = { Text(stringResource(destination.labelRes)) },
                         selected = destination == currentDestination,
-                        onClick = { currentDestination = destination }
+                        onClick = {
+                            // Leaving Store resets its sub-stack.
+                            if (destination != AppDestinations.STORE) {
+                                storeRoute = null
+                            }
+                            currentDestination = destination
+                        }
                     )
                 }
             }
         ) {
-            // Wrap content in a Row to allow the vertical MiniPlayer to sit
-            // nicely between the NavigationRail and the MainContent
             Row(modifier = Modifier.fillMaxSize()) {
 
-                // If we are in landscape/tablet AND a song is selected, show the vertical sticker
                 if (isWideLayout && selectedModule != null && !showFullScreenPlayer) {
                     MiniPlayer(
                         viewModel = audioBibleViewModel,
@@ -122,17 +146,18 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
                 }
 
                 MainContent(
-                    modifier = Modifier.weight(1f), // Take up remaining space
+                    modifier = Modifier.weight(1f),
                     destination = currentDestination,
+                    storeRoute = storeRoute,
+                    onStoreRouteChange = { storeRoute = it },
                     engineViewModel = engineViewModel,
                     audioBibleViewModel = audioBibleViewModel,
+                    freeBibleStoreViewModel = freeBibleStoreViewModel,
                     onNavigate = { currentDestination = it }
                 )
             }
         }
 
-        // 2. MiniPlayer Overlay (Portrait only)
-        // Only show the bottom bar if we are NOT in the wide layout
         if (selectedModule != null && !showFullScreenPlayer && !isWideLayout) {
             MiniPlayer(
                 viewModel = audioBibleViewModel,
@@ -141,11 +166,10 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(WindowInsets.navigationBars.asPaddingValues())
-                    .padding(bottom = 80.dp) // Position above the NavigationBar
+                    .padding(bottom = 80.dp)
             )
         }
 
-        // 3. The Artwork Screen (Full Screen Overlay)
         if (showFullScreenPlayer && selectedModule != null) {
             AudioBiblePlayerScreen(
                 viewModel = audioBibleViewModel,
@@ -159,8 +183,11 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
 fun MainContent(
     modifier: Modifier = Modifier,
     destination: AppDestinations,
+    storeRoute: StoreRoute?,
+    onStoreRouteChange: (StoreRoute?) -> Unit,
     engineViewModel: EngineViewModel,
     audioBibleViewModel: AudioBibleViewModel,
+    freeBibleStoreViewModel: FreeBibleStoreViewModel,
     onNavigate: (AppDestinations) -> Unit
 ) {
     Box(modifier = modifier) {
@@ -169,7 +196,11 @@ fun MainContent(
                 engineViewModel = engineViewModel,
                 onNavigateToStore = { onNavigate(AppDestinations.STORE) })
 
-            AppDestinations.STORE -> StoreScreen()
+            AppDestinations.STORE -> StoreHost(
+                viewModel = freeBibleStoreViewModel,
+                route = storeRoute,
+                onRouteChange = onStoreRouteChange,
+            )
 
             AppDestinations.TOOLS -> ToolsScreen(
                 onNavigateToTimeline = { onNavigate(AppDestinations.TIMELINE) },
@@ -195,6 +226,105 @@ fun MainContent(
         }
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// Store sub-stack
+// ─────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun StoreHost(
+    viewModel: FreeBibleStoreViewModel,
+    route: StoreRoute?,
+    onRouteChange: (StoreRoute?) -> Unit,
+) {
+    when (route) {
+        null -> FreeBibleStoreScreen(
+            viewModel = viewModel,
+            onOpenTranslation = { _, _ -> /* TODO: open reader */ },
+            onOpenEntitySet = { _, _ -> /* TODO: open entity browse */ },
+            onOpenItem = { item ->
+                onRouteChange(StoreRoute.ItemDetail(item.id, item.kind))
+            },
+            onSeeAll = { shelfTitle ->
+                onRouteChange(StoreRoute.Section(shelfTitle))
+            },
+            onLanguageClick = { code -> viewModel.selectLanguage(code) },
+            onSeeAllLanguages = { onRouteChange(StoreRoute.Languages) },
+        )
+
+        is StoreRoute.Section -> {
+            val shelves by viewModel.shelves.collectAsStateWithLifecycle()
+            val items = remember(shelves, route.title) {
+                shelves.firstOrNull { it.title == route.title }?.items ?: emptyList()
+            }
+            StoreSectionScreen(
+                title = route.title,
+                items = items,
+                viewModel = viewModel,
+                onBack = { onRouteChange(null) },
+                onOpenTranslation = { _, _ -> /* TODO */ },
+                onOpenEntitySet = { _, _ -> /* TODO */ },
+                onOpenItem = { item ->
+                    onRouteChange(StoreRoute.ItemDetail(item.id, item.kind))
+                },
+            )
+        }
+
+        is StoreRoute.ItemDetail -> {
+            val item = remember(route.id, route.kind) {
+                viewModel.itemDetail(route.id, route.kind)
+            }
+            if (item != null) {
+                StoreItemDetailScreen(
+                    item = item,
+                    viewModel = viewModel,
+                    onBack = { onRouteChange(null) },
+                )
+            } else {
+                LaunchedEffect(Unit) { onRouteChange(null) }
+            }
+        }
+
+        StoreRoute.Languages -> {
+            val languages by viewModel.languages.collectAsStateWithLifecycle()
+            LanguageSectionScreen(
+                languages = languages,
+                onLanguageSelected = { code ->
+                    viewModel.selectLanguage(code)
+                    onRouteChange(null)
+                },
+                onBack = { onRouteChange(null) },
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Save/restore the store route across config changes
+// ─────────────────────────────────────────────────────────────────────
+
+private val StoreRouteSaver = Saver<StoreRoute?, ArrayList<Any>>(
+    save = { route ->
+        when (route) {
+            null -> arrayListOf()
+            is StoreRoute.Section -> arrayListOf("section", route.title)
+            is StoreRoute.ItemDetail -> arrayListOf("item", route.id, route.kind)
+            StoreRoute.Languages -> arrayListOf("languages")
+        }
+    },
+    restore = { saved ->
+        when {
+            saved.isEmpty() -> null
+            saved[0] == "section" -> StoreRoute.Section(saved[1] as String)
+            saved[0] == "item" -> StoreRoute.ItemDetail(
+                saved[1] as String,
+                saved[2] as String,
+            )
+            saved[0] == "languages" -> StoreRoute.Languages
+            else -> null
+        }
+    },
+)
 
 enum class AppDestinations(
     val labelRes: Int,

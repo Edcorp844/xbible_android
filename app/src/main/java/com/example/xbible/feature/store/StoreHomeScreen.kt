@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.xbible.core.ui.components.SectionHeader
 import com.example.xbible.feature.store.components.CollectionTile
 import com.example.xbible.feature.store.components.ContributorAvatarTile
 import com.example.xbible.feature.store.components.ModuleCard
@@ -294,36 +295,3 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
-@Composable
-private fun SectionHeader(title: String, onClick: (() -> Unit)?) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 20.dp)
-            .padding(top = 20.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f)
-        )
-        if (onClick != null) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowForward, // Changed from KeyboardArrowRight to ArrowForward
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-    }
-}

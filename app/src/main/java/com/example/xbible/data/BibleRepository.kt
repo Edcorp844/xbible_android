@@ -8,13 +8,23 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import uniffi.xbible_engine.DictionaryQuery
 import uniffi.xbible_engine.DictionaryResponse
+import uniffi.xbible_engine.EntityRef
+import uniffi.xbible_engine.EntitySummary
+import uniffi.xbible_engine.EventDetail
+import uniffi.xbible_engine.FreeBibleTaskStatus
+import uniffi.xbible_engine.GroupDetail
+import uniffi.xbible_engine.LanguageFacet
 import uniffi.xbible_engine.LexiconQuery
 import uniffi.xbible_engine.LexiconResponse
 import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.Period
+import uniffi.xbible_engine.PersonDetail
+import uniffi.xbible_engine.PlaceDetail
 import uniffi.xbible_engine.SearchResults
 import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.Section
+import uniffi.xbible_engine.StoreItem
+import uniffi.xbible_engine.StoreShelf
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.TaskStatus
 import uniffi.xbible_engine.TimelineData
@@ -98,7 +108,14 @@ class BibleRepository @Inject constructor(private val application: Application) 
             File(filesDir, "modules").mkdirs()
 
             initLogging()
-            engine = XBibleEngine()
+
+            val newEngine = XBibleEngine()
+
+            val dbPath = application.getDatabasePath("xbible.db").absolutePath
+            newEngine.setFreeBibleDbPath(dbPath)
+            Log.d(TAG, "initialize: FreeBible store DB at $dbPath")
+
+            engine = newEngine
             Log.d(TAG, "initialize: XBibleEngine constructed")
             Result.success(Unit)
         } catch (e: Throwable) {
@@ -223,5 +240,138 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     suspend fun getTimelineData(): List<Period> = onEngine {
         TimelineData().use { it.getData() }
+    }
+
+    // ── FreeBible store ───────────────────────────────────────────────
+
+    suspend fun refreshFreeBibleCatalog() = onEngine {
+        engine?.refreshFreeBibleCatalog()
+        Unit
+    }
+
+    suspend fun freeBibleHomeFeed(languageCode: String?): List<StoreShelf> = onEngine {
+        engine?.freeBibleHomeFeed(languageCode) ?: emptyList()
+    }
+
+    suspend fun freeBibleLanguages(): List<LanguageFacet> = onEngine {
+        engine?.freeBibleLanguages() ?: emptyList()
+    }
+
+    suspend fun searchFreeBibleStore(query: String): List<StoreItem> = onEngine {
+        engine?.searchFreeBibleStore(query) ?: emptyList()
+    }
+
+    suspend fun installFreeBibleTranslation(translationId: String): String = onEngine {
+        engine?.installFreeBibleTranslation(translationId) ?: ""
+    }
+
+    suspend fun uninstallFreeBibleTranslation(translationId: String): String = onEngine {
+        engine?.uninstallFreeBibleTranslation(translationId) ?: ""
+    }
+
+    suspend fun cancelFreeBibleTask(taskId: String) = onEngine {
+        engine?.cancelFreeBibleTask(taskId)
+        Unit
+    }
+
+    suspend fun pollFreeBibleTask(taskId: String): FreeBibleTaskStatus? = onEngine {
+        engine?.pollFreeBibleTask(taskId)
+    }
+
+    suspend fun isFreeBibleInstalled(translationId: String): Boolean = onEngine {
+        engine?.isFreeBibleInstalled(translationId) ?: false
+    }
+
+    suspend fun freeBibleStoreItem(id: String, kind: String): StoreItem? = onEngine {
+        engine?.freeBibleStoreItem(id, kind)
+    }
+
+    // ── FreeBible entity sets ────────────────────────────────────────
+
+    suspend fun installFreeBibleEntitySet(
+        datasetId: String,
+        kind: String,
+    ): String = onEngine {
+        engine?.installFreeBibleEntitySet(datasetId, kind) ?: ""
+    }
+
+    suspend fun isFreeBibleEntitySetInstalled(
+        datasetId: String,
+        kind: String,
+    ): Boolean = onEngine {
+        engine?.isFreeBibleEntitySetInstalled(datasetId, kind) ?: false
+    }
+
+    suspend fun listFreeBiblePeople(
+        datasetId: String,
+        offset: Int,
+        limit: Int,
+        query: String?,
+    ): List<EntitySummary> = onEngine {
+        engine?.freeBibleListPeople(datasetId, offset, limit, query) ?: emptyList()
+    }
+
+    suspend fun listFreeBibleEvents(
+        datasetId: String,
+        offset: Int,
+        limit: Int,
+        query: String?,
+    ): List<EntitySummary> = onEngine {
+        engine?.freeBibleListEvents(datasetId, offset, limit, query) ?: emptyList()
+    }
+
+    suspend fun listFreeBiblePlaces(
+        datasetId: String,
+        offset: Int,
+        limit: Int,
+        query: String?,
+    ): List<EntitySummary> = onEngine {
+        engine?.freeBibleListPlaces(datasetId, offset, limit, query) ?: emptyList()
+    }
+
+    suspend fun listFreeBibleGroups(
+        datasetId: String,
+        offset: Int,
+        limit: Int,
+        query: String?,
+    ): List<EntitySummary> = onEngine {
+        engine?.freeBibleListGroups(datasetId, offset, limit, query) ?: emptyList()
+    }
+
+    suspend fun getFreeBiblePerson(
+        datasetId: String,
+        id: String,
+    ): PersonDetail? = onEngine {
+        engine?.freeBibleGetPerson(datasetId, id)
+    }
+
+    suspend fun getFreeBibleEvent(
+        datasetId: String,
+        id: String,
+    ): EventDetail? = onEngine {
+        engine?.freeBibleGetEvent(datasetId, id)
+    }
+
+    suspend fun getFreeBiblePlace(
+        datasetId: String,
+        id: String,
+    ): PlaceDetail? = onEngine {
+        engine?.freeBibleGetPlace(datasetId, id)
+    }
+
+    suspend fun getFreeBibleGroup(
+        datasetId: String,
+        id: String,
+    ): GroupDetail? = onEngine {
+        engine?.freeBibleGetGroup(datasetId, id)
+    }
+
+    suspend fun freeBibleEntitiesForVerse(
+        datasetId: String,
+        book: String,
+        chapter: Int,
+        verse: Int,
+    ): List<EntityRef> = onEngine {
+        engine?.freeBibleEntitiesForVerse(datasetId, book, chapter, verse) ?: emptyList()
     }
 }
