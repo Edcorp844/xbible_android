@@ -11,8 +11,12 @@ import uniffi.xbible_engine.DictionaryResponse
 import uniffi.xbible_engine.EntityRef
 import uniffi.xbible_engine.EntitySummary
 import uniffi.xbible_engine.EventDetail
+import uniffi.xbible_engine.FreeBibleBook
+import uniffi.xbible_engine.FreeBibleReader
+import uniffi.xbible_engine.FreeBibleStore
 import uniffi.xbible_engine.FreeBibleTaskStatus
 import uniffi.xbible_engine.GroupDetail
+import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.LanguageFacet
 import uniffi.xbible_engine.LexiconQuery
 import uniffi.xbible_engine.LexiconResponse
@@ -20,6 +24,7 @@ import uniffi.xbible_engine.ModuleBook
 import uniffi.xbible_engine.Period
 import uniffi.xbible_engine.PersonDetail
 import uniffi.xbible_engine.PlaceDetail
+import uniffi.xbible_engine.ReaderChapter
 import uniffi.xbible_engine.SearchResults
 import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.Section
@@ -28,6 +33,7 @@ import uniffi.xbible_engine.StoreShelf
 import uniffi.xbible_engine.SwordModule
 import uniffi.xbible_engine.TaskStatus
 import uniffi.xbible_engine.TimelineData
+import uniffi.xbible_engine.VerseRange
 import uniffi.xbible_engine.XBibleEngine
 import uniffi.xbible_engine.initLogging
 import java.io.File
@@ -38,56 +44,38 @@ import javax.inject.Singleton
 private const val TAG = "BibleRepo"
 
 /**
- * Repository that abstracts the XBibleEngine (Rust) and provides data to the ViewModels.
+ * Repository that abstracts the XBibleEngine (Rust) and provides data to the
+ * ViewModels.
  *
  * ## Threading contract
  *
  * The Rust engine is **not internally synchronized**. All calls into it must
- * happen on a single thread — otherwise we hit the exact SIGSEGV that Swift
- * avoids by routing everything through `engineQueue`.
- *
- * Every public method here is `suspend` and internally dispatches onto
- * [engineDispatcher], which is a dedicated single-thread executor. Callers may
- * invoke these methods from any coroutine context (Main, IO, Default); the
- * repository serializes them.
- *
- * Do **not** expose the raw `engine` field. Everything goes through
- * [onEngine].
+ * happen on a single thread. Every public method here is `suspend` and
+ * dispatches onto [engineDispatcher] — a dedicated single-thread executor.
  */
 @Singleton
 class BibleRepository @Inject constructor(private val application: Application) {
 
-    /**
-     * The one and only thread that ever touches the Rust engine.
-     * Mirrors Swift's `DispatchQueue` labelled `engineQueue`.
-     */
     private val engineDispatcher: CoroutineDispatcher =
         Executors.newSingleThreadExecutor { r ->
             Thread(r, "xbible-engine").apply {
                 isDaemon = true
-                // Give the engine thread a predictable priority. UI/coroutines
-                // stay responsive; engine work is CPU-bound (parsing, extracting).
                 priority = Thread.NORM_PRIORITY
             }
         }.asCoroutineDispatcher()
 
-    @Volatile
-    private var engine: XBibleEngine? = null
+    @Volatile private var engine: XBibleEngine? = null
+    @Volatile private var freeBible: uniffi.xbible_engine.FreeBibleEngine? = null
+    @Volatile private var freeBibleStore: FreeBibleStore? = null
+    @Volatile private var freeBibleReader: FreeBibleReader? = null
 
-    /**
-     * Run [block] serialized on the engine thread. All engine access MUST go
-     * through this helper. If you add a new method below, wrap the body in
-     * `onEngine { ... }`.
-     */
     private suspend fun <T> onEngine(block: () -> T): T =
         withContext(engineDispatcher) { block() }
 
-    // ── Lifecycle ─────────────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════
+    // Lifecycle
+    // ══════════════════════════════════════════════════════════════════
 
-    /**
-     * Initializes the native environment and the engine.
-     * Idempotent — safe to call multiple times.
-     */
     suspend fun initialize(): Result<Unit> = onEngine {
         try {
             if (engine != null) {
@@ -111,12 +99,21 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
             val newEngine = XBibleEngine()
 
-            val dbPath = application.getDatabasePath("xbible.db").absolutePath
-            newEngine.setFreeBibleDbPath(dbPath)
-            Log.d(TAG, "initialize: FreeBible store DB at $dbPath")
+            // Grab the FreeBible sub-tree once.
+            val fb = newEngine.freebible()
+            val fbStore = fb.store()
+            val fbReader = fb.reader()
 
+            val dbPath = application.getDatabasePath("xbible.db").absolutePath
+            fb.setDbPath(dbPath)
+            Log.d(TAG, "initialize: FreeBible DB at $dbPath")
+
+            freeBibleReader = fbReader
+            freeBibleStore = fbStore
+            freeBible = fb
             engine = newEngine
-            Log.d(TAG, "initialize: XBibleEngine constructed")
+
+            Log.d(TAG, "initialize: XBibleEngine + FreeBible constructed")
             Result.success(Unit)
         } catch (e: Throwable) {
             Log.e(TAG, "Failed to initialize XBibleEngine", e)
@@ -126,7 +123,9 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     fun isInitialized(): Boolean = engine != null
 
-    // ── Module discovery ──────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════
+    // SWORD engine (unchanged — mirrors XBibleEngine's methods)
+    // ══════════════════════════════════════════════════════════════════
 
     suspend fun getBibleModules(): List<SwordModule> = onEngine {
         engine?.getBibleModules() ?: emptyList()
@@ -136,25 +135,16 @@ class BibleRepository @Inject constructor(private val application: Application) 
         engine?.getBooks(moduleName) ?: emptyList()
     }
 
-    suspend fun getChapterContent(moduleName: String, reference: String): List<Section> = onEngine {
-        engine?.getChapterContent(moduleName, reference) ?: emptyList()
-    }
+    suspend fun getChapterContent(moduleName: String, reference: String): List<Section> =
+        onEngine { engine?.getChapterContent(moduleName, reference) ?: emptyList() }
 
     suspend fun refreshModules(): List<SwordModule> = onEngine {
         engine?.refreshInstalledModules() ?: emptyList()
     }
 
     suspend fun getInstalledModules(): List<SwordModule> = onEngine {
-        val e = engine
-        if (e == null) {
-            Log.w(TAG, "getInstalledModules: engine not initialized")
-            emptyList()
-        } else {
-            e.refreshInstalledModules()
-        }
+        engine?.refreshInstalledModules() ?: emptyList()
     }
-
-    // ── Remote / store ────────────────────────────────────────────────
 
     suspend fun getRemoteSources(): List<String> = onEngine {
         engine?.getRemoteSources() ?: emptyList()
@@ -164,13 +154,6 @@ class BibleRepository @Inject constructor(private val application: Application) 
         engine?.fetchRemoteModules(sourceName) ?: emptyList()
     }
 
-    // ── Install pipeline ──────────────────────────────────────────────
-
-    /**
-     * Kicks off an async install. Returns a task id that can be polled via
-     * [getTaskStatus]. The engine spawns its own worker for the actual
-     * download/extract; this call only registers the task.
-     */
     suspend fun installModuleAsync(source: String, moduleName: String): String = onEngine {
         engine?.installModuleAsync(source, moduleName) ?: ""
     }
@@ -180,11 +163,8 @@ class BibleRepository @Inject constructor(private val application: Application) 
     }
 
     suspend fun cancelTask(taskId: String) = onEngine {
-        engine?.cancelTask(taskId)
-        Unit
+        engine?.cancelTask(taskId); Unit
     }
-
-    // ── Module management ─────────────────────────────────────────────
 
     suspend fun isModuleInstalled(moduleName: String): Boolean = onEngine {
         engine?.isModuleInstalled(moduleName) ?: false
@@ -193,8 +173,6 @@ class BibleRepository @Inject constructor(private val application: Application) 
     suspend fun uninstallModule(moduleName: String): Int = onEngine {
         engine?.uninstallModule(moduleName) ?: -1
     }
-
-    // ── Typed module lookups ──────────────────────────────────────────
 
     suspend fun getDictionaryModules(): List<SwordModule> = onEngine {
         engine?.getDictionaryModules() ?: emptyList()
@@ -208,8 +186,6 @@ class BibleRepository @Inject constructor(private val application: Application) 
         engine?.getCommentaryModules() ?: emptyList()
     }
 
-    // ── Queries ───────────────────────────────────────────────────────
-
     suspend fun lookupDictionary(query: DictionaryQuery): DictionaryResponse = onEngine {
         engine?.lookupDictionary(query) ?: DictionaryResponse(emptyList())
     }
@@ -221,7 +197,7 @@ class BibleRepository @Inject constructor(private val application: Application) 
     suspend fun search(
         moduleName: String,
         query: String,
-        searchType: SearchType
+        searchType: SearchType,
     ): SearchResults = onEngine {
         engine?.search(moduleName, query, searchType)
             ?: SearchResults(query, moduleName, emptyList())
@@ -231,147 +207,229 @@ class BibleRepository @Inject constructor(private val application: Application) 
         engine?.getSingleEntry(module, reference) ?: emptyList()
     }
 
-    // ── Timeline ──────────────────────────────────────────────────────
-    //
-    // TimelineData() is a *separate* Rust object — its `use {}` closes it
-    // immediately. Whether it needs engine-thread affinity depends on whether
-    // it shares engine state internally; keep it on the engine thread to be
-    // safe. Cheap operation, no reason to risk it.
-
     suspend fun getTimelineData(): List<Period> = onEngine {
         TimelineData().use { it.getData() }
     }
 
-    // ── FreeBible store ───────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════
+    // FreeBible store
+    // ══════════════════════════════════════════════════════════════════
 
     suspend fun refreshFreeBibleCatalog() = onEngine {
-        engine?.refreshFreeBibleCatalog()
-        Unit
+        freeBibleStore?.refresh(); Unit
     }
 
     suspend fun freeBibleHomeFeed(languageCode: String?): List<StoreShelf> = onEngine {
-        engine?.freeBibleHomeFeed(languageCode) ?: emptyList()
+        freeBibleStore?.homeFeed(languageCode) ?: emptyList()
     }
 
     suspend fun freeBibleLanguages(): List<LanguageFacet> = onEngine {
-        engine?.freeBibleLanguages() ?: emptyList()
+        freeBibleStore?.languages() ?: emptyList()
     }
 
     suspend fun searchFreeBibleStore(query: String): List<StoreItem> = onEngine {
-        engine?.searchFreeBibleStore(query) ?: emptyList()
-    }
-
-    suspend fun installFreeBibleTranslation(translationId: String): String = onEngine {
-        engine?.installFreeBibleTranslation(translationId) ?: ""
-    }
-
-    suspend fun uninstallFreeBibleTranslation(translationId: String): String = onEngine {
-        engine?.uninstallFreeBibleTranslation(translationId) ?: ""
-    }
-
-    suspend fun cancelFreeBibleTask(taskId: String) = onEngine {
-        engine?.cancelFreeBibleTask(taskId)
-        Unit
-    }
-
-    suspend fun pollFreeBibleTask(taskId: String): FreeBibleTaskStatus? = onEngine {
-        engine?.pollFreeBibleTask(taskId)
-    }
-
-    suspend fun isFreeBibleInstalled(translationId: String): Boolean = onEngine {
-        engine?.isFreeBibleInstalled(translationId) ?: false
+        freeBibleStore?.search(query) ?: emptyList()
     }
 
     suspend fun freeBibleStoreItem(id: String, kind: String): StoreItem? = onEngine {
-        engine?.freeBibleStoreItem(id, kind)
+        freeBibleStore?.item(id, kind)
     }
 
-    // ── FreeBible entity sets ────────────────────────────────────────
-
-    suspend fun installFreeBibleEntitySet(
-        datasetId: String,
-        kind: String,
-    ): String = onEngine {
-        engine?.installFreeBibleEntitySet(datasetId, kind) ?: ""
-    }
-
-    suspend fun isFreeBibleEntitySetInstalled(
-        datasetId: String,
-        kind: String,
-    ): Boolean = onEngine {
-        engine?.isFreeBibleEntitySetInstalled(datasetId, kind) ?: false
-    }
-
-    suspend fun listFreeBiblePeople(
-        datasetId: String,
+    suspend fun getFreeBibleShelf(
+        shelfId: String,
+        language: String?,
         offset: Int,
         limit: Int,
-        query: String?,
+    ): List<StoreItem> = onEngine {
+        freeBibleStore?.getShelf(shelfId, language, offset.toUInt(), limit.toUInt())
+            ?: emptyList()
+    }
+
+    suspend fun getFreeBibleShelfTotal(shelfId: String, language: String?): Int = onEngine {
+        freeBibleStore?.shelfTotal(shelfId, language)?.toInt() ?: 0
+    }
+
+    suspend fun installFreeBibleTranslation(translationId: String): String = onEngine {
+        freeBibleStore?.installTranslation(translationId) ?: ""
+    }
+
+    suspend fun uninstallFreeBibleTranslation(translationId: String): String = onEngine {
+        freeBibleStore?.uninstallTranslation(translationId) ?: ""
+    }
+
+    suspend fun installFreeBibleEntitySet(datasetId: String, kind: String): String = onEngine {
+        freeBibleStore?.installEntitySet(datasetId, kind) ?: ""
+    }
+
+    suspend fun pollFreeBibleTask(taskId: String): FreeBibleTaskStatus? = onEngine {
+        freeBibleStore?.pollTask(taskId)
+    }
+
+    suspend fun cancelFreeBibleTask(taskId: String) = onEngine {
+        freeBibleStore?.cancelTask(taskId); Unit
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // FreeBible reader — reading page APIs
+    // ══════════════════════════════════════════════════════════════════
+
+    suspend fun getFreeBibleInstalledTranslations(): List<InstalledTranslation> = onEngine {
+        freeBibleReader?.getInstalledTranslations() ?: emptyList()
+    }
+
+    suspend fun isFreeBibleInstalled(translationId: String): Boolean = onEngine {
+        freeBibleReader?.isInstalled(translationId) ?: false
+    }
+
+    suspend fun getFreeBibleBooks(translationId: String): List<FreeBibleBook> = onEngine {
+        freeBibleReader?.getBooks(translationId) ?: emptyList()
+    }
+
+    suspend fun getFirstFreeBibleBook(translationId: String): FreeBibleBook? = onEngine {
+        freeBibleReader?.getBooks(translationId)?.firstOrNull()
+    }
+
+    suspend fun getFreeBibleBook(translationId: String, bookId: String): FreeBibleBook? =
+        onEngine {
+            freeBibleReader?.getBooks(translationId)?.firstOrNull { it.id == bookId }
+        }
+
+    /**
+     * The main reading API. Returns everything needed to render one chapter:
+     * ordered blocks, footnotes, prev/next.
+     */
+    suspend fun readFreeBibleChapter(
+        translationId: String,
+        bookId: String,
+        chapter: Int,
+    ): ReaderChapter? = onEngine {
+        freeBibleReader?.readChapter(translationId, bookId, chapter)
+    }
+
+    suspend fun getFreeBibleVerse(
+        translationId: String,
+        bookId: String,
+        chapter: Int,
+        verse: Int,
+    ): String? = onEngine {
+        freeBibleReader?.getVerse(translationId, bookId, chapter, verse)
+    }
+
+    suspend fun getFreeBibleVerseRange(
+        translationId: String,
+        bookId: String,
+        chapter: Int,
+        startVerse: Int,
+        endVerse: Int,
+    ): List<Pair<Int, String>> = onEngine {
+        val reader = freeBibleReader ?: return@onEngine emptyList()
+        (startVerse..endVerse).mapNotNull { v ->
+            reader.getVerse(translationId, bookId, chapter, v)?.let { v to it }
+        }
+    }
+
+    suspend fun getFreeBibleNextChapter(
+        translationId: String,
+        bookId: String,
+        chapter: Int,
+    ): Triple<String, Int, String>? = onEngine {
+        val reader = freeBibleReader ?: return@onEngine null
+        val books = reader.getBooks(translationId)
+        val idx = books.indexOfFirst { it.id == bookId }
+        if (idx < 0) return@onEngine null
+        val current = books[idx]
+        if (chapter < current.numberOfChapters) {
+            return@onEngine Triple(bookId, chapter + 1, current.name)
+        }
+        val next = books.getOrNull(idx + 1) ?: return@onEngine null
+        Triple(next.id, 1, next.name)
+    }
+
+    suspend fun getFreeBiblePrevChapter(
+        translationId: String,
+        bookId: String,
+        chapter: Int,
+    ): Triple<String, Int, String>? = onEngine {
+        val reader = freeBibleReader ?: return@onEngine null
+        val books = reader.getBooks(translationId)
+        val idx = books.indexOfFirst { it.id == bookId }
+        if (idx < 0) return@onEngine null
+        if (chapter > 1) {
+            return@onEngine Triple(bookId, chapter - 1, books[idx].name)
+        }
+        if (idx == 0) return@onEngine null
+        val prev = books[idx - 1]
+        Triple(prev.id, prev.numberOfChapters, prev.name)
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // FreeBible reader — entities
+    // ══════════════════════════════════════════════════════════════════
+
+    suspend fun isFreeBibleEntitySetInstalled(datasetId: String, kind: String): Boolean =
+        onEngine { freeBibleReader?.isEntitySetInstalled(datasetId, kind) ?: false }
+
+    suspend fun listFreeBiblePeople(
+        datasetId: String, offset: Int, limit: Int, query: String?,
     ): List<EntitySummary> = onEngine {
-        engine?.freeBibleListPeople(datasetId, offset, limit, query) ?: emptyList()
+        freeBibleReader?.listPeople(datasetId, offset, limit, query) ?: emptyList()
     }
 
     suspend fun listFreeBibleEvents(
-        datasetId: String,
-        offset: Int,
-        limit: Int,
-        query: String?,
+        datasetId: String, offset: Int, limit: Int, query: String?,
     ): List<EntitySummary> = onEngine {
-        engine?.freeBibleListEvents(datasetId, offset, limit, query) ?: emptyList()
+        freeBibleReader?.listEvents(datasetId, offset, limit, query) ?: emptyList()
     }
 
     suspend fun listFreeBiblePlaces(
-        datasetId: String,
-        offset: Int,
-        limit: Int,
-        query: String?,
+        datasetId: String, offset: Int, limit: Int, query: String?,
     ): List<EntitySummary> = onEngine {
-        engine?.freeBibleListPlaces(datasetId, offset, limit, query) ?: emptyList()
+        freeBibleReader?.listPlaces(datasetId, offset, limit, query) ?: emptyList()
     }
 
     suspend fun listFreeBibleGroups(
-        datasetId: String,
-        offset: Int,
-        limit: Int,
-        query: String?,
+        datasetId: String, offset: Int, limit: Int, query: String?,
     ): List<EntitySummary> = onEngine {
-        engine?.freeBibleListGroups(datasetId, offset, limit, query) ?: emptyList()
+        freeBibleReader?.listGroups(datasetId, offset, limit, query) ?: emptyList()
     }
 
-    suspend fun getFreeBiblePerson(
-        datasetId: String,
-        id: String,
-    ): PersonDetail? = onEngine {
-        engine?.freeBibleGetPerson(datasetId, id)
+    suspend fun getFreeBiblePerson(datasetId: String, id: String): PersonDetail? = onEngine {
+        freeBibleReader?.getPerson(datasetId, id)
     }
 
-    suspend fun getFreeBibleEvent(
-        datasetId: String,
-        id: String,
-    ): EventDetail? = onEngine {
-        engine?.freeBibleGetEvent(datasetId, id)
+    suspend fun getFreeBibleEvent(datasetId: String, id: String): EventDetail? = onEngine {
+        freeBibleReader?.getEvent(datasetId, id)
     }
 
-    suspend fun getFreeBiblePlace(
-        datasetId: String,
-        id: String,
-    ): PlaceDetail? = onEngine {
-        engine?.freeBibleGetPlace(datasetId, id)
+    suspend fun getFreeBiblePlace(datasetId: String, id: String): PlaceDetail? = onEngine {
+        freeBibleReader?.getPlace(datasetId, id)
     }
 
-    suspend fun getFreeBibleGroup(
-        datasetId: String,
-        id: String,
-    ): GroupDetail? = onEngine {
-        engine?.freeBibleGetGroup(datasetId, id)
+    suspend fun getFreeBibleGroup(datasetId: String, id: String): GroupDetail? = onEngine {
+        freeBibleReader?.getGroup(datasetId, id)
+    }
+
+    suspend fun searchFreeBibleEntities(
+        datasetId: String, query: String,
+    ): List<EntitySummary> = onEngine {
+        freeBibleReader?.searchEntities(datasetId, query) ?: emptyList()
     }
 
     suspend fun freeBibleEntitiesForVerse(
-        datasetId: String,
-        book: String,
-        chapter: Int,
-        verse: Int,
+        datasetId: String, book: String, chapter: Int, verse: Int,
     ): List<EntityRef> = onEngine {
-        engine?.freeBibleEntitiesForVerse(datasetId, book, chapter, verse) ?: emptyList()
+        freeBibleReader?.getEntitiesForVerse(datasetId, book, chapter, verse) ?: emptyList()
+    }
+
+    suspend fun getFreeBibleVerseRefs(
+        datasetId: String, kind: String, id: String,
+    ): List<VerseRange> = onEngine {
+        freeBibleReader?.getVerseRefs(datasetId, kind, id) ?: emptyList()
+    }
+
+    suspend fun getFreeBibleRelated(
+        datasetId: String, kind: String, id: String, relation: String?,
+    ): List<EntityRef> = onEngine {
+        freeBibleReader?.getRelated(datasetId, kind, id, relation) ?: emptyList()
     }
 }

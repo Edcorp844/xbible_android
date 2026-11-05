@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -202,10 +204,13 @@ fun StoreSectionScreen(
                     )
                 }
             } else {
-                LazyColumn(
+                // ── GRID instead of LazyColumn ─────────────────
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     items(visible, key = { "${it.kind}:${it.id}" }) { item ->
                         SectionItemCard(
@@ -237,25 +242,30 @@ private fun SectionItemCard(
         activeInstall = activeInstall,
         isInstalled = viewModel.isInstalled(item.id),
     )
-    TranslationCard(
-        item = item,
-        status = status,
-        onInstall = { viewModel.installTranslation(item.id) },
-        onOpen = {
-            when (item.kind) {
-                "translation" -> onOpenTranslation(item.id, item.name)
-                "entity_set" -> {
-                    val (dataset, kind) = item.id.split(':', limit = 2)
-                    onOpenEntitySet(dataset, kind)
+
+    // Wrapping TranslationCard in a Box that fills width ensures it
+    // expands to fill its grid cell properly.
+    Box(modifier = Modifier.fillMaxWidth()) {
+        TranslationCard(
+            item = item,
+            status = status,
+            onInstall = { viewModel.installTranslation(item.id) },
+            onOpen = {
+                when (item.kind) {
+                    "translation" -> onOpenTranslation(item.id, item.name)
+                    "entity_set" -> {
+                        val (dataset, kind) = item.id.split(':', limit = 2)
+                        onOpenEntitySet(dataset, kind)
+                    }
+                    else -> onOpenItem(item)
                 }
-                else -> onOpenItem(item)
-            }
-        },
-        onDelete = if (status is TranslationCardStatus.Installed && item.kind == "translation") {
-            { viewModel.uninstallTranslation(item.id) }
-        } else null,
-        onDetails = { onOpenItem(item) },
-    )
+            },
+            onDelete = if (status is TranslationCardStatus.Installed && item.kind == "translation") {
+                { viewModel.uninstallTranslation(item.id) }
+            } else null,
+            onDetails = { onOpenItem(item) },
+        )
+    }
 }
 
 private fun sectionStatusFor(

@@ -755,31 +755,53 @@ external fun uniffi_xbible_engine_checksum_method_artwork_extract_colors(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_artwork_image_bytes(
 ): Int
+external fun uniffi_xbible_engine_checksum_method_freebibleengine_reader(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebibleengine_set_db_path(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebibleengine_store(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_books(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_entities_for_verse(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_event(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_group(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_installed_translations(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_person(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_place(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_related(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_verse(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_verse_refs(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_is_entity_set_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_is_installed(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_list_events(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_list_groups(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_list_people(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_list_places(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_search_entities(
+): Int
+external fun uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path(
+): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task(
 ): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_books(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter_items(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_entities_for_verse(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_event(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_footnotes(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_group(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_person(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_place(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_related(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_verse(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_verse_refs(
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_shelf(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_home_feed(
 ): Int
@@ -787,21 +809,9 @@ external fun uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_
 ): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_install_translation(
 ): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_is_entity_set_installed(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_is_installed(
-): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_item(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_languages(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_events(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_groups(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_people(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_places(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_list_tasks(
 ): Int
@@ -811,11 +821,11 @@ external fun uniffi_xbible_engine_checksum_method_freebiblestore_refresh(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_search(
 ): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_search_entities(
-): Int
-external fun uniffi_xbible_engine_checksum_method_freebiblestore_set_db_path(
+external fun uniffi_xbible_engine_checksum_method_freebiblestore_shelf_total(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation(
+): Int
+external fun uniffi_xbible_engine_checksum_method_xbibleengine_freebible(
 ): Int
 external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details(
 ): Int
@@ -909,68 +919,6 @@ external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_result_m
 ): Int
 external fun uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status(
 ): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_cancel_free_bible_task(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_entities_for_verse(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_books(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter_items(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_event(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_footnotes(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_group(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_person(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_place(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_verse(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_home_feed(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_languages(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_events(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_groups(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_people(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_places(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_related_entities(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_search_entities(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_store_item(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_verse_refs(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_entity_set(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_translation(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_entity_set_installed(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_installed(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_list_free_bible_tasks(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_poll_free_bible_task(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_refresh_free_bible_catalog(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_search_free_bible_store(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_set_free_bible_db_path(
-): Int
-external fun uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_free_bible_translation(
-): Int
 external fun uniffi_xbible_engine_checksum_constructor_timelinedata_new(
 ): Int
 external fun uniffi_xbible_engine_checksum_constructor_audioengine_new(
@@ -982,6 +930,10 @@ external fun uniffi_xbible_engine_checksum_constructor_storedownloadprogresslist
 external fun uniffi_xbible_engine_checksum_constructor_storeapiservice_new(
 ): Int
 external fun uniffi_xbible_engine_checksum_constructor_artwork_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_freebibleengine_new(
+): Int
+external fun uniffi_xbible_engine_checksum_constructor_freebiblereader_new(
 ): Int
 external fun uniffi_xbible_engine_checksum_constructor_freebiblestore_new(
 ): Int
@@ -1151,6 +1103,62 @@ external fun uniffi_xbible_engine_fn_method_artwork_extract_colors(`ptr`: Long,`
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_artwork_image_bytes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_clone_freebibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_free_freebibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_constructor_freebibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_method_freebibleengine_reader(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_method_freebibleengine_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_method_freebibleengine_store(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_clone_freebiblereader(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_free_freebiblereader(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_xbible_engine_fn_constructor_freebiblereader_new(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_installed_translations(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_related(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_is_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_freebiblereader_is_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
+external fun uniffi_xbible_engine_fn_method_freebiblereader_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
 external fun uniffi_xbible_engine_fn_clone_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_xbible_engine_fn_free_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -1159,29 +1167,7 @@ external fun uniffi_xbible_engine_fn_constructor_freebiblestore_new(uniffi_out_e
 ): Long
 external fun uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_chapter_items(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_footnotes(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_related(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_xbible_engine_fn_method_freebiblestore_get_shelf(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1189,21 +1175,9 @@ external fun uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(`p
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_install_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_is_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_freebiblestore_is_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
 external fun uniffi_xbible_engine_fn_method_freebiblestore_item(`ptr`: Long,`id`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_languages(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_list_tasks(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1213,10 +1187,8 @@ external fun uniffi_xbible_engine_fn_method_freebiblestore_refresh(`ptr`: Long,u
 ): Unit
 external fun uniffi_xbible_engine_fn_method_freebiblestore_search(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
+external fun uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Int
 external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -1224,6 +1196,8 @@ external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_ou
 external fun uniffi_xbible_engine_fn_free_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
 external fun uniffi_xbible_engine_fn_constructor_xbibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_xbible_engine_fn_method_xbibleengine_freebible(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_download_progress_details(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1316,68 +1290,6 @@ external fun uniffi_xbible_engine_fn_method_xbibleengine_cancel_task(`ptr`: Long
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_result_modules(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_xbibleengine_get_task_status(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_cancel_free_bible_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter_items(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_footnotes(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_languages(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_related_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_store_item(`ptr`: Long,`id`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_free_bible_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_entity_set(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_xbibleengine_list_free_bible_tasks(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_poll_free_bible_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_refresh_free_bible_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_xbibleengine_search_free_bible_store(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_xbibleengine_set_free_bible_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_xbibleengine_uninstall_free_bible_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_func_init_logging(uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
@@ -1668,58 +1580,85 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_artwork_image_bytes() != 35402) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_freebibleengine_reader() != 32797) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebibleengine_set_db_path() != 17942) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebibleengine_store() != 48456) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_books() != 2437) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_entities_for_verse() != 31880) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_event() != 13047) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_group() != 6689) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_installed_translations() != 25065) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_person() != 14022) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_place() != 21551) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_related() != 5712) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse() != 39045) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse_refs() != 56545) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_entity_set_installed() != 58881) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_installed() != 57506) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_events() != 5968) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_groups() != 6952) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_people() != 1671) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_places() != 6436) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter() != 32094) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_search_entities() != 61509) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path() != 55613) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task() != 25949) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_books() != 64543) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter() != 9299) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_chapter_items() != 1101) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_entities_for_verse() != 50583) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_event() != 12024) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_footnotes() != 60875) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_group() != 589) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_person() != 56144) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_place() != 43910) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_related() != 65159) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_verse() != 50404) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_verse_refs() != 56606) {
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_shelf() != 55711) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_home_feed() != 19050) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set() != 3659) {
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set() != 62256) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_translation() != 5227) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_is_entity_set_installed() != 8161) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_is_installed() != 41104) {
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_translation() != 17363) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_item() != 47960) {
@@ -1728,37 +1667,25 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_languages() != 33532) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_events() != 19449) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_groups() != 29783) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_people() != 42817) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_places() != 35332) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_tasks() != 48491) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_poll_task() != 34218) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_refresh() != 36650) {
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_refresh() != 54228) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_search() != 16495) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_search_entities() != 11513) {
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_shelf_total() != 14542) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_set_db_path() != 14085) {
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation() != 1570) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation() != 22741) {
+    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_freebible() != 12521) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_download_progress_details() != 32431) {
@@ -1899,99 +1826,6 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_get_task_status() != 39544) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_cancel_free_bible_task() != 28603) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_entities_for_verse() != 11903) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_books() != 27839) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter() != 16937) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_chapter_items() != 59987) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_event() != 9453) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_footnotes() != 52145) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_group() != 36550) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_person() != 56549) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_place() != 55698) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_get_verse() != 56648) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_home_feed() != 37711) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_languages() != 10210) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_events() != 44024) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_groups() != 19927) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_people() != 15619) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_list_places() != 4379) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_related_entities() != 20791) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_search_entities() != 48845) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_store_item() != 45953) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_free_bible_verse_refs() != 41798) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_entity_set() != 5757) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_install_free_bible_translation() != 1858) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_entity_set_installed() != 63626) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_is_free_bible_installed() != 17313) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_list_free_bible_tasks() != 33908) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_poll_free_bible_task() != 5809) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_refresh_free_bible_catalog() != 7719) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_search_free_bible_store() != 24408) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_set_free_bible_db_path() != 64072) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_uninstall_free_bible_translation() != 5432) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
     if (lib.uniffi_xbible_engine_checksum_constructor_timelinedata_new() != 19980) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -2008,6 +1842,12 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_constructor_artwork_new() != 38662) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_constructor_freebibleengine_new() != 19552) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_constructor_freebiblereader_new() != 24958) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_constructor_freebiblestore_new() != 54384) {
@@ -3288,23 +3128,343 @@ public object FfiConverterTypeAudioEngine: FfiConverter<AudioEngine, Long> {
 //
 
 
-public interface FreeBibleStoreInterface {
+/**
+ * Top-level FreeBible engine.
+ *
+ * Owns the SQLite handle. On the Rust side this is a `Db<S>` type-state
+ * so `query`/`write` methods only exist once the DB is open. On the
+ * FFI side we expose a single concrete `FreeBibleEngine` — the type
+ * parameter only exists to catch mistakes in Rust code before they
+ * hit the FFI boundary.
+ */
+public interface FreeBibleEngineInterface {
     
-    fun `cancelTask`(`taskId`: kotlin.String)
+    /**
+     * Reader sub-engine: chapters, books, entities, verse lookups.
+     */
+    fun `reader`(): FreeBibleReader
+    
+    /**
+     * Open the database at `path` and share the connection with both
+     * sub-engines. Idempotent: calling twice reopens to the new path.
+     */
+    fun `setDbPath`(`path`: kotlin.String)
+    
+    /**
+     * Store sub-engine: catalog, shelves, search, installs.
+     */
+    fun `store`(): FreeBibleStore
+    
+    companion object
+}
+
+/**
+ * Top-level FreeBible engine.
+ *
+ * Owns the SQLite handle. On the Rust side this is a `Db<S>` type-state
+ * so `query`/`write` methods only exist once the DB is open. On the
+ * FFI side we expose a single concrete `FreeBibleEngine` — the type
+ * parameter only exists to catch mistakes in Rust code before they
+ * hit the FFI boundary.
+ */
+open class FreeBibleEngine: Disposable, AutoCloseable, FreeBibleEngineInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+    constructor() :
+        this(UniffiWithHandle, 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_constructor_freebibleengine_new(
+    
+        _status)
+}
+    )
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_xbible_engine_fn_free_freebibleengine(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_xbible_engine_fn_clone_freebibleengine(handle, status)
+        }
+    }
+
+    
+    /**
+     * Reader sub-engine: chapters, books, entities, verse lookups.
+     */override fun `reader`(): FreeBibleReader {
+            return FfiConverterTypeFreeBibleReader.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebibleengine_reader(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Open the database at `path` and share the connection with both
+     * sub-engines. Idempotent: calling twice reopens to the new path.
+     */
+    @Throws(FreeBibleException::class)override fun `setDbPath`(`path`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebibleengine_set_db_path(
+        it,
+        FfiConverterString.lower(`path`),_status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Store sub-engine: catalog, shelves, search, installs.
+     */override fun `store`(): FreeBibleStore {
+            return FfiConverterTypeFreeBibleStore.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebibleengine_store(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+
+    
+
+
+    
+    
+    /**
+     * @suppress
+     */
+    companion object
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleEngine: FfiConverter<FreeBibleEngine, Long> {
+    override fun lower(value: FreeBibleEngine): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): FreeBibleEngine {
+        return FreeBibleEngine(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): FreeBibleEngine {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: FreeBibleEngine) = 8UL
+
+    override fun write(value: FreeBibleEngine, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
+public interface FreeBibleReaderInterface {
     
     fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook>
-    
-    fun `getChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse>
-    
-    fun `getChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem>
     
     fun `getEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef>
     
     fun `getEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail?
     
-    fun `getFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote>
-    
     fun `getGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail?
+    
+    fun `getInstalledTranslations`(): List<InstalledTranslation>
     
     fun `getPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail?
     
@@ -3316,19 +3476,9 @@ public interface FreeBibleStoreInterface {
     
     fun `getVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange>
     
-    fun `homeFeed`(`language`: kotlin.String?): List<StoreShelf>
-    
-    fun `installEntitySet`(`datasetId`: kotlin.String, `kindStr`: kotlin.String): kotlin.String
-    
-    fun `installTranslation`(`translationId`: kotlin.String): kotlin.String
-    
     fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean
     
     fun `isInstalled`(`translationId`: kotlin.String): kotlin.Boolean
-    
-    fun `item`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem?
-    
-    fun `languages`(): List<LanguageFacet>
     
     fun `listEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
     
@@ -3338,6 +3488,521 @@ public interface FreeBibleStoreInterface {
     
     fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
     
+    fun `readChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): ReaderChapter?
+    
+    fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
+    
+    fun `setDbPath`(`path`: kotlin.String)
+    
+    companion object
+}
+
+open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+    constructor() :
+        this(UniffiWithHandle, 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_constructor_freebiblereader_new(
+    
+        _status)
+}
+    )
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_xbible_engine_fn_free_freebiblereader(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_xbible_engine_fn_clone_freebiblereader(handle, status)
+        }
+    }
+
+    override fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
+            return FfiConverterSequenceTypeFreeBibleBook.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_books(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef> {
+            return FfiConverterSequenceTypeEntityRef.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_entities_for_verse(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`book`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail? {
+            return FfiConverterOptionalTypeEventDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_event(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail? {
+            return FfiConverterOptionalTypeGroupDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_group(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getInstalledTranslations`(): List<InstalledTranslation> {
+            return FfiConverterSequenceTypeInstalledTranslation.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_installed_translations(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail? {
+            return FfiConverterOptionalTypePersonDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_person(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail? {
+            return FfiConverterOptionalTypePlaceDetail.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_place(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getRelated`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef> {
+            return FfiConverterSequenceTypeEntityRef.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_related(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),FfiConverterOptionalString.lower(`relation`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String? {
+            return FfiConverterOptionalString.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_verse(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `getVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange> {
+            return FfiConverterSequenceTypeVerseRange.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_verse_refs(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_is_entity_set_installed(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `isInstalled`(`translationId`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_is_installed(
+        it,
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_events(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_groups(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_people(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_places(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `readChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): ReaderChapter? {
+            return FfiConverterOptionalTypeReaderChapter.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(
+        it,
+        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    override fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary> {
+            return FfiConverterSequenceTypeEntitySummary.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_search_entities(
+        it,
+        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`query`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `setDbPath`(`path`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_set_db_path(
+        it,
+        FfiConverterString.lower(`path`),_status)
+}
+    }
+    
+    
+
+    
+
+    
+
+
+    
+    
+    /**
+     * @suppress
+     */
+    companion object
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFreeBibleReader: FfiConverter<FreeBibleReader, Long> {
+    override fun lower(value: FreeBibleReader): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): FreeBibleReader {
+        return FreeBibleReader(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): FreeBibleReader {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: FreeBibleReader) = 8UL
+
+    override fun write(value: FreeBibleReader, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
+/**
+ * FFI-visible store handle. The concrete `Store` catalog only exists
+ * when the engine is in `Open` state, so methods take `&self` and
+ * reach into the shared handle (single runtime check at the boundary).
+ */
+public interface FreeBibleStoreInterface {
+    
+    fun `cancelTask`(`taskId`: kotlin.String)
+    
+    fun `getShelf`(`shelfId`: kotlin.String, `language`: kotlin.String?, `offset`: kotlin.UInt, `limit`: kotlin.UInt): List<StoreItem>
+    
+    fun `homeFeed`(`language`: kotlin.String?): List<StoreShelf>
+    
+    fun `installEntitySet`(`datasetId`: kotlin.String, `kindStr`: kotlin.String): kotlin.String
+    
+    fun `installTranslation`(`translationId`: kotlin.String): kotlin.String
+    
+    fun `item`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem?
+    
+    fun `languages`(): List<LanguageFacet>
+    
     fun `listTasks`(): List<FreeBibleTaskStatus>
     
     fun `pollTask`(`taskId`: kotlin.String): FreeBibleTaskStatus?
@@ -3346,15 +4011,18 @@ public interface FreeBibleStoreInterface {
     
     fun `search`(`query`: kotlin.String): List<StoreItem>
     
-    fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
-    
-    fun `setDbPath`(`path`: kotlin.String)
+    fun `shelfTotal`(`shelfId`: kotlin.String, `language`: kotlin.String?): kotlin.UInt
     
     fun `uninstallTranslation`(`translationId`: kotlin.String): kotlin.String
     
     companion object
 }
 
+/**
+ * FFI-visible store handle. The concrete `Store` catalog only exists
+ * when the engine is in `Open` state, so methods take `&self` and
+ * reach into the shared handle (single runtime check at the boundary).
+ */
 open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
 {
 
@@ -3471,156 +4139,13 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     
     
 
-    override fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
-            return FfiConverterSequenceTypeFreeBibleBook.lift(
+    override fun `getShelf`(`shelfId`: kotlin.String, `language`: kotlin.String?, `offset`: kotlin.UInt, `limit`: kotlin.UInt): List<StoreItem> {
+            return FfiConverterSequenceTypeStoreItem.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_books(
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_shelf(
         it,
-        FfiConverterString.lower(`translationId`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse> {
-            return FfiConverterSequenceTypeFreeBibleVerse.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_chapter(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem> {
-            return FfiConverterSequenceTypeFreeBibleChapterItem.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_chapter_items(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef> {
-            return FfiConverterSequenceTypeEntityRef.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_entities_for_verse(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`book`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail? {
-            return FfiConverterOptionalTypeEventDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_event(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote> {
-            return FfiConverterSequenceTypeFreeBibleFootnote.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_footnotes(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail? {
-            return FfiConverterOptionalTypeGroupDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_group(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail? {
-            return FfiConverterOptionalTypePersonDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_person(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail? {
-            return FfiConverterOptionalTypePlaceDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_place(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getRelated`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef> {
-            return FfiConverterSequenceTypeEntityRef.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_related(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),FfiConverterOptionalString.lower(`relation`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String? {
-            return FfiConverterOptionalString.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_verse(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `getVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange> {
-            return FfiConverterSequenceTypeVerseRange.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_verse_refs(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),_status)
+        FfiConverterString.lower(`shelfId`),FfiConverterOptionalString.lower(`language`),FfiConverterUInt.lower(`offset`),FfiConverterUInt.lower(`limit`),_status)
 }
     }
     )
@@ -3668,32 +4193,6 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     }
     
 
-    override fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_is_entity_set_installed(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `isInstalled`(`translationId`: kotlin.String): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_is_installed(
-        it,
-        FfiConverterString.lower(`translationId`),_status)
-}
-    }
-    )
-    }
-    
-
     override fun `item`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem? {
             return FfiConverterOptionalTypeStoreItem.lift(
     callWithHandle {
@@ -3714,58 +4213,6 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_languages(
         it,
         _status)
-}
-    }
-    )
-    }
-    
-
-    override fun `listEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_events(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `listGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_groups(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `listPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_people(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_list_places(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
 }
     }
     )
@@ -3824,30 +4271,17 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     }
     
 
-    override fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
+    override fun `shelfTotal`(`shelfId`: kotlin.String, `language`: kotlin.String?): kotlin.UInt {
+            return FfiConverterUInt.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_search_entities(
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`query`),_status)
+        FfiConverterString.lower(`shelfId`),FfiConverterOptionalString.lower(`language`),_status)
 }
     }
     )
     }
-    
-
-    
-    @Throws(FreeBibleException::class)override fun `setDbPath`(`path`: kotlin.String)
-        = 
-    callWithHandle {
-    uniffiRustCallWithError(FreeBibleException) { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_set_db_path(
-        it,
-        FfiConverterString.lower(`path`),_status)
-}
-    }
-    
     
 
     
@@ -5690,6 +6124,11 @@ public object FfiConverterTypeTimelineData: FfiConverter<TimelineData, Long> {
 public interface XBibleEngineInterface {
     
     /**
+     * The FreeBible sub-engine (store + reader).
+     */
+    fun `freebible`(): FreeBibleEngine
+    
+    /**
      * Get detailed download progress for module installation
      */
     fun `getDownloadProgressDetails`(): DownloadProgress
@@ -5916,120 +6355,6 @@ public interface XBibleEngineInterface {
      */
     fun `getTaskStatus`(`taskId`: kotlin.String): TaskStatus?
     
-    fun `cancelFreeBibleTask`(`taskId`: kotlin.String)
-    
-    /**
-     * Every entity whose verse range covers `(book, chapter, verse)`.
-     * Powers "who's in this verse" in the reader.
-     */
-    fun `freeBibleEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef>
-    
-    fun `freeBibleGetBooks`(`translationId`: kotlin.String): List<FreeBibleBook>
-    
-    fun `freeBibleGetChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse>
-    
-    fun `freeBibleGetChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem>
-    
-    fun `freeBibleGetEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail?
-    
-    fun `freeBibleGetFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote>
-    
-    fun `freeBibleGetGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail?
-    
-    fun `freeBibleGetPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail?
-    
-    fun `freeBibleGetPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail?
-    
-    fun `freeBibleGetVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String?
-    
-    /**
-     * Home feed, App Store style. `language = None` shows everything.
-     */
-    fun `freeBibleHomeFeed`(`language`: kotlin.String?): List<StoreShelf>
-    
-    /**
-     * Language list for the sidebar.
-     */
-    fun `freeBibleLanguages`(): List<LanguageFacet>
-    
-    fun `freeBibleListEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
-    
-    fun `freeBibleListGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
-    
-    fun `freeBibleListPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
-    
-    fun `freeBibleListPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
-    
-    /**
-     * All entities an entity points to, filtered by relation.
-     * E.g. `relation = Some("participant")` on an event gives its participants;
-     * `relation = None` gives every outgoing edge.
-     */
-    fun `freeBibleRelatedEntities`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef>
-    
-    fun `freeBibleSearchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
-    
-    /**
-     * Detail for one item: kind is "translation" | "commentary" | "dataset".
-     */
-    fun `freeBibleStoreItem`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem?
-    
-    /**
-     * All verse ranges for an entity.
-     */
-    fun `freeBibleVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange>
-    
-    /**
-     * Start installing an entity set.
-     * `kind` is one of "person" | "event" | "place" | "group".
-     * Returns a task ID for `poll_free_bible_task`.
-     */
-    fun `installFreeBibleEntitySet`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.String
-    
-    /**
-     * Start installing a translation. Returns a task ID for `poll_free_bible_task`.
-     */
-    fun `installFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String
-    
-    fun `isFreeBibleEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean
-    
-    fun `isFreeBibleInstalled`(`translationId`: kotlin.String): kotlin.Boolean
-    
-    fun `listFreeBibleTasks`(): List<FreeBibleTaskStatus>
-    
-    /**
-     * Poll a FreeBible task.
-     *
-     * While the task is `Running`, the returned status carries a full
-     * `InstallProgress`: fraction, chapters_done/total, verses_done,
-     * current book/chapter, and a human-readable message. Call this on a
-     * timer (250–500 ms is typical) and update your progress bar.
-     *
-     * Returns `None` if the task ID is unknown.
-     */
-    fun `pollFreeBibleTask`(`taskId`: kotlin.String): FreeBibleTaskStatus?
-    
-    /**
-     * Fetch/refresh the FreeBible catalog (translations, commentaries, datasets).
-     * Falls back to SQLite if the network is unavailable.
-     */
-    fun `refreshFreeBibleCatalog`()
-    
-    /**
-     * Search translations, commentaries, datasets.
-     */
-    fun `searchFreeBibleStore`(`query`: kotlin.String): List<StoreItem>
-    
-    /**
-     * Point the FreeBible store at a SQLite file. Call once at startup.
-     */
-    fun `setFreeBibleDbPath`(`path`: kotlin.String)
-    
-    /**
-     * Start uninstalling a translation. Returns a task ID for `poll_free_bible_task`.
-     */
-    fun `uninstallFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String
-    
     companion object
 }
 
@@ -6143,6 +6468,22 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
             UniffiLib.uniffi_xbible_engine_fn_clone_xbibleengine(handle, status)
         }
     }
+
+    
+    /**
+     * The FreeBible sub-engine (store + reader).
+     */override fun `freebible`(): FreeBibleEngine {
+            return FfiConverterTypeFreeBibleEngine.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_freebible(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
 
     
     /**
@@ -6869,463 +7210,6 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
     UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_get_task_status(
         it,
         FfiConverterString.lower(`taskId`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `cancelFreeBibleTask`(`taskId`: kotlin.String)
-        = 
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_cancel_free_bible_task(
-        it,
-        FfiConverterString.lower(`taskId`),_status)
-}
-    }
-    
-    
-
-    
-    /**
-     * Every entity whose verse range covers `(book, chapter, verse)`.
-     * Powers "who's in this verse" in the reader.
-     */override fun `freeBibleEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef> {
-            return FfiConverterSequenceTypeEntityRef.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_entities_for_verse(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`book`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
-            return FfiConverterSequenceTypeFreeBibleBook.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_books(
-        it,
-        FfiConverterString.lower(`translationId`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleVerse> {
-            return FfiConverterSequenceTypeFreeBibleVerse.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetChapterItems`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleChapterItem> {
-            return FfiConverterSequenceTypeFreeBibleChapterItem.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_chapter_items(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetEvent`(`datasetId`: kotlin.String, `id`: kotlin.String): EventDetail? {
-            return FfiConverterOptionalTypeEventDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_event(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetFootnotes`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): List<FreeBibleFootnote> {
-            return FfiConverterSequenceTypeFreeBibleFootnote.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_footnotes(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetGroup`(`datasetId`: kotlin.String, `id`: kotlin.String): GroupDetail? {
-            return FfiConverterOptionalTypeGroupDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_group(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetPerson`(`datasetId`: kotlin.String, `id`: kotlin.String): PersonDetail? {
-            return FfiConverterOptionalTypePersonDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_person(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetPlace`(`datasetId`: kotlin.String, `id`: kotlin.String): PlaceDetail? {
-            return FfiConverterOptionalTypePlaceDetail.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_place(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleGetVerse`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): kotlin.String? {
-            return FfiConverterOptionalString.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_get_verse(
-        it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Home feed, App Store style. `language = None` shows everything.
-     */override fun `freeBibleHomeFeed`(`language`: kotlin.String?): List<StoreShelf> {
-            return FfiConverterSequenceTypeStoreShelf.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_home_feed(
-        it,
-        FfiConverterOptionalString.lower(`language`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Language list for the sidebar.
-     */override fun `freeBibleLanguages`(): List<LanguageFacet> {
-            return FfiConverterSequenceTypeLanguageFacet.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_languages(
-        it,
-        _status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleListEvents`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_events(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleListGroups`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_groups(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleListPeople`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_people(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleListPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_list_places(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * All entities an entity points to, filtered by relation.
-     * E.g. `relation = Some("participant")` on an event gives its participants;
-     * `relation = None` gives every outgoing edge.
-     */override fun `freeBibleRelatedEntities`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String, `relation`: kotlin.String?): List<EntityRef> {
-            return FfiConverterSequenceTypeEntityRef.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_related_entities(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),FfiConverterOptionalString.lower(`relation`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `freeBibleSearchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary> {
-            return FfiConverterSequenceTypeEntitySummary.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_search_entities(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Detail for one item: kind is "translation" | "commentary" | "dataset".
-     */override fun `freeBibleStoreItem`(`id`: kotlin.String, `kind`: kotlin.String): StoreItem? {
-            return FfiConverterOptionalTypeStoreItem.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_store_item(
-        it,
-        FfiConverterString.lower(`id`),FfiConverterString.lower(`kind`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * All verse ranges for an entity.
-     */override fun `freeBibleVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange> {
-            return FfiConverterSequenceTypeVerseRange.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_free_bible_verse_refs(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Start installing an entity set.
-     * `kind` is one of "person" | "event" | "place" | "group".
-     * Returns a task ID for `poll_free_bible_task`.
-     */
-    @Throws(FreeBibleException::class)override fun `installFreeBibleEntitySet`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.String {
-            return FfiConverterString.lift(
-    callWithHandle {
-    uniffiRustCallWithError(FreeBibleException) { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_entity_set(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Start installing a translation. Returns a task ID for `poll_free_bible_task`.
-     */
-    @Throws(FreeBibleException::class)override fun `installFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String {
-            return FfiConverterString.lift(
-    callWithHandle {
-    uniffiRustCallWithError(FreeBibleException) { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_install_free_bible_translation(
-        it,
-        FfiConverterString.lower(`translationId`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `isFreeBibleEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_entity_set_installed(
-        it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `isFreeBibleInstalled`(`translationId`: kotlin.String): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_is_free_bible_installed(
-        it,
-        FfiConverterString.lower(`translationId`),_status)
-}
-    }
-    )
-    }
-    
-
-    override fun `listFreeBibleTasks`(): List<FreeBibleTaskStatus> {
-            return FfiConverterSequenceTypeFreeBibleTaskStatus.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_list_free_bible_tasks(
-        it,
-        _status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Poll a FreeBible task.
-     *
-     * While the task is `Running`, the returned status carries a full
-     * `InstallProgress`: fraction, chapters_done/total, verses_done,
-     * current book/chapter, and a human-readable message. Call this on a
-     * timer (250–500 ms is typical) and update your progress bar.
-     *
-     * Returns `None` if the task ID is unknown.
-     */override fun `pollFreeBibleTask`(`taskId`: kotlin.String): FreeBibleTaskStatus? {
-            return FfiConverterOptionalTypeFreeBibleTaskStatus.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_poll_free_bible_task(
-        it,
-        FfiConverterString.lower(`taskId`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Fetch/refresh the FreeBible catalog (translations, commentaries, datasets).
-     * Falls back to SQLite if the network is unavailable.
-     */
-    @Throws(FreeBibleException::class)override fun `refreshFreeBibleCatalog`()
-        = 
-    callWithHandle {
-    uniffiRustCallWithError(FreeBibleException) { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_refresh_free_bible_catalog(
-        it,
-        _status)
-}
-    }
-    
-    
-
-    
-    /**
-     * Search translations, commentaries, datasets.
-     */override fun `searchFreeBibleStore`(`query`: kotlin.String): List<StoreItem> {
-            return FfiConverterSequenceTypeStoreItem.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_search_free_bible_store(
-        it,
-        FfiConverterString.lower(`query`),_status)
-}
-    }
-    )
-    }
-    
-
-    
-    /**
-     * Point the FreeBible store at a SQLite file. Call once at startup.
-     */
-    @Throws(FreeBibleException::class)override fun `setFreeBibleDbPath`(`path`: kotlin.String)
-        = 
-    callWithHandle {
-    uniffiRustCallWithError(FreeBibleException) { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_set_free_bible_db_path(
-        it,
-        FfiConverterString.lower(`path`),_status)
-}
-    }
-    
-    
-
-    
-    /**
-     * Start uninstalling a translation. Returns a task ID for `poll_free_bible_task`.
-     */
-    @Throws(FreeBibleException::class)override fun `uninstallFreeBibleTranslation`(`translationId`: kotlin.String): kotlin.String {
-            return FfiConverterString.lift(
-    callWithHandle {
-    uniffiRustCallWithError(FreeBibleException) { _status ->
-    UniffiLib.uniffi_xbible_engine_fn_method_xbibleengine_uninstall_free_bible_translation(
-        it,
-        FfiConverterString.lower(`translationId`),_status)
 }
     }
     )
@@ -9493,6 +9377,84 @@ public object FfiConverterTypeInstallProgress: FfiConverterRustBuffer<InstallPro
 
 
 
+data class InstalledTranslation (
+    var `id`: kotlin.String
+    , 
+    var `name`: kotlin.String
+    , 
+    var `englishName`: kotlin.String
+    , 
+    var `shortName`: kotlin.String
+    , 
+    var `language`: kotlin.String
+    , 
+    var `languageName`: kotlin.String?
+    , 
+    var `textDirection`: kotlin.String
+    , 
+    var `bookCount`: kotlin.Int
+    , 
+    var `chapterCount`: kotlin.Int
+    , 
+    var `verseCount`: kotlin.Int
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeInstalledTranslation: FfiConverterRustBuffer<InstalledTranslation> {
+    override fun read(buf: ByteBuffer): InstalledTranslation {
+        return InstalledTranslation(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: InstalledTranslation) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`name`) +
+            FfiConverterString.allocationSize(value.`englishName`) +
+            FfiConverterString.allocationSize(value.`shortName`) +
+            FfiConverterString.allocationSize(value.`language`) +
+            FfiConverterOptionalString.allocationSize(value.`languageName`) +
+            FfiConverterString.allocationSize(value.`textDirection`) +
+            FfiConverterInt.allocationSize(value.`bookCount`) +
+            FfiConverterInt.allocationSize(value.`chapterCount`) +
+            FfiConverterInt.allocationSize(value.`verseCount`)
+    )
+
+    override fun write(value: InstalledTranslation, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`name`, buf)
+            FfiConverterString.write(value.`englishName`, buf)
+            FfiConverterString.write(value.`shortName`, buf)
+            FfiConverterString.write(value.`language`, buf)
+            FfiConverterOptionalString.write(value.`languageName`, buf)
+            FfiConverterString.write(value.`textDirection`, buf)
+            FfiConverterInt.write(value.`bookCount`, buf)
+            FfiConverterInt.write(value.`chapterCount`, buf)
+            FfiConverterInt.write(value.`verseCount`, buf)
+    }
+}
+
+
+
 data class InternalPlaybackState (
     var `currentTimeMs`: kotlin.Long
     , 
@@ -10570,6 +10532,223 @@ public object FfiConverterTypePlaybackState: FfiConverterRustBuffer<PlaybackStat
             FfiConverterString.write(value.`activeText`, buf)
             FfiConverterBoolean.write(value.`isPlaying`, buf)
             FfiConverterTypeRepeatMode.write(value.`repeatMode`, buf)
+    }
+}
+
+
+
+data class ReaderBlock (
+    var `itemType`: kotlin.String
+    , 
+    var `verseNumber`: kotlin.Int?
+    , 
+    var `text`: kotlin.String
+    , 
+    var `isPoem`: kotlin.Boolean
+    , 
+    var `isWordsOfJesus`: kotlin.Boolean
+    , 
+    var `verses`: List<ReaderVerse>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeReaderBlock: FfiConverterRustBuffer<ReaderBlock> {
+    override fun read(buf: ByteBuffer): ReaderBlock {
+        return ReaderBlock(
+            FfiConverterString.read(buf),
+            FfiConverterOptionalInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterSequenceTypeReaderVerse.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ReaderBlock) = (
+            FfiConverterString.allocationSize(value.`itemType`) +
+            FfiConverterOptionalInt.allocationSize(value.`verseNumber`) +
+            FfiConverterString.allocationSize(value.`text`) +
+            FfiConverterBoolean.allocationSize(value.`isPoem`) +
+            FfiConverterBoolean.allocationSize(value.`isWordsOfJesus`) +
+            FfiConverterSequenceTypeReaderVerse.allocationSize(value.`verses`)
+    )
+
+    override fun write(value: ReaderBlock, buf: ByteBuffer) {
+            FfiConverterString.write(value.`itemType`, buf)
+            FfiConverterOptionalInt.write(value.`verseNumber`, buf)
+            FfiConverterString.write(value.`text`, buf)
+            FfiConverterBoolean.write(value.`isPoem`, buf)
+            FfiConverterBoolean.write(value.`isWordsOfJesus`, buf)
+            FfiConverterSequenceTypeReaderVerse.write(value.`verses`, buf)
+    }
+}
+
+
+
+data class ReaderChapter (
+    var `translationId`: kotlin.String
+    , 
+    var `bookId`: kotlin.String
+    , 
+    var `bookName`: kotlin.String
+    , 
+    var `chapterNumber`: kotlin.Int
+    , 
+    var `blocks`: List<ReaderBlock>
+    , 
+    var `footnotes`: List<FreeBibleFootnote>
+    , 
+    var `nextChapter`: kotlin.Int?
+    , 
+    var `prevChapter`: kotlin.Int?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeReaderChapter: FfiConverterRustBuffer<ReaderChapter> {
+    override fun read(buf: ByteBuffer): ReaderChapter {
+        return ReaderChapter(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeReaderBlock.read(buf),
+            FfiConverterSequenceTypeFreeBibleFootnote.read(buf),
+            FfiConverterOptionalInt.read(buf),
+            FfiConverterOptionalInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ReaderChapter) = (
+            FfiConverterString.allocationSize(value.`translationId`) +
+            FfiConverterString.allocationSize(value.`bookId`) +
+            FfiConverterString.allocationSize(value.`bookName`) +
+            FfiConverterInt.allocationSize(value.`chapterNumber`) +
+            FfiConverterSequenceTypeReaderBlock.allocationSize(value.`blocks`) +
+            FfiConverterSequenceTypeFreeBibleFootnote.allocationSize(value.`footnotes`) +
+            FfiConverterOptionalInt.allocationSize(value.`nextChapter`) +
+            FfiConverterOptionalInt.allocationSize(value.`prevChapter`)
+    )
+
+    override fun write(value: ReaderChapter, buf: ByteBuffer) {
+            FfiConverterString.write(value.`translationId`, buf)
+            FfiConverterString.write(value.`bookId`, buf)
+            FfiConverterString.write(value.`bookName`, buf)
+            FfiConverterInt.write(value.`chapterNumber`, buf)
+            FfiConverterSequenceTypeReaderBlock.write(value.`blocks`, buf)
+            FfiConverterSequenceTypeFreeBibleFootnote.write(value.`footnotes`, buf)
+            FfiConverterOptionalInt.write(value.`nextChapter`, buf)
+            FfiConverterOptionalInt.write(value.`prevChapter`, buf)
+    }
+}
+
+
+
+data class ReaderVerse (
+    var `number`: kotlin.Int
+    , 
+    var `text`: kotlin.String
+    , 
+    var `words`: List<ReaderWord>
+    , 
+    var `footnoteIds`: List<kotlin.String>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeReaderVerse: FfiConverterRustBuffer<ReaderVerse> {
+    override fun read(buf: ByteBuffer): ReaderVerse {
+        return ReaderVerse(
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeReaderWord.read(buf),
+            FfiConverterSequenceString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ReaderVerse) = (
+            FfiConverterInt.allocationSize(value.`number`) +
+            FfiConverterString.allocationSize(value.`text`) +
+            FfiConverterSequenceTypeReaderWord.allocationSize(value.`words`) +
+            FfiConverterSequenceString.allocationSize(value.`footnoteIds`)
+    )
+
+    override fun write(value: ReaderVerse, buf: ByteBuffer) {
+            FfiConverterInt.write(value.`number`, buf)
+            FfiConverterString.write(value.`text`, buf)
+            FfiConverterSequenceTypeReaderWord.write(value.`words`, buf)
+            FfiConverterSequenceString.write(value.`footnoteIds`, buf)
+    }
+}
+
+
+
+data class ReaderWord (
+    var `text`: kotlin.String
+    , 
+    var `isWordsOfJesus`: kotlin.Boolean
+    , 
+    var `strongs`: kotlin.String?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeReaderWord: FfiConverterRustBuffer<ReaderWord> {
+    override fun read(buf: ByteBuffer): ReaderWord {
+        return ReaderWord(
+            FfiConverterString.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterOptionalString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ReaderWord) = (
+            FfiConverterString.allocationSize(value.`text`) +
+            FfiConverterBoolean.allocationSize(value.`isWordsOfJesus`) +
+            FfiConverterOptionalString.allocationSize(value.`strongs`)
+    )
+
+    override fun write(value: ReaderWord, buf: ByteBuffer) {
+            FfiConverterString.write(value.`text`, buf)
+            FfiConverterBoolean.write(value.`isWordsOfJesus`, buf)
+            FfiConverterOptionalString.write(value.`strongs`, buf)
     }
 }
 
@@ -12848,6 +13027,38 @@ public object FfiConverterOptionalTypePlaybackState: FfiConverterRustBuffer<Play
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeReaderChapter: FfiConverterRustBuffer<ReaderChapter?> {
+    override fun read(buf: ByteBuffer): ReaderChapter? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeReaderChapter.read(buf)
+    }
+
+    override fun allocationSize(value: ReaderChapter?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeReaderChapter.allocationSize(value)
+        }
+    }
+
+    override fun write(value: ReaderChapter?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeReaderChapter.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypeRemoteArtworkFile: FfiConverterRustBuffer<RemoteArtworkFile?> {
     override fun read(buf: ByteBuffer): RemoteArtworkFile? {
         if (buf.get().toInt() == 0) {
@@ -13592,6 +13803,34 @@ public object FfiConverterSequenceTypeIdRef: FfiConverterRustBuffer<List<IdRef>>
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeInstalledTranslation: FfiConverterRustBuffer<List<InstalledTranslation>> {
+    override fun read(buf: ByteBuffer): List<InstalledTranslation> {
+        val len = buf.getInt()
+        return List<InstalledTranslation>(len) {
+            FfiConverterTypeInstalledTranslation.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<InstalledTranslation>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeInstalledTranslation.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<InstalledTranslation>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeInstalledTranslation.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeLanguageFacet: FfiConverterRustBuffer<List<LanguageFacet>> {
     override fun read(buf: ByteBuffer): List<LanguageFacet> {
         val len = buf.getInt()
@@ -13778,6 +14017,90 @@ public object FfiConverterSequenceTypePeriod: FfiConverterRustBuffer<List<Period
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypePeriod.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeReaderBlock: FfiConverterRustBuffer<List<ReaderBlock>> {
+    override fun read(buf: ByteBuffer): List<ReaderBlock> {
+        val len = buf.getInt()
+        return List<ReaderBlock>(len) {
+            FfiConverterTypeReaderBlock.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<ReaderBlock>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeReaderBlock.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<ReaderBlock>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeReaderBlock.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeReaderVerse: FfiConverterRustBuffer<List<ReaderVerse>> {
+    override fun read(buf: ByteBuffer): List<ReaderVerse> {
+        val len = buf.getInt()
+        return List<ReaderVerse>(len) {
+            FfiConverterTypeReaderVerse.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<ReaderVerse>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeReaderVerse.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<ReaderVerse>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeReaderVerse.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeReaderWord: FfiConverterRustBuffer<List<ReaderWord>> {
+    override fun read(buf: ByteBuffer): List<ReaderWord> {
+        val len = buf.getInt()
+        return List<ReaderWord>(len) {
+            FfiConverterTypeReaderWord.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<ReaderWord>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeReaderWord.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<ReaderWord>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeReaderWord.write(it, buf)
         }
     }
 }
