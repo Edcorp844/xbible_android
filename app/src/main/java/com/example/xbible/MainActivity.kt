@@ -25,12 +25,18 @@ import com.example.xbible.feature.onboarding.EngineInitializationScreen
 import com.example.xbible.ui.XbibleApp
 import com.example.xbible.ui.theme.XbibleTheme
 import com.example.xbible.viewmodel.EngineViewModel
+import com.example.xbible.viewmodel.ReaderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val engineViewModel: EngineViewModel by viewModels()
+
+    // Reader is scoped to the Activity so its state (tabs, current chapter,
+    // lexicon lookup, reading preferences) survives navigation between
+    // top-level destinations and configuration changes.
+    private val readerViewModel: ReaderViewModel by viewModels()
 
     // Modern activity result launcher (replaces deprecated onRequestPermissionsResult).
     // Result is ignored — playback still works, only the notification is affected.
@@ -61,7 +67,10 @@ class MainActivity : ComponentActivity() {
                     val errorMessage by engineViewModel.errorMessage.collectAsState()
 
                     when {
-                        isReady -> XbibleApp(engineViewModel = engineViewModel)
+                        isReady -> XbibleApp(
+                            engineViewModel = engineViewModel,
+                            readerViewModel = readerViewModel,
+                        )
 
                         errorMessage != null -> {
                             Box(

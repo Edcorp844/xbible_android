@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.xbible.data.BibleRepository
 import com.example.xbible.core.ui.components.WordConfig
+import com.example.xbible.core.ui.components.AddedWordStyle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -177,13 +178,19 @@ class EngineViewModel @Inject constructor(
         }
         val lineHeight = prefs.getFloat("lineHeight", 1.5f)
         val wordSpacing = prefs.getFloat("wordSpacing", 0f)
-        val justify = prefs.getBoolean("justify", false)
+        val justify = prefs.getBoolean("justify", true)
         val showRedWords = prefs.getBoolean("showRedWords", true)
         val showStrongs = prefs.getBoolean("showStrongs", true)
         val showLemma = prefs.getBoolean("showLemma", true)
         val showMorph = prefs.getBoolean("showMorph", true)
         val showVerseNotes = prefs.getBoolean("showVerseNotes", true)
         val showWordNotes = prefs.getBoolean("showWordNotes", true)
+        val addedWordsStyleName = prefs.getString("addedWordsStyle", "Brackets") ?: "Brackets"
+        val addedWordsStyle = try {
+            AddedWordStyle.valueOf(addedWordsStyleName)
+        } catch (_: Exception) {
+            AddedWordStyle.Brackets
+        }
 
         _wordConfig.value = WordConfig(
             fontSize = fontSize,
@@ -196,7 +203,8 @@ class EngineViewModel @Inject constructor(
             showLemma = showLemma,
             showMorph = showMorph,
             showVerseNotes = showVerseNotes,
-            showWordNotes = showWordNotes
+            showWordNotes = showWordNotes,
+            addedWordsStyle = addedWordsStyle
         )
     }
 
@@ -220,6 +228,7 @@ class EngineViewModel @Inject constructor(
             putBoolean("showMorph", config.showMorph)
             putBoolean("showVerseNotes", config.showVerseNotes)
             putBoolean("showWordNotes", config.showWordNotes)
+            putString("addedWordsStyle", config.addedWordsStyle.name)
             apply()
         }
     }

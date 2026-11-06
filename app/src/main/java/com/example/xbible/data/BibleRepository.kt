@@ -64,10 +64,14 @@ class BibleRepository @Inject constructor(private val application: Application) 
             }
         }.asCoroutineDispatcher()
 
-    @Volatile private var engine: XBibleEngine? = null
-    @Volatile private var freeBible: uniffi.xbible_engine.FreeBibleEngine? = null
-    @Volatile private var freeBibleStore: FreeBibleStore? = null
-    @Volatile private var freeBibleReader: FreeBibleReader? = null
+    @Volatile
+    private var engine: XBibleEngine? = null
+    @Volatile
+    private var freeBible: uniffi.xbible_engine.FreeBibleEngine? = null
+    @Volatile
+    private var freeBibleStore: FreeBibleStore? = null
+    @Volatile
+    private var freeBibleReader: FreeBibleReader? = null
 
     private suspend fun <T> onEngine(block: () -> T): T =
         withContext(engineDispatcher) { block() }
@@ -99,14 +103,41 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
             val newEngine = XBibleEngine()
 
-            // Grab the FreeBible sub-tree once.
+            // Grab the FreeBible sub-tree.
             val fb = newEngine.freebible()
+
+            // Resolve the DB path from the application context so every
+            // code path that uses getDatabasePath("xbible.db") agrees on it.
+            val dbPath = application.getDatabasePath("xbible.db").absolutePath
+            Log.d(TAG, "initialize: opening FreeBible DB at $dbPath")
+            Log.d(TAG, "initialize: file exists before open = ${File(dbPath).exists()}")
+            if (File(dbPath).exists()) {
+                Log.d(TAG, "initialize: file size before open = ${File(dbPath).length()} bytes")
+            }
+
+            // IMPORTANT: setDbPath must run before any read queries.
+            // It opens the connection, runs migrations, and attaches the
+            // shared Arc to both store and reader.
+            fb.setDbPath(dbPath)
+
+            // Now grab the handles. These wrap the same underlying Rust
+            // objects that fb.setDbPath just configured.
             val fbStore = fb.store()
             val fbReader = fb.reader()
 
-            val dbPath = application.getDatabasePath("xbible.db").absolutePath
-            fb.setDbPath(dbPath)
-            Log.d(TAG, "initialize: FreeBible DB at $dbPath")
+            // ── Sanity check: what does the reader actually see? ──────
+            val installed = fbReader.getInstalledTranslations()
+            Log.d(
+                TAG,
+                "initialize: reader sees ${installed.size} installed translation(s) right after setDbPath",
+            )
+            installed.forEach { t ->
+                Log.d(TAG, "initialize:   - ${t.id} (${t.shortName}) \"${t.name}\"")
+            }
+
+            // Also verify the store can query the same DB.
+            val languages = fbStore.languages()
+            Log.d(TAG, "initialize: store sees ${languages.size} language facet(s)")
 
             freeBibleReader = fbReader
             freeBibleStore = fbStore

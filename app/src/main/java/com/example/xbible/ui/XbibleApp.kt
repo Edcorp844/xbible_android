@@ -58,10 +58,14 @@ import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.AudioBibleViewModel
 import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.FreeBibleStoreViewModel
+import com.example.xbible.viewmodel.ReaderViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun XbibleApp(engineViewModel: EngineViewModel) {
+fun XbibleApp(
+    engineViewModel: EngineViewModel,
+    readerViewModel: ReaderViewModel,
+) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.STUDY) }
 
     // Store sub-navigation state. Null = the main store screen.
@@ -151,6 +155,7 @@ fun XbibleApp(engineViewModel: EngineViewModel) {
                     storeRoute = storeRoute,
                     onStoreRouteChange = { storeRoute = it },
                     engineViewModel = engineViewModel,
+                    readerViewModel = readerViewModel,
                     audioBibleViewModel = audioBibleViewModel,
                     freeBibleStoreViewModel = freeBibleStoreViewModel,
                     onNavigate = { currentDestination = it }
@@ -186,15 +191,17 @@ fun MainContent(
     storeRoute: StoreRoute?,
     onStoreRouteChange: (StoreRoute?) -> Unit,
     engineViewModel: EngineViewModel,
+    readerViewModel: ReaderViewModel,
     audioBibleViewModel: AudioBibleViewModel,
     freeBibleStoreViewModel: FreeBibleStoreViewModel,
-    onNavigate: (AppDestinations) -> Unit
+    onNavigate: (AppDestinations) -> Unit,
 ) {
     Box(modifier = modifier) {
         when (destination) {
             AppDestinations.STUDY -> StudyScreen(
-                engineViewModel = engineViewModel,
-                onNavigateToStore = { onNavigate(AppDestinations.STORE) })
+                readerViewModel = readerViewModel,
+                onNavigateToStore = { onNavigate(AppDestinations.STORE) },
+            )
 
             AppDestinations.STORE -> StoreHost(
                 viewModel = freeBibleStoreViewModel,
@@ -204,7 +211,7 @@ fun MainContent(
 
             AppDestinations.TOOLS -> ToolsScreen(
                 onNavigateToTimeline = { onNavigate(AppDestinations.TIMELINE) },
-                onNavigateToAudioBible = { onNavigate(AppDestinations.AUDIO_BIBLE) }
+                onNavigateToAudioBible = { onNavigate(AppDestinations.AUDIO_BIBLE) },
             )
 
             AppDestinations.LIBRARY -> LibraryScreen(
@@ -216,12 +223,12 @@ fun MainContent(
 
             AppDestinations.TIMELINE -> TimelineScreen(
                 onBack = { onNavigate(AppDestinations.TOOLS) },
-                onEventClick = { event -> }
+                onEventClick = { _ -> },
             )
 
             AppDestinations.AUDIO_BIBLE -> AudioBibleNavigation(
                 viewModel = audioBibleViewModel,
-                onBackToTools = { onNavigate(AppDestinations.TOOLS) }
+                onBackToTools = { onNavigate(AppDestinations.TOOLS) },
             )
         }
     }

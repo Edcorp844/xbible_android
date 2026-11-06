@@ -2,47 +2,65 @@ package com.example.xbible.feature.study
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.xbible.ui.icons.XBibleIcons
-import com.example.xbible.viewmodel.StudyTab
+import com.example.xbible.viewmodel.ReaderTab
+import uniffi.xbible_engine.ReaderBlock
+import uniffi.xbible_engine.ReaderChapter
+import uniffi.xbible_engine.ReaderVerse
 import uniffi.xbible_engine.SearchHit
-import uniffi.xbible_engine.Section
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchView(
-    tab: StudyTab,
+    tab: ReaderTab,
     onSearch: (String) -> Unit,
     onReferenceClick: (String) -> Unit,
-    onCopyVerse: (String, List<Section>) -> Unit,
+    onCopyVerse: (String, ReaderChapter) -> Unit,
     onOpenInNewTab: (SearchHit) -> Unit,
     onPreviewChapter: (String) -> Unit,
-    onLexiconLookup: (String) -> Unit
+    onLexiconLookup: (String) -> Unit,
 ) {
     var query by remember(tab.id) { mutableStateOf(tab.searchQuery) }
 
@@ -53,7 +71,9 @@ fun SearchView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = { Text("Search ${tab.module?.name ?: "Bible"}...") },
+            placeholder = {
+                Text("Search ${tab.translation?.shortName ?: "Bible"}...")
+            },
             leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
             trailingIcon = if (query.isNotEmpty()) {
                 {
@@ -67,11 +87,11 @@ fun SearchView(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                 unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
             ),
             singleLine = true,
             keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         )
 
         if (tab.isSearching) {
@@ -91,18 +111,18 @@ fun SearchView(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(tab.searchResults) { hit ->
+                items(tab.searchResults, key = { it.key + it.moduleName }) { hit ->
                     SearchHitItem(
                         hit = hit,
-                        content = tab.searchHitsContent[hit.key],
+                        chapter = tab.searchHitsContent[hit.key],
                         query = tab.searchQuery,
                         onReferenceClick = { onReferenceClick(hit.key) },
-                        onCopyVerse = { sections -> onCopyVerse(hit.key, sections) },
+                        onCopyVerse = { chapter -> onCopyVerse(hit.key, chapter) },
                         onOpenInNewTab = { onOpenInNewTab(hit) },
                         onPreviewChapter = { onPreviewChapter(hit.key) },
-                        onLexiconLookup = { onLexiconLookup(hit.key) }
+                        onLexiconLookup = { onLexiconLookup(hit.key) },
                     )
                 }
             }
@@ -114,57 +134,57 @@ fun SearchView(
 @Composable
 fun SearchHitItem(
     hit: SearchHit,
-    content: List<Section>?,
+    chapter: ReaderChapter?,
     query: String,
     onReferenceClick: () -> Unit,
-    onCopyVerse: (List<Section>) -> Unit,
+    onCopyVerse: (ReaderChapter) -> Unit,
     onOpenInNewTab: () -> Unit,
     onPreviewChapter: () -> Unit,
-    onLexiconLookup: () -> Unit
+    onLexiconLookup: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = content != null) { onReferenceClick() }
-            .padding(16.dp)
+            .clickable(enabled = chapter != null) { onReferenceClick() }
+            .padding(16.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = hit.key,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = if (content != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                color = if (chapter != null) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outline,
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (content != null) {
-            val words = content.flatMap { it.verses }.flatMap { it.words }
+        if (chapter != null) {
+            // Flatten the chapter into per-word pieces so we can highlight matches.
+            val pieces = collectWords(chapter)
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                words.forEach { word ->
-                    val isMatch = query.split(" ").any { q ->
-                        q.isNotEmpty() && word.text.contains(q, ignoreCase = true)
-                    }
+                pieces.forEach { piece ->
+                    val isMatch = query.split(" ")
+                        .any { q -> q.isNotEmpty() && piece.text.contains(q, ignoreCase = true) }
+
                     Text(
-                        text = word.text,
+                        text = piece.text,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = if (isMatch) {
                             Modifier
                                 .background(
-                                    MaterialTheme.colorScheme.primaryContainer.copy(
-                                        alpha = 0.7f
-                                    ),
-                                    RoundedCornerShape(size = 8.dp)
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                                    RoundedCornerShape(size = 8.dp),
                                 )
                                 .padding(horizontal = 4.dp)
-                        } else Modifier
+                        } else Modifier,
                     )
                 }
             }
@@ -174,51 +194,90 @@ fun SearchHitItem(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onPreviewChapter) {
                     Icon(
                         Icons.Default.Visibility,
                         contentDescription = "Preview Chapter",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 }
                 IconButton(onClick = onOpenInNewTab) {
                     Icon(
                         XBibleIcons.OpenInTab,
                         contentDescription = "Open in New Tab",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 }
-                IconButton(onClick = { onCopyVerse(content) }) {
+                IconButton(onClick = { onCopyVerse(chapter) }) {
                     Icon(
                         XBibleIcons.Copy,
                         contentDescription = "Copy Verse",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 }
                 IconButton(onClick = onLexiconLookup) {
                     Icon(
                         XBibleIcons.Lexicon,
                         contentDescription = "Lexicon",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             }
         } else {
-            // Placeholder/Living space
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp)
                     .background(
                         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        RoundedCornerShape(4.dp)
-                    )
+                        RoundedCornerShape(4.dp),
+                    ),
             )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
         HorizontalDivider()
     }
+}
+
+/**
+ * Collect every renderable word from a chapter for the hit preview.
+ *
+ * `ReaderChapter.blocks` alternates between headings, verse blocks,
+ * poems, and line breaks. For the search preview we flatten everything
+ * into a linear sequence of `Piece` so the `FlowRow` can wrap them.
+ */
+private data class WordPiece(val text: String, val isWordsOfJesus: Boolean)
+
+private fun collectWords(chapter: ReaderChapter): List<WordPiece> {
+    val out = mutableListOf<WordPiece>()
+
+    chapter.blocks.forEach { block ->
+        when (block.itemType) {
+            "verse" -> {
+                block.verses.forEach { verse ->
+                    if (verse.words.isNotEmpty()) {
+                        verse.words.forEach { w ->
+                            out += WordPiece(w.text, w.isWordsOfJesus)
+                        }
+                    } else {
+                        // Fallback: split plain text so highlight still works.
+                        verse.text.split(" ").forEach { tok ->
+                            if (tok.isNotBlank()) out += WordPiece(tok, false)
+                        }
+                    }
+                }
+            }
+            "heading", "hebrew_subtitle" -> {
+                block.text.split(" ").forEach { tok ->
+                    if (tok.isNotBlank()) out += WordPiece(tok, false)
+                }
+            }
+            else -> Unit // line_break / unknown — nothing to render
+        }
+    }
+
+    return out
 }

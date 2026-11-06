@@ -7,11 +7,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,7 +22,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.*
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.*
@@ -43,61 +43,75 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.xbible.R
 import com.example.xbible.core.ui.components.PageView
+import com.example.xbible.core.ui.components.HighlightColor
+import com.example.xbible.core.ui.components.HighlightStyle
 import com.example.xbible.ui.icons.XBibleIcons
-import com.example.xbible.viewmodel.EngineViewModel
+import com.example.xbible.viewmodel.ReaderViewModel
+import com.example.xbible.viewmodel.StudyTool
 import com.example.xbible.viewmodel.TabType
-import uniffi.xbible_engine.Word
+import uniffi.xbible_engine.ReaderWord
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun StudyScreen(
-    engineViewModel: EngineViewModel,
-    onNavigateToStore: () -> Unit
+    readerViewModel: ReaderViewModel,
+    onNavigateToStore: () -> Unit,
 ) {
-    val adaptiveInfo = currentWindowAdaptiveInfo()
-    val isCompact = !adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
-    val isExpanded = adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
-    
+    val adaptiveInfo = currentWindowAdaptiveInfoV2()
+    val isCompact = !adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+    )
+    val isExpanded =
+        adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+
     val clipboardManager = LocalClipboardManager.current
-    
-    val sections by engineViewModel.currentChapterContent.collectAsState()
-    val parallelSections by engineViewModel.parallelChapterContent.collectAsState()
-    val wordConfig by engineViewModel.wordConfig.collectAsState()
-    val installedBibles by engineViewModel.installedBibles.collectAsState()
-    val isLoading by engineViewModel.isLoadingContent.collectAsState()
-    val currentReference by engineViewModel.currentReference.collectAsState()
-    val currentModule by engineViewModel.currentModule.collectAsState()
-    val parallelModule by engineViewModel.parallelModule.collectAsState()
-    
-    // Selection State
-    var selectedWord by remember { mutableStateOf<Word?>(null) }
+
+    // ── State from ReaderViewModel ───────────────────────────────
+    val chapterData by readerViewModel.currentChapterData.collectAsState()
+    val parallelChapterData by readerViewModel.parallelChapterData.collectAsState()
+    val wordConfig by readerViewModel.wordConfig.collectAsState()
+    val installedTranslations by readerViewModel.installedTranslations.collectAsState()
+    val isLoading by readerViewModel.isLoadingContent.collectAsState()
+    val currentTranslation by readerViewModel.currentTranslation.collectAsState()
+    val parallelTranslation by readerViewModel.parallelTranslation.collectAsState()
+    val tabs by readerViewModel.tabs.collectAsState()
+    val activeTabIndex by readerViewModel.activeTabIndex.collectAsState()
+    val currentBooks by readerViewModel.currentBooksFlow.collectAsState()
+    val highlights by readerViewModel.highlights.collectAsState()
+    val verseEntities by readerViewModel.verseEntities.collectAsState()
+
+    // ── Local UI state ──────────────────────────────────────────
+    var selectedWord by remember { mutableStateOf<ReaderWord?>(null) }
     var showLexicon by remember { mutableStateOf(false) }
-    
-    val tabs by engineViewModel.tabs.collectAsState()
-    val activeTabIndex by engineViewModel.activeTabIndex.collectAsState()
     var showTabsPreview by remember { mutableStateOf(false) }
-    
     var showModuleSelection by remember { mutableStateOf(false) }
     var showReferencePicker by remember { mutableStateOf(false) }
     var showSearchSettings by remember { mutableStateOf(false) }
     var showFontSettings by remember { mutableStateOf(false) }
     var showParallelMode by remember { mutableStateOf(false) }
-    
     var showMoreMenu by remember { mutableStateOf(false) }
-    
+
+    // Verse Actions State
+    var selectedVerseNumber by remember { mutableStateOf<Int?>(null) }
+    var selectedVerseText by remember { mutableStateOf("") }
+    var showVerseActions by remember { mutableStateOf(false) }
+    var selectedHighlightColor by remember { mutableStateOf(HighlightColor.Yellow) }
+    var selectedHighlightStyle by remember { mutableStateOf(HighlightStyle.Solid) }
+
     val moduleSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val referenceSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lexiconSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val searchSettingsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val fontSettingsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val parallelModeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val verseActionsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    // Outer navigator for Bible/Reference Drawer
+    // ── Supporting-pane navigator for the drawer ────────────────
     val drawerNavigator = rememberSupportingPaneScaffoldNavigator(
         scaffoldDirective = calculatePaneScaffoldDirective(adaptiveInfo).copy(
             maxHorizontalPartitions = 1,
             horizontalPartitionSpacerSize = 0.dp,
-            verticalPartitionSpacerSize = 0.dp
+            verticalPartitionSpacerSize = 0.dp,
         ),
         adaptStrategies = SupportingPaneScaffoldDefaults.adaptStrategies(
             supportingPaneAdaptStrategy = AdaptStrategy.Levitate(
@@ -112,13 +126,15 @@ fun StudyScreen(
                             showParallelMode = false
                         }
                     )
-                }
-            )
-        )
+                },
+            ),
+        ),
     )
 
-    // Handle Drawer Visibility
-    val isBibleDrawerVisible = (showModuleSelection || showReferencePicker || showSearchSettings || showFontSettings || showParallelMode) && !isCompact
+    val isBibleDrawerVisible =
+        (showModuleSelection || showReferencePicker || showSearchSettings ||
+                showFontSettings || showParallelMode) && !isCompact
+
     LaunchedEffect(isBibleDrawerVisible) {
         if (isBibleDrawerVisible) {
             drawerNavigator.navigateTo(SupportingPaneScaffoldRole.Supporting)
@@ -127,26 +143,17 @@ fun StudyScreen(
         }
     }
 
-    // Auto-show lexicon on expanded screens
     LaunchedEffect(selectedWord, isExpanded) {
-        if (selectedWord != null && isExpanded) {
-            showLexicon = true
-        }
+        if (selectedWord != null && isExpanded) showLexicon = true
     }
 
-    val currentBooks by engineViewModel.currentBooksFlow.collectAsState()
-    val currentBookIndex by engineViewModel.currentBookIndexFlow.collectAsState()
-    val currentChapterIndex by engineViewModel.currentChapterIndexFlow.collectAsState()
-    
-    val hasNext by engineViewModel.hasNext.collectAsState()
-    val hasPrevious by engineViewModel.hasPrevious.collectAsState()
+    val currentTab = tabs.getOrNull(activeTabIndex)
+    val currentBlocks = chapterData?.blocks.orEmpty()
+    val hasNext = currentTab?.hasNextChapter == true
+    val hasPrev = currentTab?.hasPrevChapter == true
 
+    // ── Scroll state + FAB visibility ───────────────────────────
     val listState = rememberLazyListState()
-    
-    // Resizable split state
-    var lexiconPaneWidth by remember { mutableStateOf(400.dp) }
-    val density = LocalDensity.current
-
     var lastScrollIndex by remember { mutableIntStateOf(0) }
     var lastScrollOffset by remember { mutableIntStateOf(0) }
     var isScrollingUp by remember { mutableStateOf(true) }
@@ -166,23 +173,23 @@ fun StudyScreen(
     }
 
     val showFab by remember {
-        derivedStateOf {
-            isScrollingUp && (hasNext || hasPrevious || tabs.size > 1)
-        }
+        derivedStateOf { isScrollingUp && (hasNext || hasPrev || tabs.size > 1) }
     }
 
-    LaunchedEffect(sections) {
-        if (sections.isNotEmpty()) {
+    LaunchedEffect(chapterData) {
+        if (chapterData != null) {
             listState.scrollToItem(0)
             isScrollingUp = true
         }
     }
 
-    LaunchedEffect(Unit) {
-        engineViewModel.refreshEngine()
-    }
+    LaunchedEffect(Unit) { readerViewModel.refreshEngine() }
 
-    // Shared Header UI
+    // Resizable lexicon pane
+    var lexiconPaneWidth by remember { mutableStateOf(400.dp) }
+    val density = LocalDensity.current
+
+    // ── Shared header ──────────────────────────────────────────
     val sharedHeader = @Composable {
         TopAppBar(
             title = {
@@ -190,7 +197,7 @@ fun StudyScreen(
                     leadingButton = {
                         val isSelected = showModuleSelection && !isCompact
                         SplitButtonDefaults.ElevatedLeadingButton(
-                            onClick = { 
+                            onClick = {
                                 if (isCompact) {
                                     showModuleSelection = true
                                     showLexicon = false
@@ -203,20 +210,22 @@ fun StudyScreen(
                             colors = if (isSelected) {
                                 ButtonDefaults.elevatedButtonColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                 )
                             } else ButtonDefaults.elevatedButtonColors()
                         ) {
                             Text(
-                                text = currentModule?.name ?: stringResource(R.string.select_bible),
+                                text = currentTranslation?.shortName
+                                    ?: stringResource(R.string.select_bible),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     },
                     trailingButton = {
-                        val isSearchTab = tabs.getOrNull(activeTabIndex)?.type == TabType.SEARCH
-                        val isSelected = (if (isSearchTab) showSearchSettings else showReferencePicker) && !isCompact
+                        val isSearchTab = currentTab?.type == TabType.SEARCH
+                        val isSelected =
+                            (if (isSearchTab) showSearchSettings else showReferencePicker) && !isCompact
                         SplitButtonDefaults.ElevatedTrailingButton(
                             checked = isSelected,
                             onCheckedChange = {
@@ -234,30 +243,35 @@ fun StudyScreen(
                                     }
                                     showModuleSelection = false
                                 }
-                            }
+                            },
                         ) {
                             Text(
-                                text = if (isSearchTab) stringResource(R.string.settings) else (currentReference ?: stringResource(R.string.study)),
+                                text = if (isSearchTab) {
+                                    stringResource(R.string.settings)
+                                } else {
+                                    chapterData?.let { "${it.bookName} ${it.chapterNumber}" }
+                                        ?: stringResource(R.string.study)
+                                },
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
-                    }
+                    },
                 )
             },
             actions = {
                 if (!isCompact) {
                     IconToggleButton(
                         checked = showLexicon,
-                        onCheckedChange = { showLexicon = it }
+                        onCheckedChange = { showLexicon = it },
                     ) {
                         Icon(
                             XBibleIcons.Sidebar,
-                            contentDescription = stringResource(R.string.study_tools)
+                            contentDescription = stringResource(R.string.study_tools),
                         )
                     }
                 }
-                IconButton(onClick = { engineViewModel.addSearchTab() }) {
+                IconButton(onClick = { readerViewModel.addSearchTab() }) {
                     Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search))
                 }
                 Box {
@@ -267,7 +281,7 @@ fun StudyScreen(
                     DropdownMenu(
                         expanded = showMoreMenu,
                         onDismissRequest = { showMoreMenu = false },
-                        shape = RoundedCornerShape(24.dp)
+                        shape = RoundedCornerShape(24.dp),
                     ) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.font_and_settings)) },
@@ -283,7 +297,13 @@ fun StudyScreen(
                                 }
                                 showMoreMenu = false
                             },
-                            leadingIcon = { Icon(XBibleIcons.FontSize, contentDescription = null, modifier = Modifier.size(20.dp)) }
+                            leadingIcon = {
+                                Icon(
+                                    XBibleIcons.FontSize,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            },
                         )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.parallel_display)) },
@@ -299,17 +319,24 @@ fun StudyScreen(
                                 }
                                 showMoreMenu = false
                             },
-                            leadingIcon = { Icon(XBibleIcons.ParallelMode, contentDescription = null, modifier = Modifier.size(20.dp)) }
+                            leadingIcon = {
+                                Icon(
+                                    XBibleIcons.ParallelMode,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            },
                         )
                     }
                 }
-            }
+            },
         )
     }
 
+    // ── Scaffold + drawer ──────────────────────────────────────
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         SupportingPaneScaffold(
             modifier = Modifier.fillMaxSize(),
@@ -326,26 +353,31 @@ fun StudyScreen(
                             AnimatedVisibility(
                                 visible = showFab,
                                 enter = slideInVertically(initialOffsetY = { it }),
-                                exit = slideOutVertically(targetOffsetY = { it })
+                                exit = slideOutVertically(targetOffsetY = { it }),
                             ) {
                                 HorizontalFloatingToolbar(
-                                modifier = Modifier.navigationBarsPadding(),
-                                expanded = true,
-                                colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
+                                    modifier = Modifier.navigationBarsPadding(),
+                                    expanded = true,
+                                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
                                     content = {
                                         IconButton(
-                                            onClick = { engineViewModel.previousChapter() },
-                                            enabled = hasPrevious
+                                            onClick = { readerViewModel.previousChapter() },
+                                            enabled = hasPrev,
                                         ) {
-                                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_chapter))
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.ArrowBack,
+                                                contentDescription = stringResource(R.string.previous_chapter),
+                                            )
                                         }
-
                                         Box(contentAlignment = Alignment.Center) {
                                             FilledTonalButton(
                                                 onClick = { showTabsPreview = true },
-                                                shape = IconButtonDefaults.filledShape
+                                                shape = IconButtonDefaults.filledShape,
                                             ) {
-                                                Icon(XBibleIcons.Tabs, contentDescription = stringResource(R.string.tabs))
+                                                Icon(
+                                                    XBibleIcons.Tabs,
+                                                    contentDescription = stringResource(R.string.tabs),
+                                                )
                                             }
                                             if (tabs.size > 1) {
                                                 Surface(
@@ -353,121 +385,141 @@ fun StudyScreen(
                                                         .align(Alignment.TopEnd)
                                                         .padding(top = 2.dp, end = 2.dp),
                                                     color = MaterialTheme.colorScheme.secondary,
-                                                    shape = RoundedCornerShape(8.dp)
+                                                    shape = RoundedCornerShape(8.dp),
                                                 ) {
                                                     Text(
                                                         text = tabs.size.toString(),
                                                         modifier = Modifier.padding(horizontal = 4.dp),
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = MaterialTheme.colorScheme.onSecondary
+                                                        color = MaterialTheme.colorScheme.onSecondary,
                                                     )
                                                 }
                                             }
                                         }
-
                                         IconButton(
-                                            onClick = { engineViewModel.nextChapter() },
-                                            enabled = hasNext
+                                            onClick = { readerViewModel.nextChapter() },
+                                            enabled = hasNext,
                                         ) {
-                                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.next_chapter))
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.ArrowForward,
+                                                contentDescription = stringResource(R.string.next_chapter),
+                                            )
                                         }
-                                    }
+                                    },
                                 )
                             }
-                        }
+                        },
                     ) { paddingValues ->
                         BoxWithConstraints(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(paddingValues)
+                                .padding(paddingValues),
                         ) {
                             val innerMaxWidth = maxWidth
                             val minPaneWidth = 300.dp
-                            
+
                             Row(modifier = Modifier.fillMaxSize()) {
-                                // 1. Bible Text Area or Search Area
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .fillMaxHeight()
+                                        .fillMaxHeight(),
                                 ) {
-                                    val currentTab = tabs.getOrNull(activeTabIndex)
                                     if (currentTab?.type == TabType.SEARCH) {
                                         SearchView(
                                             tab = currentTab,
-                                            onSearch = { query -> engineViewModel.performSearch(query) },
-                                            onReferenceClick = { hitKey -> 
-                                                // We can use openSearchHit here if we find the hit
-                                                currentTab.searchResults.find { it.key == hitKey }?.let {
-                                                    engineViewModel.openSearchHit(it)
-                                                }
+                                            onSearch = readerViewModel::performSearch,
+                                            onReferenceClick = { hitKey ->
+                                                currentTab.searchResults
+                                                    .find { it.key == hitKey }
+                                                    ?.let { readerViewModel.openSearchHit(it) }
                                             },
-                                            onCopyVerse = { ref, sections ->
-                                                val text = sections.flatMap { it.verses }.flatMap { it.words }.joinToString(" ") { it.text }
+                                            onCopyVerse = { ref, chapter ->
+                                                val text = chapter.blocks
+                                                    .flatMap { b -> b.verses }
+                                                    .joinToString(" ") { v -> v.text }
                                                 clipboardManager.setText(AnnotatedString("$ref: $text"))
                                             },
                                             onOpenInNewTab = { hit ->
-                                                engineViewModel.openSearchHitInNewTab(hit)
+                                                readerViewModel.openSearchHitInNewTab(hit)
                                             },
                                             onPreviewChapter = { ref ->
-                                                currentTab.searchResults.find { it.key == ref }?.let {
-                                                    engineViewModel.openSearchHit(it)
-                                                }
+                                                currentTab.searchResults
+                                                    .find { it.key == ref }
+                                                    ?.let { readerViewModel.openSearchHit(it) }
                                             },
                                             onLexiconLookup = { ref ->
-                                                currentTab.searchResults.find { it.key == ref }?.let {
-                                                    engineViewModel.openSearchHit(it)
-                                                    showLexicon = true
-                                                }
-                                            }
+                                                currentTab.searchResults
+                                                    .find { it.key == ref }
+                                                    ?.let {
+                                                        readerViewModel.openSearchHit(it)
+                                                        showLexicon = true
+                                                    }
+                                            },
                                         )
                                     } else {
                                         when {
-                                            installedBibles.isEmpty() -> {
+                                            installedTranslations.isEmpty() -> {
                                                 Column(
                                                     modifier = Modifier.fillMaxSize(),
                                                     verticalArrangement = Arrangement.Center,
-                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
                                                 ) {
-                                                    Text(text = stringResource(R.string.no_bibles_installed))
-                                                    Spacer(modifier = Modifier.height(16.dp))
+                                                    Text(stringResource(R.string.no_bibles_installed))
+                                                    Spacer(Modifier.height(16.dp))
                                                     Button(onClick = onNavigateToStore) {
                                                         Text(stringResource(R.string.go_to_store))
                                                     }
                                                 }
                                             }
                                             isLoading -> {
-                                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                                    CircularProgressIndicator()
-                                                }
+                                                Box(
+                                                    Modifier.fillMaxSize(),
+                                                    contentAlignment = Alignment.Center,
+                                                ) { CircularProgressIndicator() }
                                             }
-                                            sections.isEmpty() -> {
-                                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                                    Text(text = stringResource(R.string.no_content_loaded))
+                                            chapterData == null || currentBlocks.isEmpty() -> {
+                                                Box(
+                                                    Modifier.fillMaxSize(),
+                                                    contentAlignment = Alignment.Center,
+                                                ) {
+                                                    Text(stringResource(R.string.no_content_loaded))
                                                 }
                                             }
                                             else -> {
                                                 PageView(
-                                                    sections = sections,
-                                                    parallelSections = parallelSections,
+                                                    chapter = chapterData!!,
+                                                    parallelChapter = parallelChapterData,
                                                     config = wordConfig,
                                                     state = listState,
                                                     onWordClick = { word ->
                                                         selectedWord = word
-                                                        engineViewModel.lookupWord(word)
+                                                        readerViewModel.lookupWord(word)
                                                         showLexicon = true
                                                     },
                                                     onStrongsClick = { strongs ->
-                                                        engineViewModel.lookupStrongs(strongs)
+                                                        readerViewModel.lookupStrongs(strongs)
                                                         showLexicon = true
-                                                    }
+                                                    },
+                                                    onVerseTap = { verse ->
+                                                        val verseObj = chapterData?.blocks?.flatMap { it.verses }?.find { it.number == verse }
+                                                        selectedVerseNumber = verse
+                                                        selectedVerseText = verseObj?.text ?: ""
+                                                        showVerseActions = true
+                                                        readerViewModel.showEntitiesForVerse(verse)
+                                                    },
+                                                    chapterEntities = verseEntities,
+                                                    onEntityTap = { entity ->
+                                                        // TODO: navigate to entity detail
+                                                        showLexicon = false
+                                                    },
+                                                    selectedVerseNumber = selectedVerseNumber,
+                                                    highlights = highlights,
                                                 )
                                             }
                                         }
                                     }
                                 }
 
-                                // 2. Study Tools Side Pane (Resizable)
                                 if (showLexicon && !isCompact) {
                                     Box(
                                         modifier = Modifier
@@ -477,29 +529,31 @@ fun StudyScreen(
                                             .draggable(
                                                 state = rememberDraggableState { delta ->
                                                     val deltaDp = with(density) { delta.toDp() }
-                                                    lexiconPaneWidth = (lexiconPaneWidth - deltaDp).coerceIn(minPaneWidth, innerMaxWidth * 0.7f)
+                                                    lexiconPaneWidth = (lexiconPaneWidth - deltaDp)
+                                                        .coerceIn(minPaneWidth, innerMaxWidth * 0.7f)
                                                 },
-                                                orientation = Orientation.Horizontal
+                                                orientation = Orientation.Horizontal,
                                             ),
-                                        contentAlignment = Alignment.Center
+                                        contentAlignment = Alignment.Center,
                                     ) {
                                         Box(
                                             modifier = Modifier
                                                 .height(48.dp)
                                                 .width(4.dp)
                                                 .clip(RoundedCornerShape(2.dp))
-                                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                                .background(
+                                                    MaterialTheme.colorScheme.outlineVariant
+                                                        .copy(alpha = 0.5f),
+                                                ),
                                         )
                                     }
 
                                     Box(
                                         modifier = Modifier
                                             .width(lexiconPaneWidth)
-                                            .fillMaxHeight()
+                                            .fillMaxHeight(),
                                     ) {
-                                        SplitDetailPane(
-                                            engineViewModel = engineViewModel
-                                        )
+                                        SplitDetailPane(readerViewModel = readerViewModel)
                                     }
                                 }
                             }
@@ -510,39 +564,30 @@ fun StudyScreen(
             supportingPane = {
                 if (isBibleDrawerVisible) {
                     AnimatedPane(
-                    modifier = Modifier
-                        .preferredHeight(1f)
-                        .width(400.dp)
-                ) {
+                        modifier = Modifier
+                            .preferredHeight(1f)
+                            .width(400.dp),
+                    ) {
                         Surface(
                             modifier = Modifier.fillMaxSize(),
                             shape = RectangleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerLow,
                             tonalElevation = 3.dp,
-                            shadowElevation = 16.dp
+                            shadowElevation = 16.dp,
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .statusBarsPadding()
-                                    .padding(top = 16.dp)
+                                    .padding(top = 16.dp),
                             ) {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.End,//Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
-//                                    Text(
-//                                        text = when {
-//                                            showModuleSelection -> stringResource(R.string.bible_selection)
-//                                            showSearchSettings -> stringResource(R.string.search_settings)
-//                                            showFontSettings -> stringResource(R.string.text_settings)
-//                                            showParallelMode -> stringResource(R.string.parallel_display)
-//                                            else -> stringResource(R.string.reference_picker)
-//                                        },
-//                                        style = MaterialTheme.typography.titleMedium,
-//                                        fontWeight = FontWeight.Bold
-//                                    )
                                     IconButton(onClick = {
                                         showModuleSelection = false
                                         showReferencePicker = false
@@ -550,47 +595,62 @@ fun StudyScreen(
                                         showFontSettings = false
                                         showParallelMode = false
                                     }) {
-                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close_drawer_desc))
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = stringResource(R.string.close_drawer_desc),
+                                        )
                                     }
                                 }
-                                
-                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Spacer(Modifier.height(8.dp))
 
                                 when {
                                     showModuleSelection -> {
-                                        ModuleSelectionContent(installedBibles, currentModule) { module ->
-                                            engineViewModel.selectModule(module)
+                                        ModuleSelectionContent(
+                                            translations = installedTranslations,
+                                            current = currentTranslation,
+                                        ) { translation ->
+                                            readerViewModel.selectTranslation(translation)
                                             showModuleSelection = false
                                         }
                                     }
                                     showSearchSettings -> {
-                                        val currentTab = tabs.getOrNull(activeTabIndex)
-                                        if (currentTab != null) {
-                                            SearchSettingsContent(currentTab.searchType) { type ->
-                                                engineViewModel.updateSearchType(type)
+                                        currentTab?.let { tab ->
+                                            SearchSettingsContent(tab.searchType) { type ->
+                                                readerViewModel.updateSearchType(type)
                                                 showSearchSettings = false
                                             }
                                         }
                                     }
                                     showReferencePicker -> {
-                                        ReferencePickerContent(currentBooks, currentBookIndex, currentChapterIndex, { index -> engineViewModel.selectBook(index) }) { chapter ->
-                                            engineViewModel.selectChapter(chapter)
-                                            showReferencePicker = false
-                                        }
+                                        ReferencePickerContent(
+                                            books = currentBooks,
+                                            currentBookId = chapterData?.bookId,
+                                            currentChapter = chapterData?.chapterNumber ?: 1,
+                                            onSelectBook = { bookId ->
+                                                readerViewModel.selectBook(bookId)
+                                            },
+                                            onSelectChapter = { ch ->
+                                                chapterData?.let { readerViewModel.openChapter(it.bookId, ch) }
+                                                showReferencePicker = false
+                                            },
+                                        )
                                     }
                                     showFontSettings -> {
                                         FontSettingsContent(
                                             config = wordConfig,
-                                            onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } },
-                                            onResetConfig = { engineViewModel.resetWordConfig() }
+                                            onConfigChange = { newConfig ->
+                                                readerViewModel.updateWordConfig { newConfig }
+                                            },
+                                            onResetConfig = { readerViewModel.resetWordConfig() },
                                         )
                                     }
                                     showParallelMode -> {
                                         ParallelModeContent(
-                                            installedBibles = installedBibles,
-                                            currentModule = currentModule,
-                                            parallelModule = parallelModule,
-                                            onParallelModuleSelected = { engineViewModel.selectParallelModule(it) }
+                                            translations = installedTranslations,
+                                            current = currentTranslation,
+                                            parallel = parallelTranslation,
+                                            onParallelSelected = { readerViewModel.selectParallelTranslation(it) },
                                         )
                                     }
                                 }
@@ -598,79 +658,151 @@ fun StudyScreen(
                         }
                     }
                 }
-            }
+            },
         )
     }
 
-    // --- MOBILE OVERLAYS ---
+    // ── Compact bottom sheets ──────────────────────────────────
     if (isCompact) {
         if (showModuleSelection) {
-            ModalBottomSheet(onDismissRequest = { showModuleSelection = false }, sheetState = moduleSheetState) {
-                ModuleSelectionContent(installedBibles, currentModule) { module ->
-                    engineViewModel.selectModule(module)
+            ModalBottomSheet(
+                onDismissRequest = { showModuleSelection = false },
+                sheetState = moduleSheetState,
+            ) {
+                ModuleSelectionContent(installedTranslations, currentTranslation) { translation ->
+                    readerViewModel.selectTranslation(translation)
                     showModuleSelection = false
                 }
             }
         }
         if (showReferencePicker) {
-            ModalBottomSheet(onDismissRequest = { showReferencePicker = false }, sheetState = referenceSheetState) {
-                ReferencePickerContent(currentBooks, currentBookIndex, currentChapterIndex, { index -> engineViewModel.selectBook(index) }) { chapter ->
-                    engineViewModel.selectChapter(chapter)
-                    showReferencePicker = false
-                }
+            ModalBottomSheet(
+                onDismissRequest = { showReferencePicker = false },
+                sheetState = referenceSheetState,
+            ) {
+                ReferencePickerContent(
+                    books = currentBooks,
+                    currentBookId = chapterData?.bookId,
+                    currentChapter = chapterData?.chapterNumber ?: 1,
+                    onSelectBook = { readerViewModel.selectBook(it) },
+                    onSelectChapter = { ch ->
+                        chapterData?.let { readerViewModel.openChapter(it.bookId, ch) }
+                        showReferencePicker = false
+                    },
+                )
             }
         }
         if (showSearchSettings) {
-            ModalBottomSheet(onDismissRequest = { showSearchSettings = false }, sheetState = searchSettingsSheetState) {
-                val currentTab = tabs.getOrNull(activeTabIndex)
-                if (currentTab != null) {
-                    SearchSettingsContent(currentTab.searchType) { type ->
-                        engineViewModel.updateSearchType(type)
+            ModalBottomSheet(
+                onDismissRequest = { showSearchSettings = false },
+                sheetState = searchSettingsSheetState,
+            ) {
+                currentTab?.let { tab ->
+                    SearchSettingsContent(tab.searchType) { type ->
+                        readerViewModel.updateSearchType(type)
                         showSearchSettings = false
                     }
                 }
             }
         }
         if (showLexicon) {
-            ModalBottomSheet(onDismissRequest = { showLexicon = false }, sheetState = lexiconSheetState) {
-                SplitDetailPane(engineViewModel)
+            ModalBottomSheet(
+                onDismissRequest = { showLexicon = false },
+                sheetState = lexiconSheetState,
+            ) {
+                SplitDetailPane(readerViewModel)
             }
         }
         if (showFontSettings) {
-            ModalBottomSheet(onDismissRequest = { showFontSettings = false }, sheetState = fontSettingsSheetState) {
+            ModalBottomSheet(
+                onDismissRequest = { showFontSettings = false },
+                sheetState = fontSettingsSheetState,
+            ) {
                 FontSettingsContent(
                     config = wordConfig,
-                    onConfigChange = { newConfig -> engineViewModel.updateWordConfig { newConfig } },
-                    onResetConfig = { engineViewModel.resetWordConfig() }
+                    onConfigChange = { newConfig ->
+                        readerViewModel.updateWordConfig { newConfig }
+                    },
+                    onResetConfig = { readerViewModel.resetWordConfig() },
                 )
             }
         }
         if (showParallelMode) {
-            ModalBottomSheet(onDismissRequest = { showParallelMode = false }, sheetState = parallelModeSheetState) {
+            ModalBottomSheet(
+                onDismissRequest = { showParallelMode = false },
+                sheetState = parallelModeSheetState,
+            ) {
                 ParallelModeContent(
-                    installedBibles = installedBibles,
-                    currentModule = currentModule,
-                    parallelModule = parallelModule,
-                    onParallelModuleSelected = { engineViewModel.selectParallelModule(it) }
+                    translations = installedTranslations,
+                    current = currentTranslation,
+                    parallel = parallelTranslation,
+                    onParallelSelected = { readerViewModel.selectParallelTranslation(it) },
+                )
+            }
+        }
+
+        // ── VERSE ACTIONS SHEET ─────────────────────────────────
+        if (showVerseActions) {
+            ModalBottomSheet(
+                onDismissRequest = { showVerseActions = false },
+                sheetState = verseActionsSheetState,
+            ) {
+                VerseActionsSheet(
+                    reference = "${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber",
+                    verseText = selectedVerseText,
+                    currentHighlight = null,
+                    currentStyle = selectedHighlightStyle,
+                    onDismiss = { showVerseActions = false },
+                    onCopy = {
+                        clipboardManager.setText(
+                            AnnotatedString("${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber $selectedVerseText")
+                        )
+                    },
+                    onOpenEntities = {
+                        showVerseActions = false
+                        showLexicon = true
+                    },
+                    onHighlight = { color, style ->
+                        chapterData?.let { ch ->
+                            selectedVerseNumber?.let { vNum ->
+                                readerViewModel.setHighlight(ch.bookId, ch.chapterNumber, vNum, color, style)
+                            }
+                        }
+                    },
+                    onClearHighlight = {
+                        chapterData?.let { ch ->
+                            selectedVerseNumber?.let { vNum ->
+                                readerViewModel.removeHighlight(ch.bookId, ch.chapterNumber, vNum)
+                            }
+                        }
+                    }
                 )
             }
         }
     }
 
-    // Tabs Preview remain full screen
     AnimatedVisibility(
         visible = showTabsPreview,
         enter = fadeIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300))
+        exit = fadeOut(animationSpec = tween(300)),
     ) {
         TabsPreview(
             tabs = tabs,
             activeTabIndex = activeTabIndex,
-            onTabSelected = { index -> engineViewModel.switchTab(index); showTabsPreview = false },
-            onAddTab = { engineViewModel.addNewTab(); showTabsPreview = false },
-            onAddSearchTab = { engineViewModel.addSearchTab(); showTabsPreview = false },
-            onRemoveTab = { index -> engineViewModel.removeTab(index) },
-            onDismiss = { showTabsPreview = false }
+            onTabSelected = {
+                readerViewModel.switchTab(it)
+                showTabsPreview = false
+            },
+            onAddTab = {
+                readerViewModel.addNewTab()
+                showTabsPreview = false
+            },
+            onAddSearchTab = {
+                readerViewModel.addSearchTab()
+                showTabsPreview = false
+            },
+            onRemoveTab = readerViewModel::removeTab,
+            onDismiss = { showTabsPreview = false },
         )
     }
 }

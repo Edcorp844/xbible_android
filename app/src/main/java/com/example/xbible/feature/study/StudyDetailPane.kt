@@ -15,7 +15,20 @@ import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -25,18 +38,38 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Translate
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -48,26 +81,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import com.example.xbible.R
 import com.example.xbible.core.ui.components.SectionView
-import com.example.xbible.viewmodel.EngineViewModel
+import com.example.xbible.viewmodel.ReaderViewModel
 import com.example.xbible.viewmodel.StudyTool
 import uniffi.xbible_engine.DictionaryResult
-import uniffi.xbible_engine.Word
 
 @Composable
 fun SplitDetailPane(
-    engineViewModel: EngineViewModel
+    readerViewModel: ReaderViewModel,
 ) {
-    val selectedTab by engineViewModel.selectedTool.collectAsState()
+    val selectedTab by readerViewModel.selectedTool.collectAsState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 4.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
+            .padding(start = 4.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -76,24 +107,24 @@ fun SplitDetailPane(
             tonalElevation = 1.dp,
             border = BorderStroke(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-            )
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+            ),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Primary Tabs Header
                 StudyToolPicker(
                     selectedTab = selectedTab,
-                    onTabSelected = { engineViewModel.selectTool(it) }
+                    onTabSelected = { readerViewModel.selectTool(it) },
                 )
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                )
 
-                // Dynamic Content Pane
                 Box(modifier = Modifier.weight(1f)) {
                     when (selectedTab) {
-                        StudyTool.Dictionary -> DictionaryTabContent(engineViewModel)
-                        StudyTool.Lexicon -> LexiconTabContent(engineViewModel)
-                        StudyTool.Commentary -> CommentaryTabContent(engineViewModel)
+                        StudyTool.Dictionary -> DictionaryTabContent(readerViewModel)
+                        StudyTool.Lexicon -> LexiconTabContent(readerViewModel)
+                        StudyTool.Commentary -> CommentaryTabContent(readerViewModel)
                     }
                 }
             }
@@ -105,7 +136,7 @@ fun SplitDetailPane(
 @Composable
 fun StudyToolPicker(
     selectedTab: StudyTool,
-    onTabSelected: (StudyTool) -> Unit
+    onTabSelected: (StudyTool) -> Unit,
 ) {
     val toolList = StudyTool.entries
     Column {
@@ -113,14 +144,14 @@ fun StudyToolPicker(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 ButtonGroup(
                     overflowIndicator = { menuState ->
@@ -129,11 +160,10 @@ fun StudyToolPicker(
                         }
                     },
                     modifier = Modifier.wrapContentWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
                 ) {
                     toolList.forEachIndexed { index, tool ->
                         val isSelected = selectedTab == tool
-
                         customItem(
                             buttonGroupContent = {
                                 val shapes = when {
@@ -141,25 +171,28 @@ fun StudyToolPicker(
                                     index == toolList.size - 1 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                                 }
-                                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                                CompositionLocalProvider(
+                                    LocalMinimumInteractiveComponentSize provides Dp.Unspecified,
+                                ) {
                                     OutlinedToggleButton(
                                         checked = isSelected,
                                         onCheckedChange = { if (it) onTabSelected(tool) },
                                         shapes = shapes,
                                         modifier = Modifier.defaultMinSize(
                                             minWidth = 1.dp,
-                                            minHeight = 1.dp
+                                            minHeight = 1.dp,
                                         ),
                                         contentPadding = PaddingValues(
                                             horizontal = 8.dp,
-                                            vertical = 4.dp
-                                        )
+                                            vertical = 4.dp,
+                                        ),
                                     ) {
                                         Text(
                                             text = tool.name,
                                             style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                            maxLines = 1
+                                            fontWeight = if (isSelected) FontWeight.Bold
+                                            else FontWeight.Medium,
+                                            maxLines = 1,
                                         )
                                     }
                                 }
@@ -170,9 +203,9 @@ fun StudyToolPicker(
                                     onClick = {
                                         onTabSelected(tool)
                                         menuState.dismiss()
-                                    }
+                                    },
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -182,38 +215,38 @@ fun StudyToolPicker(
 }
 
 @Composable
-fun DictionaryTabContent(engineViewModel: EngineViewModel) {
-    val selectedWord by engineViewModel.selectedWordForLookup.collectAsState()
-    val results by engineViewModel.dictionaryResults.collectAsState()
-    val isLoading by engineViewModel.isDictionaryLoading.collectAsState()
+fun DictionaryTabContent(readerViewModel: ReaderViewModel) {
+    val selectedWord by readerViewModel.selectedWordForLookup.collectAsState()
+    val results by readerViewModel.dictionaryResults.collectAsState()
+    val isLoading by readerViewModel.isDictionaryLoading.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (selectedWord.isNotEmpty()) {
                 Column {
                     Text(
                         text = selectedWord,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Box(
                         modifier = Modifier
                             .width(24.dp)
                             .height(3.dp)
-                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape),
                     )
                 }
             } else {
                 Text(
                     text = stringResource(R.string.select_word_lookup),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outline,
                 )
             }
         }
@@ -221,7 +254,7 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
         } else if (selectedWord.isEmpty()) {
             DictionaryEmptyState()
@@ -230,20 +263,20 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 32.dp, vertical = 20.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         Icons.Default.Search,
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.outline
+                        tint = MaterialTheme.colorScheme.outline,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = stringResource(R.string.no_definitions_found, selectedWord),
                         textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.outline,
                     )
                 }
             }
@@ -251,7 +284,7 @@ fun DictionaryTabContent(engineViewModel: EngineViewModel) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(results) { result -> DictionaryResultRow(result) }
             }
@@ -266,38 +299,40 @@ fun DictionaryResultRow(result: DictionaryResult) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = 0.3f
-            )
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(4.dp),
                 ) {
                     Text(
                         text = result.moduleName,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
                 IconButton(
-                    onClick = { clipboard.setText(AnnotatedString("${result.key}\n\n${result.definition}")) },
-                    modifier = Modifier.size(24.dp)
+                    onClick = {
+                        clipboard.setText(
+                            AnnotatedString("${result.key}\n\n${result.definition}"),
+                        )
+                    },
+                    modifier = Modifier.size(24.dp),
                 ) {
                     Icon(
                         Icons.Outlined.ContentCopy,
                         contentDescription = stringResource(R.string.copy),
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
@@ -305,7 +340,7 @@ fun DictionaryResultRow(result: DictionaryResult) {
             Text(
                 text = result.key,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(8.dp))
             HtmlText(html = result.definition, key = result.key)
@@ -320,104 +355,108 @@ fun DictionaryEmptyState() {
             .fillMaxSize()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             Icons.AutoMirrored.Outlined.MenuBook,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.dictionary_lookup),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.dictionary_lookup_desc),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.outline
+            color = MaterialTheme.colorScheme.outline,
         )
     }
 }
 
 @Composable
-fun LexiconTabContent(engineViewModel: EngineViewModel) {
-    val selectedStrongs by engineViewModel.selectedStrongsForLookup.collectAsState()
-    val selectedModule by engineViewModel.selectedLexiconModule.collectAsState()
-    val availableLexicons by engineViewModel.availableLexicons.collectAsState()
-    val results by engineViewModel.lexiconResults.collectAsState()
-    val isLoading by engineViewModel.isLexiconLoading.collectAsState()
+fun LexiconTabContent(readerViewModel: ReaderViewModel) {
+    val selectedStrongs by readerViewModel.selectedStrongsForLookup.collectAsState()
+    val selectedModule by readerViewModel.selectedLexiconModule.collectAsState()
+    val availableLexicons by readerViewModel.availableLexicons.collectAsState()
+    val results by readerViewModel.lexiconResults.collectAsState()
+    val isLoading by readerViewModel.isLexiconLoading.collectAsState()
     var showModuleMenu by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = stringResource(R.string.lexicon),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     if (availableLexicons.isEmpty()) {
                         Text(
                             text = stringResource(R.string.no_lexicons_installed),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     } else {
                         Box {
                             Surface(
                                 onClick = { showModuleMenu = true },
                                 shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                             ) {
                                 Row(
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 ) {
-                                    Text(text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                        ?: selectedModule?.name
-                                        ?: stringResource(R.string.select_lexicon),
+                                    Text(
+                                        text = selectedModule?.description?.takeIf { it.isNotEmpty() }
+                                            ?: selectedModule?.name
+                                            ?: stringResource(R.string.select_lexicon),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.labelSmall)
+                                        style = MaterialTheme.typography.labelSmall,
+                                    )
                                     Icon(
                                         Icons.Default.KeyboardArrowDown,
                                         contentDescription = null,
-                                        modifier = Modifier.size(12.dp)
+                                        modifier = Modifier.size(12.dp),
                                     )
                                 }
                             }
                             DropdownMenu(
                                 expanded = showModuleMenu,
-                                onDismissRequest = { showModuleMenu = false }) {
+                                onDismissRequest = { showModuleMenu = false },
+                            ) {
                                 availableLexicons.forEach { module ->
                                     DropdownMenuItem(
                                         text = { Text(module.description.ifEmpty { module.name }) },
                                         onClick = {
-                                            engineViewModel.selectLexiconModule(module); showModuleMenu =
-                                            false
+                                            readerViewModel.selectLexiconModule(module)
+                                            showModuleMenu = false
                                         },
                                         trailingIcon = if (selectedModule?.name == module.name) {
                                             {
                                                 Icon(
                                                     Icons.Default.Check,
                                                     contentDescription = null,
-                                                    modifier = Modifier.size(16.dp)
+                                                    modifier = Modifier.size(16.dp),
                                                 )
                                             }
-                                        } else null)
+                                        } else null,
+                                    )
                                 }
                             }
                         }
@@ -429,28 +468,32 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                         Text(
                             text = stringResource(R.string.strongs_code_label),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.outline,
                         )
                         Surface(
                             color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(4.dp)
+                            shape = RoundedCornerShape(4.dp),
                         ) {
                             Text(
                                 text = selectedStrongs,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace),
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontFamily = FontFamily.Monospace,
+                                ),
+                                fontWeight = FontWeight.Bold,
                             )
                         }
                     }
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+        )
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
         } else if (selectedStrongs.isEmpty()) {
             LexiconEmptyState()
@@ -459,23 +502,23 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(32.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = stringResource(
                         R.string.no_lexicon_entries_found,
                         selectedStrongs,
-                        selectedModule?.name ?: ""
+                        selectedModule?.name ?: "",
                     ),
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outline,
                 )
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 items(results) { result ->
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -484,20 +527,20 @@ fun LexiconTabContent(engineViewModel: EngineViewModel) {
                                 text = result.moduleName,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "(${result.key})",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = MaterialTheme.colorScheme.outline,
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         HtmlText(
                             html = result.definition,
                             key = result.key,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
                 }
@@ -513,112 +556,115 @@ fun LexiconEmptyState() {
             .fillMaxSize()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             Icons.Outlined.Translate,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.lexicon_study),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.lexicon_study_desc),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.outline
+            color = MaterialTheme.colorScheme.outline,
         )
     }
 }
 
 @Composable
-fun CommentaryTabContent(engineViewModel: EngineViewModel) {
-    val selectedModule by engineViewModel.selectedCommentaryModule.collectAsState()
-    val availableCommentaries by engineViewModel.availableCommentaries.collectAsState()
-    val results by engineViewModel.commentaryResults.collectAsState()
-    val isLoading by engineViewModel.isCommentaryLoading.collectAsState()
-    val currentReference by engineViewModel.currentCommentaryReference.collectAsState()
+fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
+    val selectedModule by readerViewModel.selectedCommentaryModule.collectAsState()
+    val availableCommentaries by readerViewModel.availableCommentaries.collectAsState()
+    val results by readerViewModel.commentaryResults.collectAsState()
+    val isLoading by readerViewModel.isCommentaryLoading.collectAsState()
+    val currentReference by readerViewModel.currentCommentaryReference.collectAsState()
     var showModuleMenu by remember { mutableStateOf(false) }
     val clipboard = LocalClipboardManager.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = stringResource(R.string.commentary),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     if (availableCommentaries.isEmpty()) {
                         Text(
                             text = stringResource(R.string.no_commentaries_installed),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     } else {
                         Box {
                             Surface(
                                 onClick = { showModuleMenu = true },
                                 shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                             ) {
                                 Row(
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 ) {
-                                    Text(text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                        ?: selectedModule?.name
-                                        ?: stringResource(R.string.select_commentary),
+                                    Text(
+                                        text = selectedModule?.description?.takeIf { it.isNotEmpty() }
+                                            ?: selectedModule?.name
+                                            ?: stringResource(R.string.select_commentary),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.labelSmall)
+                                        style = MaterialTheme.typography.labelSmall,
+                                    )
                                     Icon(
                                         Icons.Default.KeyboardArrowDown,
                                         contentDescription = null,
-                                        modifier = Modifier.size(12.dp)
+                                        modifier = Modifier.size(12.dp),
                                     )
                                 }
                             }
                             DropdownMenu(
                                 expanded = showModuleMenu,
                                 onDismissRequest = { showModuleMenu = false },
-                                shape = RoundedCornerShape(24.dp)
+                                shape = RoundedCornerShape(24.dp),
                             ) {
                                 availableCommentaries.forEach { module ->
                                     DropdownMenuItem(
                                         contentPadding = PaddingValues(
                                             start = 16.dp,
                                             end = 16.dp,
-                                            top = 16.dp
+                                            top = 16.dp,
                                         ),
                                         text = { Text(module.description.ifEmpty { module.name }) },
                                         onClick = {
-                                            engineViewModel.selectCommentaryModule(module); showModuleMenu =
-                                            false
+                                            readerViewModel.selectCommentaryModule(module)
+                                            showModuleMenu = false
                                         },
                                         trailingIcon = if (selectedModule?.name == module.name) {
                                             {
                                                 Icon(
                                                     Icons.Default.Check,
                                                     contentDescription = null,
-                                                    modifier = Modifier.size(16.dp)
+                                                    modifier = Modifier.size(16.dp),
                                                 )
                                             }
-                                        } else null)
+                                        } else null,
+                                    )
                                 }
                             }
                         }
@@ -628,18 +674,18 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(R.string.reference_label),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.outline,
                         )
                         Text(
                             text = currentReference,
                             style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                     if (results.isNotEmpty()) {
@@ -658,28 +704,30 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                             },
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                             modifier = Modifier.height(24.dp),
-                            colors = ButtonDefaults.textButtonColors()
+                            colors = ButtonDefaults.textButtonColors(),
                         ) {
                             Icon(
                                 Icons.Outlined.ContentCopy,
                                 contentDescription = null,
-                                modifier = Modifier.size(12.dp)
+                                modifier = Modifier.size(12.dp),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 stringResource(R.string.copy),
-                                style = MaterialTheme.typography.labelSmall
+                                style = MaterialTheme.typography.labelSmall,
                             )
                         }
                     }
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+        )
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
         } else if (selectedModule == null) {
             CommentaryEmptyState()
@@ -688,23 +736,23 @@ fun CommentaryTabContent(engineViewModel: EngineViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(32.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = stringResource(
                         R.string.no_commentary_found,
                         currentReference,
-                        selectedModule?.name ?: ""
+                        selectedModule?.name ?: "",
                     ),
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outline,
                 )
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(results) { section -> SectionView(section = section) }
             }
@@ -719,26 +767,26 @@ fun CommentaryEmptyState() {
             .fillMaxSize()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             Icons.AutoMirrored.Filled.MenuBook,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.commentaries),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.commentaries_desc),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.outline
+            color = MaterialTheme.colorScheme.outline,
         )
     }
 }
@@ -748,7 +796,7 @@ fun HtmlText(
     html: String,
     key: String,
     modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium,
 ) {
     val onSurface = MaterialTheme.colorScheme.onSurface
     val primary = MaterialTheme.colorScheme.primary
@@ -760,19 +808,17 @@ fun HtmlText(
         remember(html, key, onSurface, primary, secondary, outlineVariant, surfaceVariant) {
             var text = html.trim()
             val keyLower = key.lowercase()
-            // Clean prefix/suffix search key
             if (text.lowercase().startsWith(keyLower)) text = text.drop(keyLower.length).trim()
             if (text.lowercase().endsWith(keyLower)) text = text.dropLast(keyLower.length).trim()
 
-            // Prepare HTML for parsing
             val processedHtml = text
                 .replace(
                     "class=\"orth\"",
-                    "color='#${String.format("%06X", 0xFFFFFF and primary.toArgb())}'"
+                    "color='#${String.format("%06X", 0xFFFFFF and primary.toArgb())}'",
                 )
                 .replace(
                     "class=\"pos\"",
-                    "color='#${String.format("%06X", 0xFFFFFF and secondary.toArgb())}'"
+                    "color='#${String.format("%06X", 0xFFFFFF and secondary.toArgb())}'",
                 )
                 .replace("<div class=\"cit\">", "<blockquote>")
                 .replace("</div>", "</blockquote>")
@@ -781,16 +827,14 @@ fun HtmlText(
             val rawSpanned = HtmlCompat.fromHtml(processedHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
             val spannable = SpannableStringBuilder(rawSpanned)
 
-            // Find and group contiguous QuoteSpans to apply a single BlockQuoteSpan per block
             val quoteSpans = spannable.getSpans(0, spannable.length, QuoteSpan::class.java)
             if (quoteSpans.isNotEmpty()) {
-                // Sort spans by start position
                 val sortedSpans = quoteSpans.sortedBy { spannable.getSpanStart(it) }
 
                 var currentStart = spannable.getSpanStart(sortedSpans[0])
                 var currentEnd = spannable.getSpanEnd(sortedSpans[0])
 
-                for (i in 0 until sortedSpans.size) {
+                for (i in sortedSpans.indices) {
                     val span = sortedSpans[i]
                     val start = spannable.getSpanStart(span)
                     val end = spannable.getSpanEnd(span)
@@ -798,28 +842,25 @@ fun HtmlText(
                     spannable.removeSpan(span)
 
                     if (start <= currentEnd + 1) {
-                        // Contiguous or overlapping, extend the current range
                         currentEnd = maxOf(currentEnd, end)
                     } else {
-                        // New block started, apply the previous one
                         applyBlockQuote(
                             spannable,
                             currentStart,
                             currentEnd,
                             surfaceVariant.toArgb(),
-                            outlineVariant.toArgb()
+                            outlineVariant.toArgb(),
                         )
                         currentStart = start
                         currentEnd = end
                     }
                 }
-                // Apply the last gathered block
                 applyBlockQuote(
                     spannable,
                     currentStart,
                     currentEnd,
                     surfaceVariant.toArgb(),
-                    outlineVariant.toArgb()
+                    outlineVariant.toArgb(),
                 )
             }
 
@@ -833,26 +874,22 @@ fun HtmlText(
                 setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, style.fontSize.value)
                 setTextColor(onSurface.toArgb())
                 setLineSpacing(0f, 1.2f)
-                // Internal padding for the whole TextView
                 setPadding(0, 0, 0, 0)
                 if (style.fontFamily == FontFamily.Serif) {
                     setTypeface(android.graphics.Typeface.SERIF)
                 }
             }
         },
-        update = { it.text = spanned }
+        update = { it.text = spanned },
     )
 }
 
-/**
- * Helper to apply the custom styled BlockQuoteSpan to a range.
- */
 private fun applyBlockQuote(
     spannable: SpannableStringBuilder,
     start: Int,
     end: Int,
     backgroundColor: Int,
-    stripeColor: Int
+    stripeColor: Int,
 ) {
     if (start < end) {
         val alpha = (0.25f * 255).toInt()
@@ -862,21 +899,18 @@ private fun applyBlockQuote(
                 backgroundColor = bgWithAlpha,
                 stripeColor = stripeColor,
                 stripeWidth = 8,
-                gapWidth = 24
+                gapWidth = 24,
             ),
-            start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
         )
     }
 }
 
-/**
- * Custom Span to provide a professional full-width block quote appearance.
- */
 private class BlockQuoteSpan(
     private val backgroundColor: Int,
     private val stripeColor: Int,
     private val stripeWidth: Int,
-    private val gapWidth: Int
+    private val gapWidth: Int,
 ) : LeadingMarginSpan, LineBackgroundSpan {
 
     private val horizontalMargin = 20f
@@ -899,7 +933,7 @@ private class BlockQuoteSpan(
         c: Canvas, p: Paint, x: Int, dir: Int,
         top: Int, baseline: Int, bottom: Int,
         text: CharSequence, start: Int, end: Int,
-        first: Boolean, layout: Layout
+        first: Boolean, layout: Layout,
     ) {
         val spanned = text as? Spanned ?: return
         val isFirst = isFirstLine(spanned, start)
@@ -917,10 +951,10 @@ private class BlockQuoteSpan(
 
         val path = Path()
         val radii = floatArrayOf(
-            if (isFirst) radius else 0f, if (isFirst) radius else 0f, // Top-left
-            0f, 0f, // Top-right
-            0f, 0f, // Bottom-right
-            if (isLast) radius else 0f, if (isLast) radius else 0f   // Bottom-left
+            if (isFirst) radius else 0f, if (isFirst) radius else 0f,
+            0f, 0f,
+            0f, 0f,
+            if (isLast) radius else 0f, if (isLast) radius else 0f,
         )
 
         path.addRoundRect(rect, radii, Path.Direction.CW)
@@ -933,7 +967,7 @@ private class BlockQuoteSpan(
     override fun drawBackground(
         c: Canvas, p: Paint,
         left: Int, right: Int, top: Int, baseline: Int, bottom: Int,
-        text: CharSequence, start: Int, end: Int, lineNumber: Int
+        text: CharSequence, start: Int, end: Int, lineNumber: Int,
     ) {
         val spanned = text as? Spanned ?: return
         val isFirst = isFirstLine(spanned, start)
@@ -948,10 +982,10 @@ private class BlockQuoteSpan(
 
         val path = Path()
         val radii = floatArrayOf(
-            if (isFirst) radius else 0f, if (isFirst) radius else 0f, // Top-left
-            if (isFirst) radius else 0f, if (isFirst) radius else 0f, // Top-right
-            if (isLast) radius else 0f, if (isLast) radius else 0f,   // Bottom-right
-            if (isLast) radius else 0f, if (isLast) radius else 0f    // Bottom-left
+            if (isFirst) radius else 0f, if (isFirst) radius else 0f,
+            if (isFirst) radius else 0f, if (isFirst) radius else 0f,
+            if (isLast) radius else 0f, if (isLast) radius else 0f,
+            if (isLast) radius else 0f, if (isLast) radius else 0f,
         )
 
         path.addRoundRect(rect, radii, Path.Direction.CW)
