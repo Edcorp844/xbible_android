@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uniffi.xbible_engine.DictionaryQuery
 import uniffi.xbible_engine.DictionaryResult
+import uniffi.xbible_engine.EntityRef
 import uniffi.xbible_engine.FreeBibleBook
 import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.LexiconQuery
@@ -34,7 +35,6 @@ import uniffi.xbible_engine.SearchHit
 import uniffi.xbible_engine.SearchResults
 import uniffi.xbible_engine.SearchType
 import uniffi.xbible_engine.SwordModule
-import uniffi.xbible_engine.VerseRange
 import java.util.UUID
 import javax.inject.Inject
 
@@ -76,6 +76,8 @@ enum class ReaderStudyTool {
     Dictionary, Lexicon, Commentary
 }
 
+private const val THEOGRAPHIC_DATASET = "theographic"
+
 // ── ViewModel ───────────────────────────────────────────────────────
 
 @HiltViewModel
@@ -112,6 +114,10 @@ class ReaderViewModel @Inject constructor(
     val currentChapterData: StateFlow<ReaderChapter?> =
         _currentChapterData.asStateFlow()
 
+    /** All entities mentioned anywhere in the currently loaded chapter. */
+    private val _chapterEntities = MutableStateFlow<List<EntityRef>>(emptyList())
+    val chapterEntities: StateFlow<List<EntityRef>> = _chapterEntities.asStateFlow()
+
     private val _parallelChapterData = MutableStateFlow<ReaderChapter?>(null)
     val parallelChapterData: StateFlow<ReaderChapter?> =
         _parallelChapterData.asStateFlow()
@@ -137,9 +143,8 @@ class ReaderViewModel @Inject constructor(
 
     // ── Verse entities (for the "who's here" sheet) ─────────────────
 
-    private val _verseEntities = MutableStateFlow<List<uniffi.xbible_engine.EntityRef>>(emptyList())
-    val verseEntities: StateFlow<List<uniffi.xbible_engine.EntityRef>> =
-        _verseEntities.asStateFlow()
+    private val _verseEntities = MutableStateFlow<List<EntityRef>>(emptyList())
+    val verseEntities: StateFlow<List<EntityRef>> = _verseEntities.asStateFlow()
 
     // ── Study tools (unchanged — they still use SWORD modules) ──────
 
@@ -196,6 +201,7 @@ class ReaderViewModel @Inject constructor(
 
     private var searchContentLoadingJob: Job? = null
     private var entitiesJob: Job? = null
+    private var chapterEntitiesJob: Job? = null
 
     private val prefs = application.getSharedPreferences("word_config", Context.MODE_PRIVATE)
     private val tabPrefs = application.getSharedPreferences("reader_tabs_state", Context.MODE_PRIVATE)
@@ -372,6 +378,10 @@ class ReaderViewModel @Inject constructor(
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
         val translation = tab.translation ?: return
 
+        // Any in-flight entity lookup belongs to a different chapter now.
+        chapterEntitiesJob?.cancel()
+        _chapterEntities.value = emptyList()
+
         viewModelScope.launch {
             _isLoadingContent.value = true
             try {
@@ -383,6 +393,9 @@ class ReaderViewModel @Inject constructor(
                 } else {
                     _currentChapterData.value = data
                     _currentTranslation.value = translation
+
+                    // Kick off entity fetch for the freshly loaded chapter.
+                    loadChapterEntities(data)
 
                     // If a parallel translation is active, load the same chapter there too.
                     _parallelTranslation.value?.let { parallel ->
@@ -408,6 +421,42 @@ class ReaderViewModel @Inject constructor(
                 _errorMessage.value = "Error loading chapter: ${e.message}"
             } finally {
                 _isLoadingContent.value = false
+            }
+        }
+    }
+
+    /**
+     * Fetch every entity mentioned in [chapter] and publish it on
+     * [chapterEntities] for the "In This Chapter" footer.
+     *
+     * The Rust FFI only exposes per-verse lookups, so we fan out over the
+     * chapter's verse numbers and de-dupe by (kind, id). The whole loop runs
+     * inside one `repository` call so it stays on the engine's single thread.
+     */
+    private fun loadChapterEntities(chapter: ReaderChapter) {
+        val verseNumbers = chapter.blocks
+            .flatMap { it.verses }
+            .map { it.number }
+            .distinct()
+
+        if (verseNumbers.isEmpty()) {
+            _chapterEntities.value = emptyList()
+            return
+        }
+
+        chapterEntitiesJob = viewModelScope.launch {
+            try {
+                _chapterEntities.value = withContext(Dispatchers.IO) {
+                    repository.getFreeBibleEntitiesForChapter(
+                        datasetId = THEOGRAPHIC_DATASET,
+                        book = chapter.bookId,
+                        chapter = chapter.chapterNumber,
+                        verseNumbers = verseNumbers,
+                    )
+                }
+            } catch (e: Throwable) {
+                _chapterEntities.value = emptyList()
+                _errorMessage.value = "Entities for chapter failed: ${e.message}"
             }
         }
     }
@@ -748,7 +797,7 @@ class ReaderViewModel @Inject constructor(
             try {
                 _verseEntities.value = withContext(Dispatchers.IO) {
                     repository.freeBibleEntitiesForVerse(
-                        datasetId = "theographic",
+                        datasetId = THEOGRAPHIC_DATASET,
                         book = data.bookId,
                         chapter = data.chapterNumber,
                         verse = verse,
@@ -778,7 +827,6 @@ class ReaderViewModel @Inject constructor(
         _wordConfig.value = def
         saveConfig(def)
     }
-
 
     // ── Highlights ──────────────────────────────────────────────────
     private val _highlights = MutableStateFlow<Map<String, VerseHighlight>>(emptyMap())

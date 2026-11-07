@@ -78,6 +78,10 @@ fun StudyScreen(
     val activeTabIndex by readerViewModel.activeTabIndex.collectAsState()
     val currentBooks by readerViewModel.currentBooksFlow.collectAsState()
     val highlights by readerViewModel.highlights.collectAsState()
+
+    // Chapter-wide entities (In This Chapter footer) — populated on chapter load.
+    val chapterEntities by readerViewModel.chapterEntities.collectAsState()
+    // Per-verse entities (verse-actions sheet) — populated on verse tap.
     val verseEntities by readerViewModel.verseEntities.collectAsState()
 
     // ── Local UI state ──────────────────────────────────────────
@@ -507,7 +511,9 @@ fun StudyScreen(
                                                         showVerseActions = true
                                                         readerViewModel.showEntitiesForVerse(verse)
                                                     },
-                                                    chapterEntities = verseEntities,
+                                                    // Chapter-wide entities for the
+                                                    // "IN THIS CHAPTER" footer.
+                                                    chapterEntities = chapterEntities,
                                                     onEntityTap = { entity ->
                                                         // TODO: navigate to entity detail
                                                         showLexicon = false
@@ -744,7 +750,9 @@ fun StudyScreen(
         // ── VERSE ACTIONS SHEET ─────────────────────────────────
         if (showVerseActions) {
             ModalBottomSheet(
-                onDismissRequest = { showVerseActions = false },
+                onDismissRequest = { showVerseActions = false
+                selectedVerseNumber = null
+                },
                 sheetState = verseActionsSheetState,
             ) {
                 VerseActionsSheet(
@@ -757,6 +765,7 @@ fun StudyScreen(
                         clipboardManager.setText(
                             AnnotatedString("${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber $selectedVerseText")
                         )
+                        selectedVerseNumber = null
                     },
                     onOpenEntities = {
                         showVerseActions = false
@@ -766,6 +775,7 @@ fun StudyScreen(
                         chapterData?.let { ch ->
                             selectedVerseNumber?.let { vNum ->
                                 readerViewModel.setHighlight(ch.bookId, ch.chapterNumber, vNum, color, style)
+                                selectedVerseNumber = null
                             }
                         }
                     },
@@ -773,6 +783,7 @@ fun StudyScreen(
                         chapterData?.let { ch ->
                             selectedVerseNumber?.let { vNum ->
                                 readerViewModel.removeHighlight(ch.bookId, ch.chapterNumber, vNum)
+                                selectedVerseNumber = null
                             }
                         }
                     }

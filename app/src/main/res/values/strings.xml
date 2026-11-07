@@ -27,8 +27,9 @@
     <string name="font">Font</string>
     <string name="size">Size</string>
     <string name="family">Family</string>
-    <string name="line">Line</string>
+    <string name="line_height">Line Height</string>
     <string name="space">Space</string>
+
     <string name="display_options">Display Options</string>
     <string name="show_strongs">Show Strongs</string>
     <string name="show_lemma">Show Lemma</string>
@@ -152,4 +153,8 @@
         <item quantity="other">%d albums</item>
     </plurals>
     <string name="no_results_for">No results for</string>
+    <string name="verse_spacing">Verse Spacing</string>
+    <string name="word_spacing">Word Spacing</string>
+    <string name="verse_layout">Verse Layout</string>
+    <string name="verse_per_line">Verse per line</string>
 </resources>

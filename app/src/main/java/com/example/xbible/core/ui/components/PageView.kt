@@ -2,19 +2,32 @@ package com.example.xbible.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.*
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -53,12 +66,14 @@ fun PageView(
     val sections = remember(chapter) { groupBlocksIntoSections(chapter.blocks) }
 
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         state = state,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+        // Changed horizontal padding to 16.dp to remove the large gutter
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
     ) {
         item(key = "chapter-header") {
-            ChapterHeader(chapter)
+            ChapterHeader(chapter, config)
         }
 
         // Render grouped sections
@@ -126,10 +141,12 @@ private fun groupBlocksIntoSections(blocks: List<ReaderBlock>): List<ParagraphSe
                 commitSection()
                 currentHeading = block.text
             }
+
             "hebrew_subtitle" -> {
                 commitSection()
                 currentSubtitle = block.text
             }
+
             "verse" -> {
                 block.verses.forEach { currentVerses.add(it) }
             }
@@ -144,7 +161,7 @@ private fun groupBlocksIntoSections(blocks: List<ReaderBlock>): List<ParagraphSe
 // ── Chapter header ─────────────────────────────────────────────────
 
 @Composable
-private fun ChapterHeader(chapter: ReaderChapter) {
+private fun ChapterHeader(chapter: ReaderChapter, config: WordConfig) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,15 +170,18 @@ private fun ChapterHeader(chapter: ReaderChapter) {
     ) {
         Text(
             text = chapter.bookName.uppercase(),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.ExtraBold,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontFamily = config.fontFamily,
+            ),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             letterSpacing = 1.sp,
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
@@ -170,7 +190,10 @@ private fun ChapterHeader(chapter: ReaderChapter) {
                     .height(1.dp)
                     .background(
                         Brush.horizontalGradient(
-                            colors = listOf(Color.Transparent, MaterialTheme.colorScheme.outlineVariant)
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.outlineVariant
+                            )
                         )
                     )
             )
@@ -178,7 +201,8 @@ private fun ChapterHeader(chapter: ReaderChapter) {
             Text(
                 text = chapter.chapterNumber.toString(),
                 style = MaterialTheme.typography.displayMedium.copy(
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = config.fontFamily,
+                    fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -190,7 +214,10 @@ private fun ChapterHeader(chapter: ReaderChapter) {
                     .height(1.dp)
                     .background(
                         Brush.horizontalGradient(
-                            colors = listOf(MaterialTheme.colorScheme.outlineVariant, Color.Transparent)
+                            colors = listOf(
+                                MaterialTheme.colorScheme.outlineVariant,
+                                Color.Transparent
+                            )
                         )
                     )
             )
@@ -211,7 +238,11 @@ private fun ParagraphSectionView(
     bookId: String = "",
     chapterNumber: Int = 1,
 ) {
-    Column(modifier = Modifier.padding(bottom = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding( bottom = 16.dp),
+    ) {
         // Render H2 Heading if present
         section.headingText?.let { heading ->
             Text(
@@ -229,7 +260,9 @@ private fun ParagraphSectionView(
         section.subtitleText?.let { subtitle ->
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontFamily = config.fontFamily,
+                ),
                 fontStyle = FontStyle.Italic,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
@@ -239,30 +272,54 @@ private fun ParagraphSectionView(
         // Render verses based on layout
         if (section.verses.isNotEmpty()) {
             if (config.verseLayout == VerseLayout.VersePerLine) {
-                val verseSpacing = (config.fontSize * (config.lineHeight - 0.5f)).dp.coerceAtLeast(6.dp)
-                Column(verticalArrangement = Arrangement.spacedBy(verseSpacing)) {
+                val verseSpacing =
+                    (config.fontSize * (config.verseSpacing)).dp
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(verseSpacing)) {
                     section.verses.forEach { verse ->
                         val isSelected = verse.number == selectedVerseNumber
                         val highlightKey = "$bookId:$chapterNumber:${verse.number}"
                         val highlight = highlights[highlightKey]
 
                         val backgroundModifier = when {
-                            isSelected -> Modifier.background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-                            highlight != null && highlight.style == HighlightStyle.Solid -> Modifier.background(highlight.color.color.copy(alpha = 0.35f), RoundedCornerShape(8.dp))
-                            highlight != null && highlight.style == HighlightStyle.Marker -> Modifier.background(highlight.color.color.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+                            isSelected -> Modifier.background(
+                                MaterialTheme.colorScheme.primaryContainer.copy(
+                                    alpha = 0.4f
+                                ), RoundedCornerShape(8.dp)
+                            )
+
+                            highlight != null && highlight.style == HighlightStyle.Solid -> Modifier.background(
+                                highlight.color.color.copy(alpha = 0.35f),
+                                RoundedCornerShape(8.dp)
+                            )
+
+                            highlight != null && highlight.style == HighlightStyle.Marker -> Modifier.background(
+                                highlight.color.color.copy(alpha = 0.5f),
+                                RoundedCornerShape(4.dp)
+                            )
+
                             else -> Modifier.background(Color.Transparent)
                         }
 
-                        val underlineModifier = if (highlight != null && highlight.style == HighlightStyle.Underline) {
-                            Modifier.drawBehind {
-                                drawLine(
-                                    color = highlight.color.color,
-                                    start = androidx.compose.ui.geometry.Offset(0f, size.height),
-                                    end = androidx.compose.ui.geometry.Offset(size.width, size.height),
-                                    strokeWidth = 3.dp.toPx()
-                                )
-                            }
-                        } else Modifier
+                        val underlineModifier =
+                            if (highlight != null && highlight.style == HighlightStyle.Underline) {
+                                Modifier.drawBehind {
+                                    drawLine(
+                                        color = highlight.color.color,
+                                        start = androidx.compose.ui.geometry.Offset(
+                                            0f,
+                                            size.height
+                                        ),
+                                        end = androidx.compose.ui.geometry.Offset(
+                                            size.width,
+                                            size.height
+                                        ),
+                                        strokeWidth = 3.dp.toPx()
+                                    )
+                                }
+                            } else Modifier
 
                         Row(
                             modifier = Modifier
@@ -270,7 +327,7 @@ private fun ParagraphSectionView(
                                 .then(backgroundModifier)
                                 .then(underlineModifier)
                                 .clickable { onVerseTap?.invoke(verse.number) }
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
+                                .padding(horizontal = 8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.Top,
                         ) {
@@ -381,7 +438,11 @@ private fun ParagraphSectionView(
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { offset ->
-                        paragraphText.getStringAnnotations(tag = "VERSE", start = offset, end = offset)
+                        paragraphText.getStringAnnotations(
+                            tag = "VERSE",
+                            start = offset,
+                            end = offset
+                        )
                             .firstOrNull()?.let { annotation ->
                                 val verseNum = annotation.item.toIntOrNull()
                                 if (verseNum != null) {
@@ -403,7 +464,8 @@ private fun AnnotatedString.Builder.appendVerseWords(
     onStrongsClick: ((String) -> Unit)?,
 ) {
     val defaultRed = Color(0xFFB71C1C)
-    val redLetter = if (config.redWordsColor == Color.Unspecified) defaultRed else config.redWordsColor
+    val redLetter =
+        if (config.redWordsColor == Color.Unspecified) defaultRed else config.redWordsColor
 
     verse.words.forEachIndexed { index, word ->
         val color = if (config.showRedWords && word.isWordsOfJesus)
@@ -461,7 +523,10 @@ private fun ChapterFooter(
                     .height(1.dp)
                     .background(
                         Brush.horizontalGradient(
-                            colors = listOf(Color.Transparent, MaterialTheme.colorScheme.outlineVariant)
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.outlineVariant
+                            )
                         )
                     )
             )
@@ -480,7 +545,10 @@ private fun ChapterFooter(
                     .height(1.dp)
                     .background(
                         Brush.horizontalGradient(
-                            colors = listOf(MaterialTheme.colorScheme.outlineVariant, Color.Transparent)
+                            colors = listOf(
+                                MaterialTheme.colorScheme.outlineVariant,
+                                Color.Transparent
+                            )
                         )
                     )
             )

@@ -17,7 +17,7 @@ data class WordConfig(
     val lineHeight: Float = 1.5f,
     val wordSpacing: Float = 0f,
     val justify: Boolean = true,
-    val primaryTextColor: Color = Color.Unspecified, // Uses MaterialTheme.colorScheme.onBackground
+    val primaryTextColor: Color = Color.Unspecified,
     val showRedWords: Boolean = true,
     val redWordsColor: Color = Color.Red,
     val showStrongs: Boolean = true,
@@ -32,5 +32,6 @@ data class WordConfig(
     val morphTagColor: Color = Color.Unspecified,
     val tagBackgroundColor: Color = Color.LightGray.copy(alpha = 0.2f),
     val addedWordsStyle: AddedWordStyle = AddedWordStyle.Brackets,
-    val verseLayout: VerseLayout = VerseLayout.Paragraph
+    val verseLayout: VerseLayout = VerseLayout.Paragraph,
+    val verseSpacing: Float = 0f
 )

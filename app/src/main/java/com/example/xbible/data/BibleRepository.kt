@@ -463,4 +463,20 @@ class BibleRepository @Inject constructor(private val application: Application) 
     ): List<EntityRef> = onEngine {
         freeBibleReader?.getRelated(datasetId, kind, id, relation) ?: emptyList()
     }
+
+    suspend fun getFreeBibleEntitiesForChapter(
+        datasetId: String,
+        book: String,
+        chapter: Int,
+        verseNumbers: List<Int>,
+    ): List<EntityRef> = onEngine {
+        val reader = freeBibleReader ?: return@onEngine emptyList()
+        val seen = LinkedHashMap<String, EntityRef>()   // kind:id → ref, preserves order
+        for (v in verseNumbers) {
+            reader.getEntitiesForVerse(datasetId, book, chapter, v).forEach { ref ->
+                seen.putIfAbsent("${ref.kind}:${ref.id}", ref)
+            }
+        }
+        seen.values.toList()
+    }
 }

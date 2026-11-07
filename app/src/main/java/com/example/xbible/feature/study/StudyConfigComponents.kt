@@ -1,7 +1,6 @@
 package com.example.xbible.feature.study
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -24,6 +23,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSliderState
@@ -64,45 +64,6 @@ fun FontSettingsContent(
             fontWeight = FontWeight.Bold,
         )
 
-        // ── Reading Layout ────────────────────────────────────────
-        SettingsGroup(title = "Reading Layout") {
-            Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                VerseLayout.entries.forEach { layout ->
-                    ListItem(
-                        modifier = Modifier.clickable {
-                            onConfigChange(config.copy(verseLayout = layout))
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        trailingContent = {
-                            RadioButton(
-                                selected = config.verseLayout == layout,
-                                onClick = null,
-                            )
-                        },
-                    ) {
-                        Column {
-                            Text(
-                                text = when (layout) {
-                                    VerseLayout.Paragraph -> "Paragraph"
-                                    VerseLayout.VersePerLine -> "Verse per line"
-                                },
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                text = when (layout) {
-                                    VerseLayout.Paragraph -> "Verses flow together like a novel."
-                                    VerseLayout.VersePerLine -> "Each verse starts on a new line."
-                                },
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // ── Font Settings ─────────────────────────────────────────
         SettingsGroup(title = stringResource(R.string.font)) {
@@ -145,23 +106,69 @@ fun FontSettingsContent(
                         }
                     }
                 }
+            }
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Reading Layout ────────────────────────────────────────
+        SettingsGroup(title = stringResource(R.string.verse_layout)) {
+            Column() {
+                SwitchItem(
+                    label = stringResource(R.string.verse_per_line),
+                    checked = config.verseLayout == VerseLayout.VersePerLine,
+                    onCheckedChange = {
+                        onConfigChange(
+                            config.copy(
+                                verseLayout = if (it) {
+                                    VerseLayout.VersePerLine
+                                } else {
+                                    VerseLayout.Paragraph
+                                }
+                            )
+                        )
+                    },
+                )
+            }
+
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 SliderRow(
-                    label = stringResource(R.string.line),
+                    label = stringResource(R.string.line_height),
                     currentValue = config.lineHeight,
+                    steps = 10,
                     valueRange = 1f..2.5f,
                     valueSuffix = "x",
                     onValueChange = { onConfigChange(config.copy(lineHeight = it)) },
                 )
 
+//                SliderRow(
+//                    label = stringResource(R.string.word_spacing),
+//                    currentValue = config.wordSpacing,
+//                    valueRange = 0f..10f,
+//                    valueSuffix = "dp",
+//                    onValueChange = { onConfigChange(config.copy(wordSpacing = it)) },
+//                )
+
                 SliderRow(
-                    label = stringResource(R.string.space),
-                    currentValue = config.wordSpacing,
-                    valueRange = 0f..10f,
+                    label = stringResource(R.string.verse_spacing),
+                    currentValue = config.verseSpacing,
+                    steps = 10,
+                    valueRange = 0f..1.0f,
                     valueSuffix = "dp",
-                    onValueChange = { onConfigChange(config.copy(wordSpacing = it)) },
+                    config.verseLayout == VerseLayout.VersePerLine,
+                    onValueChange = { onConfigChange(config.copy(verseSpacing = it)) },
                 )
+
             }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        SettingsGroup(title = ""){
+            SwitchItem(
+                label = stringResource(R.string.justify_text),
+                checked = config.justify,
+                onCheckedChange = { onConfigChange(config.copy(justify = it)) },
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -230,19 +237,6 @@ fun FontSettingsContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // ── Text Style ────────────────────────────────────────────
-        SettingsGroup(title = stringResource(R.string.text_style)) {
-            Column {
-                SwitchItem(
-                    label = stringResource(R.string.justify_text),
-                    checked = config.justify,
-                    onCheckedChange = { onConfigChange(config.copy(justify = it)) },
-                )
-            }
-        }
-
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
@@ -267,13 +261,15 @@ fun FontSettingsContent(
 private fun SliderRow(
     label: String,
     currentValue: Float,
+    steps: Int = 0,
     valueRange: ClosedFloatingPointRange<Float>,
     valueSuffix: String,
+    enabled: Boolean = true,
     onValueChange: (Float) -> Unit,
 ) {
-    // Correct parameter name for this M3 version: `trackRange`
     val sliderState = rememberSliderState(
         value = currentValue,
+        steps = steps,
         trackRange = valueRange,
     )
 
@@ -283,7 +279,10 @@ private fun SliderRow(
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = if (enabled) {Color.Unspecified} else {
+                    SliderDefaults.colors().disabledThumbColor}
+            ),
             modifier = Modifier.width(70.dp),
         )
         Slider(
@@ -292,6 +291,7 @@ private fun SliderRow(
                 sliderState.value = newValue
                 onValueChange(newValue)
             },
+            enabled = enabled,
             modifier = Modifier.weight(1f),
         )
         Text(
