@@ -241,7 +241,7 @@ private fun ParagraphSectionView(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding( bottom = 16.dp),
+            .padding(bottom = 16.dp),
     ) {
         // Render H2 Heading if present
         section.headingText?.let { heading ->
@@ -249,10 +249,20 @@ private fun ParagraphSectionView(
                 text = heading,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontFamily = config.fontFamily,
+                    fontSize = config.fontSize.sp * 1.025,
+                    lineHeight = (config.fontSize * config.lineHeight).sp * 1.025,
+                    textAlign = if (config.justify) TextAlign.Justify else TextAlign.Start,
                 ),
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
+                modifier = Modifier.padding(
+                    top = 16.dp,
+                    bottom = if (section.subtitleText == null) {
+                        4.dp
+                    } else {
+                        12.dp
+                    }
+                ),
             )
         }
 
@@ -262,10 +272,19 @@ private fun ParagraphSectionView(
                 text = subtitle,
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontFamily = config.fontFamily,
+                    fontSize = config.fontSize.sp * 0.8,
+                    lineHeight = (config.fontSize * config.lineHeight).sp * 0.8,
+                    textAlign = if (config.justify) TextAlign.Justify else TextAlign.Start,
                 ),
                 fontStyle = FontStyle.Italic,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                modifier = Modifier.padding(
+                    top = if (section.headingText == null) {
+                        0.dp
+                    } else {
+                        8.dp
+                    }, bottom = 8.dp
+                ),
             )
         }
 
@@ -277,7 +296,8 @@ private fun ParagraphSectionView(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(verseSpacing)) {
+                    verticalArrangement = Arrangement.spacedBy(verseSpacing)
+                ) {
                     section.verses.forEach { verse ->
                         val isSelected = verse.number == selectedVerseNumber
                         val highlightKey = "$bookId:$chapterNumber:${verse.number}"
