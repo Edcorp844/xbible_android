@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -19,6 +23,8 @@ import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +54,9 @@ import com.example.xbible.viewmodel.FreeBibleStoreViewModel
 import com.example.xbible.viewmodel.InstallState
 import uniffi.xbible_engine.StoreItem
 
+/** Sentinel for "no kind filter selected" in the category chip row. */
+private const val ALL_KINDS = "__all__"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreSectionScreen(
@@ -58,18 +67,46 @@ fun StoreSectionScreen(
     onOpenTranslation: (String, String) -> Unit,
     onOpenEntitySet: (String, String) -> Unit,
     onOpenItem: (StoreItem) -> Unit,
+    languageFilter: String? = null,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filter by rememberSaveable { mutableStateOf(StoreFilter.ALL) }
     var sort by rememberSaveable { mutableStateOf(StoreSort.NAME_ASC) }
+    var kindFilter by rememberSaveable { mutableStateOf(ALL_KINDS) }
     var filterMenuOpen by remember { mutableStateOf(false) }
     var sortMenuOpen by remember { mutableStateOf(false) }
 
     val activeInstall by viewModel.activeInstall.collectAsStateWithLifecycle()
 
-    val visible = remember(query, filter, sort, items) {
-        val searched = if (query.isBlank()) items
-        else items.filter {
+    // 1) Language scope
+    val scopedItems = remember(items, languageFilter) {
+        if (languageFilter == null) items
+        else items.filter { it.language == languageFilter }
+    }
+
+    // 2) Discover distinct kinds present in the scoped list.
+    //    Order matters: translations first, then entity sets, then
+    //    commentaries, then everything else.
+    val kinds = remember(scopedItems) {
+        val preferredOrder = listOf(
+            "translation", "entity_set", "commentary", "dataset"
+        )
+        val present = scopedItems.map { it.kind }.distinct()
+        present.sortedWith(
+            compareBy(
+                { preferredOrder.indexOf(it).takeIf { i -> i >= 0 } ?: Int.MAX_VALUE },
+                { it },
+            )
+        )
+    }
+
+    // 3) Apply kind filter + search + user sort/filter
+    val visible = remember(query, filter, sort, kindFilter, scopedItems) {
+        val kindScoped = if (kindFilter == ALL_KINDS) scopedItems
+        else scopedItems.filter { it.kind == kindFilter }
+
+        val searched = if (query.isBlank()) kindScoped
+        else kindScoped.filter {
             it.name.contains(query, ignoreCase = true) ||
                     it.englishName.contains(query, ignoreCase = true) ||
                     it.shortName.contains(query, ignoreCase = true) ||
@@ -93,7 +130,7 @@ fun StoreSectionScreen(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = "${visible.size} of ${items.size} items",
+                            text = "${visible.size} of ${scopedItems.size} items",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -108,7 +145,7 @@ fun StoreSectionScreen(
                     }
                 },
                 actions = {
-                    // ── Filter menu ────────────────────────────
+                    // Filter menu (installed / not installed)
                     Box {
                         IconButton(onClick = { filterMenuOpen = true }) {
                             Icon(
@@ -140,7 +177,7 @@ fun StoreSectionScreen(
                         }
                     }
 
-                    // ── Sort menu ──────────────────────────────
+                    // Sort menu
                     Box {
                         IconButton(onClick = { sortMenuOpen = true }) {
                             Icon(
@@ -188,6 +225,15 @@ fun StoreSectionScreen(
                 onQueryChange = { query = it },
             )
 
+            // ── Category chips: only when >1 kind present ─────
+            if (kinds.size > 1) {
+                CategoryChipsRow(
+                    kinds = kinds,
+                    selectedKind = kindFilter,
+                    onSelect = { kindFilter = it },
+                )
+            }
+
             if (visible.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -196,19 +242,26 @@ fun StoreSectionScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = if (query.isBlank()) "Nothing here yet."
-                        else "No matches for \"$query\".",
+                        text = when {
+                            query.isNotBlank() -> "No matches for \"$query\"."
+                            kinds.size > 1 -> "Nothing in this category."
+                            else -> "Nothing here yet."
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                     )
                 }
             } else {
-                // ── GRID instead of LazyColumn ─────────────────
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Adaptive(minSize = 160.dp),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 24.dp,
+                    ),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -228,6 +281,48 @@ fun StoreSectionScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CategoryChipsRow(
+    kinds: List<String>,
+    selectedKind: String,
+    onSelect: (String) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        FilterChip(
+            selected = selectedKind == ALL_KINDS,
+            onClick = { onSelect(ALL_KINDS) },
+            label = { Text("All") },
+            shape = CircleShape,
+            colors = FilterChipDefaults.filterChipColors(),
+        )
+        kinds.forEach { kind ->
+            FilterChip(
+                selected = selectedKind == kind,
+                onClick = { onSelect(kind) },
+                label = { Text(kindLabel(kind)) },
+                shape = CircleShape,
+                colors = FilterChipDefaults.filterChipColors(),
+            )
+        }
+    }
+}
+
+private fun kindLabel(kind: String): String = when (kind) {
+    "translation" -> "Bibles"
+    "entity_set" -> "Study Tools"
+    "commentary" -> "Commentaries"
+    "dataset" -> "Datasets"
+    else -> kind.replace('_', ' ')
+        .replaceFirstChar { it.uppercase() }
+}
+
 @Composable
 private fun SectionItemCard(
     item: StoreItem,
@@ -243,29 +338,23 @@ private fun SectionItemCard(
         isInstalled = viewModel.isInstalled(item.id),
     )
 
-    // Wrapping TranslationCard in a Box that fills width ensures it
-    // expands to fill its grid cell properly.
-    Box(modifier = Modifier.fillMaxWidth()) {
-        TranslationCard(
-            item = item,
-            status = status,
-            onInstall = { viewModel.installTranslation(item.id) },
-            onOpen = {
-                when (item.kind) {
-                    "translation" -> onOpenTranslation(item.id, item.name)
-                    "entity_set" -> {
-                        val (dataset, kind) = item.id.split(':', limit = 2)
-                        onOpenEntitySet(dataset, kind)
-                    }
-                    else -> onOpenItem(item)
+    TranslationCard(
+        item = item,
+        status = status,
+        cardWidth = null,   // ← fill the grid cell
+        onInstall = { viewModel.installTranslation(item.id) },
+        onOpen = {
+            when (item.kind) {
+                "translation" -> onOpenTranslation(item.id, item.name)
+                "entity_set" -> {
+                    val (dataset, kind) = item.id.split(':', limit = 2)
+                    onOpenEntitySet(dataset, kind)
                 }
-            },
-            onDelete = if (status is TranslationCardStatus.Installed && item.kind == "translation") {
-                { viewModel.uninstallTranslation(item.id) }
-            } else null,
-            onDetails = { onOpenItem(item) },
-        )
-    }
+                else -> onOpenItem(item)
+            }
+        },
+        onClick = { onOpenItem(item) },
+    )
 }
 
 private fun sectionStatusFor(

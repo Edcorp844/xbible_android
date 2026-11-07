@@ -16,4 +16,7 @@ sealed interface StoreRoute {
 
     /** "See all languages" — full language browser. */
     data object Languages : StoreRoute
+
+    /** All translations for a single language, filtered from the catalog. */
+    data class Language(val code: String) : StoreRoute
 }

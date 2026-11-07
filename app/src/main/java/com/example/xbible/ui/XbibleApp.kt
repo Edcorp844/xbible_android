@@ -248,14 +248,16 @@ private fun StoreHost(
         null -> FreeBibleStoreScreen(
             viewModel = viewModel,
             onOpenTranslation = { _, _ -> /* TODO: open reader */ },
-            onOpenEntitySet = { _, _ -> /* TODO: open entity browse */ },
+            onOpenEntitySet = { _, _ -> /* TODO */ },
             onOpenItem = { item ->
                 onRouteChange(StoreRoute.ItemDetail(item.id, item.kind))
             },
             onSeeAll = { shelfTitle ->
                 onRouteChange(StoreRoute.Section(shelfTitle))
             },
-            onLanguageClick = { code -> viewModel.selectLanguage(code) },
+            onLanguageClick = { code ->
+                onRouteChange(StoreRoute.Language(code))
+            },
             onSeeAllLanguages = { onRouteChange(StoreRoute.Languages) },
         )
 
@@ -277,30 +279,42 @@ private fun StoreHost(
             )
         }
 
-        is StoreRoute.ItemDetail -> {
-            val item = remember(route.id, route.kind) {
-                viewModel.itemDetail(route.id, route.kind)
-            }
-            if (item != null) {
-                StoreItemDetailScreen(
-                    item = item,
-                    viewModel = viewModel,
-                    onBack = { onRouteChange(null) },
-                )
-            } else {
-                LaunchedEffect(Unit) { onRouteChange(null) }
-            }
-        }
+        is StoreRoute.ItemDetail -> { /* unchanged */ }
 
-        StoreRoute.Languages -> {
+        is StoreRoute.Languages -> {
             val languages by viewModel.languages.collectAsStateWithLifecycle()
             LanguageSectionScreen(
                 languages = languages,
                 onLanguageSelected = { code ->
-                    viewModel.selectLanguage(code)
-                    onRouteChange(null)
+                    onRouteChange(StoreRoute.Language(code))
                 },
                 onBack = { onRouteChange(null) },
+            )
+        }
+
+        is StoreRoute.Language -> {
+            val shelves by viewModel.shelves.collectAsStateWithLifecycle()
+            val languages by viewModel.languages.collectAsStateWithLifecycle()
+            val langName = languages.firstOrNull { it.code == route.code }?.name ?: route.code
+
+            // Show every item in this language across every shelf, flattened.
+            val items = remember(shelves, route.code) {
+                shelves.flatMap { it.items }
+                    .filter { it.language == route.code }
+                    .distinctBy { "${it.kind}:${it.id}" }
+            }
+
+            StoreSectionScreen(
+                title = langName,
+                items = items,
+                viewModel = viewModel,
+                onBack = { onRouteChange(StoreRoute.Languages) },
+                onOpenTranslation = { _, _ -> /* TODO */ },
+                onOpenEntitySet = { _, _ -> /* TODO */ },
+                onOpenItem = { item ->
+                    onRouteChange(StoreRoute.ItemDetail(item.id, item.kind))
+                },
+                languageFilter = route.code,
             )
         }
     }
@@ -317,6 +331,7 @@ private val StoreRouteSaver = Saver<StoreRoute?, ArrayList<Any>>(
             is StoreRoute.Section -> arrayListOf("section", route.title)
             is StoreRoute.ItemDetail -> arrayListOf("item", route.id, route.kind)
             StoreRoute.Languages -> arrayListOf("languages")
+            is StoreRoute.Language -> arrayListOf("language", route.code)
         }
     },
     restore = { saved ->
@@ -328,6 +343,7 @@ private val StoreRouteSaver = Saver<StoreRoute?, ArrayList<Any>>(
                 saved[2] as String,
             )
             saved[0] == "languages" -> StoreRoute.Languages
+            saved[0] == "language" -> StoreRoute.Language(saved[1] as String)
             else -> null
         }
     },

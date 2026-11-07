@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -508,13 +509,38 @@ private fun AnnotatedString.Builder.appendVerseWords(
     }
 }
 
+/**
+ * Decide whether a space belongs between two consecutive word tokens.
+ *
+ * Returns `true` in every ordinary case (including after commas, periods,
+ * colons, semicolons, and closing punctuation). Returns `false` only for
+ * the three cases where a space would visibly look wrong:
+ *
+ *   1. Before closing punctuation  — `word)` not `word )`
+ *   2. After opening punctuation   — `(word` not `( word`
+ *   3. Before apostrophe-continuation — `God's` not `God 's`
+ *
+ * If either token already carries whitespace at the boundary, we do not
+ * add another space (the tokenizer already spaced it).
+ */
 private fun shouldSpace(prev: String, next: String): Boolean {
     if (prev.isEmpty() || next.isEmpty()) return false
+
+    // Already spaced at the boundary — don't double up.
     if (prev.last().isWhitespace() || next.first().isWhitespace()) return false
-    val noLeadingSpaceBefore = ",.;:!?)]}'\""
-    val noTrailingSpaceAfter = ",.;!?)]}'\""
-    if (prev.last() in noLeadingSpaceBefore) return false
-    if (next.first() in noTrailingSpaceAfter) return false
+
+    // Never a space *before* a closer.
+    val noSpaceBefore = ",.;:!?)]}%"
+    if (next.first() in noSpaceBefore) return false
+
+    // Never a space *after* an opener.
+    val noSpaceAfter = "([{"
+    if (prev.last() in noSpaceAfter) return false
+
+    // Never a space before a possessive/contraction apostrophe
+    // ("God's", "don't", "he'll").
+    if (next.first() == '\'' && next.length > 1) return false
+
     return true
 }
 
@@ -527,12 +553,19 @@ private fun ChapterFooter(
     entities: List<EntityRef>,
     onEntityTap: ((EntityRef) -> Unit)?,
 ) {
+    // Group by kind so People / Places / Events read as separate lines,
+    // the way Doxa separates "who is in the passage" from "what it is about".
+    val byKind = remember(entities) {
+        entities.groupBy { it.kind.lowercase() }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 40.dp, bottom = 80.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        // ── Section label row ───────────────────────────────────
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -574,33 +607,60 @@ private fun ChapterFooter(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            entities.forEach { entity ->
-                val icon = when (entity.kind.lowercase()) {
-                    "person" -> "👤"
-                    "place" -> "📍"
-                    "event" -> "📅"
-                    "group" -> "👥"
-                    else -> "📖"
-                }
-
-                AssistChip(
-                    onClick = { onEntityTap?.invoke(entity) },
-                    label = { Text(entity.name, style = MaterialTheme.typography.labelLarge) },
-                    leadingIcon = { Text(icon, fontSize = 14.sp) },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    ),
-                    border = null
+        // ── One row per kind: label on the left, chips on the right ──
+        byKind.forEach { (kind, refs) ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Text(
+                    text = kindLabel(kind),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(top = 8.dp, end = 8.dp)
+                        .width(52.dp),
                 )
+                FlowRow(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    refs.forEach { entity ->
+                        AssistChip(
+                            onClick = { onEntityTap?.invoke(entity) },
+                            label = {
+                                Text(
+                                    text = entity.name,
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            },
+                            leadingIcon = {
+                                EntityAvatar(
+                                    entity = entity,
+                                    size = 18.dp,
+                                )
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            ),
+                            border = null,
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+private fun kindLabel(kind: String): String = when (kind) {
+    "person" -> "People"
+    "place" -> "Places"
+    "event" -> "Events"
+    "group" -> "Groups"
+    else -> "Other"
 }

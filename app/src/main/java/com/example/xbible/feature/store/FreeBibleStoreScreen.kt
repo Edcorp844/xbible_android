@@ -84,13 +84,30 @@ fun FreeBibleStoreScreen(
     onSeeAll: (shelfTitle: String) -> Unit = {},
     onLanguageClick: (languageCode: String) -> Unit = {},
     onSeeAllLanguages: () -> Unit = {},
+    activeLanguage: String? = null,
+    onClearLanguage: () -> Unit = {},
 ) {
-    val shelves by viewModel.shelves.collectAsStateWithLifecycle()
+    val allShelves by viewModel.shelves.collectAsStateWithLifecycle()
     val languages by viewModel.languages.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
     val activeInstall by viewModel.activeInstall.collectAsStateWithLifecycle()
+
+    // ── Apply the active-language filter to every shelf ──────────
+    val shelves = remember(allShelves, activeLanguage) {
+        if (activeLanguage == null) allShelves
+        else allShelves.mapNotNull { shelf ->
+            val filtered = shelf.items.filter { it.language == activeLanguage }
+            if (filtered.isEmpty()) null else shelf.copy(items = filtered)
+        }
+    }
+
+    // ── Also filter the active language out of the chip row ─────
+    val chipLanguages = remember(languages, activeLanguage) {
+        if (activeLanguage == null) languages
+        else languages.filter { it.code != activeLanguage }
+    }
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -100,10 +117,8 @@ fun FreeBibleStoreScreen(
         derivedStateOf { listState.firstVisibleItemIndex > 0 }
     }
 
-    // Pull-to-refresh is only relevant when there's content on screen
     val isRefreshing = isLoading && shelves.isNotEmpty()
 
-    // Hoisted outside the LazyColumn so `remember` runs in composable scope
     val searchResults = remember(searchQuery, shelves) {
         if (searchQuery.isBlank()) emptyList()
         else searchAcrossShelves(shelves, searchQuery)
@@ -151,7 +166,7 @@ fun FreeBibleStoreScreen(
                 .padding(innerPadding)
         ) {
             when {
-                isLoading && shelves.isEmpty() -> {
+                isLoading && shelves.isEmpty() && activeLanguage == null -> {
                     ExpressiveLoadingIndicator()
                 }
 
@@ -179,6 +194,20 @@ fun FreeBibleStoreScreen(
                                     query = searchQuery,
                                     onQueryChange = viewModel::updateSearchQuery,
                                 )
+                            }
+
+                            // Active language banner
+                            if (activeLanguage != null) {
+                                item(key = "active_language") {
+                                    val langName = languages
+                                        .firstOrNull { it.code == activeLanguage }
+                                        ?.name
+                                        ?: activeLanguage
+                                    ActiveLanguageBanner(
+                                        languageName = langName,
+                                        onClear = onClearLanguage,
+                                    )
+                                }
                             }
 
                             // ── Search Results Mode ──────────────────
@@ -228,7 +257,6 @@ fun FreeBibleStoreScreen(
                             } else {
                                 // ── Normal Browse Mode ──────────────
 
-                                // Active Install Banner
                                 if (activeInstall != null && activeInstall?.done == false) {
                                     item {
                                         ActiveInstallBanner(
@@ -238,18 +266,25 @@ fun FreeBibleStoreScreen(
                                     }
                                 }
 
-                                // Language Chips
-                                if (languages.isNotEmpty()) {
+                                if (chipLanguages.isNotEmpty()) {
                                     item {
                                         LanguageChipsSection(
-                                            languages = languages,
+                                            languages = chipLanguages,
                                             onLanguageClick = onLanguageClick,
                                             onSeeAll = onSeeAllLanguages,
                                         )
                                     }
                                 }
 
-                                // Shelf Sections
+                                if (shelves.isEmpty() && activeLanguage != null) {
+                                    item(key = "lang_empty") {
+                                        LanguageEmptyState(
+                                            languageCode = activeLanguage,
+                                            onClear = onClearLanguage,
+                                        )
+                                    }
+                                }
+
                                 items(shelves, key = { it.title }) { shelf ->
                                     val isListSection = shelf.title in listOf(
                                         "Bible Reference", "Commentaries"
@@ -285,6 +320,77 @@ fun FreeBibleStoreScreen(
     }
 }
 
+// ── New: active-language banner ──────────────────────────────────
+
+@Composable
+private fun ActiveLanguageBanner(
+    languageName: String,
+    onClear: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Showing only $languageName",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.weight(1f),
+            )
+            IconButton(
+                onClick = onClear,
+                modifier = Modifier.size(24.dp),
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "Clear language filter",
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageEmptyState(
+    languageCode: String,
+    onClear: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 48.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "No items for \"$languageCode\"",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "The catalog hasn't loaded anything in this language yet.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(16.dp))
+            FilledTonalButton(onClick = onClear, shape = CircleShape) {
+                Text("Show all languages")
+            }
+        }
+    }
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // Search helpers
@@ -433,11 +539,9 @@ private fun LanguageChipsSection(
         val priority = priorityCodes.mapNotNull { code ->
             languages.firstOrNull { it.code == code }
         }
-
         val remaining = languages.filter { lang ->
             priority.none { it.code == lang.code }
         }
-
         (priority + remaining).take(10)
     }
 
@@ -456,7 +560,7 @@ private fun LanguageChipsSection(
         ) {
             displayLanguages.forEach { language ->
                 AssistChip(
-                    onClick = {},
+                    onClick = { onLanguageClick(language.code) },   // ← was `{}`
                     label = { Text(language.name, fontWeight = FontWeight.SemiBold) },
                     shape = CircleShape,
                 )
@@ -703,12 +807,7 @@ private fun HorizontalShelfSection(
                             else -> onOpenItem(item)
                         }
                     },
-                    onDelete = if (status is TranslationCardStatus.Installed &&
-                        item.kind == "translation"
-                    ) {
-                        { viewModel.uninstallTranslation(item.id) }
-                    } else null,
-                    onDetails = { onOpenItem(item) },
+                    onClick = { onOpenItem(item) },
                 )
             }
         }
