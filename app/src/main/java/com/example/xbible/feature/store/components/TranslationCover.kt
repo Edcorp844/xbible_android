@@ -4,9 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,22 +30,15 @@ import androidx.compose.ui.unit.sp
 import uniffi.xbible_engine.StoreItem
 
 private object BookColors {
-    // Slate navy — for flagship translations
     val Navy = Color(0xFF3A4A5C)
-    // Deep teal — for word-study Bibles
     val Teal = Color(0xFF3A5552)
-    // Forest — for classic public-domain
     val Forest = Color(0xFF44524A)
-    // Warm taupe — for commentaries
     val Taupe = Color(0xFF5C5145)
-    // Muted burgundy — for study tools
     val Burgundy = Color(0xFF5A3F42)
-    // Dusty plum — for reference / entities
     val Plum = Color(0xFF4A3F52)
 }
 
 private fun colorFor(item: StoreItem): Color {
-    // Category first, then a small per-category palette.
     return when {
         item.kind == "entity_set" -> when (item.id) {
             "theographic:person" -> BookColors.Plum
@@ -56,7 +50,7 @@ private fun colorFor(item: StoreItem): Color {
         item.kind == "commentary" -> BookColors.Taupe
         item.kind == "dataset" -> BookColors.Burgundy
         item.kind == "translation" -> when {
-            item.hasStrongs -> BookColors.Teal    // word-study Bibles
+            item.hasStrongs -> BookColors.Teal
             item.badge == "Public domain" -> BookColors.Forest
             else -> BookColors.Navy
         }
@@ -73,8 +67,8 @@ fun TranslationCover(
 
     Box(
         modifier = modifier
-            .width(140.dp)
-            .height(200.dp)
+            // 0.7f aspect ratio makes it look like a physical book (taller than it is wide)
+            .aspectRatio(0.7f)
             .shadow(
                 8.dp,
                 RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp, topEnd = 8.dp, bottomEnd = 8.dp)
@@ -84,11 +78,11 @@ fun TranslationCover(
             )
             .background(baseColor)
     ) {
-        // Spine crease / 3D effect
+        // Spine crease
         Box(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(20.dp)
+                .width(16.dp)
                 .background(
                     Brush.horizontalGradient(
                         0f to Color.Black.copy(alpha = 0.35f),
@@ -114,8 +108,6 @@ fun TranslationCover(
                 .padding(start = 20.dp, end = 12.dp, top = 24.dp, bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
-            // Description under the title
             Text(
                 text = item.name,
                 color = Color.White.copy(alpha = 0.92f),
@@ -130,10 +122,8 @@ fun TranslationCover(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Footer: language + badge
             Text(
-                text = item.languageName
-                    ?: item.language.uppercase(),
+                text = item.languageName ?: item.language.uppercase(),
                 color = Color.White.copy(alpha = 0.85f),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Medium,

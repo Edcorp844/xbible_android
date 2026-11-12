@@ -6,36 +6,32 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
-import uniffi.xbible_engine.DictionaryQuery
-import uniffi.xbible_engine.DictionaryResponse
+import uniffi.xbible_engine.AudioEngine
+import uniffi.xbible_engine.AudioModuleInfo
+import uniffi.xbible_engine.AudioNode
 import uniffi.xbible_engine.EntityRef
 import uniffi.xbible_engine.EntitySummary
 import uniffi.xbible_engine.EventDetail
 import uniffi.xbible_engine.FreeBibleBook
+import uniffi.xbible_engine.FreeBibleEngine
 import uniffi.xbible_engine.FreeBibleReader
 import uniffi.xbible_engine.FreeBibleStore
 import uniffi.xbible_engine.FreeBibleTaskStatus
 import uniffi.xbible_engine.GroupDetail
 import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.LanguageFacet
-import uniffi.xbible_engine.LexiconQuery
-import uniffi.xbible_engine.LexiconResponse
-import uniffi.xbible_engine.ModuleBook
+import uniffi.xbible_engine.ModuleMetadata
 import uniffi.xbible_engine.Period
 import uniffi.xbible_engine.PersonDetail
 import uniffi.xbible_engine.PlaceDetail
+import uniffi.xbible_engine.PlaybackState
 import uniffi.xbible_engine.ReaderChapter
-import uniffi.xbible_engine.SearchResults
-import uniffi.xbible_engine.SearchType
-import uniffi.xbible_engine.Section
+import uniffi.xbible_engine.RepeatMode
 import uniffi.xbible_engine.StoreItem
 import uniffi.xbible_engine.StoreShelf
-import uniffi.xbible_engine.SwordModule
-import uniffi.xbible_engine.TaskStatus
 import uniffi.xbible_engine.TimelineData
 import uniffi.xbible_engine.VerseRange
 import uniffi.xbible_engine.XBibleEngine
-import uniffi.xbible_engine.initLogging
 import java.io.File
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -52,6 +48,24 @@ private const val TAG = "BibleRepo"
  * The Rust engine is **not internally synchronized**. All calls into it must
  * happen on a single thread. Every public method here is `suspend` and
  * dispatches onto [engineDispatcher] — a dedicated single-thread executor.
+ *
+ * ## Logging
+ *
+ * Platform logging is initialised by the Rust side inside `XBibleEngine::new()`
+ * (see `initialization.rs`). A free `initLogging()` FFI export also exists but
+ * is not called here — the constructor is sufficient.
+ *
+ * ## FFI surface (as generated)
+ *
+ *  - `XBibleEngine`     → `audioEngine()`, `freebible()`
+ *  - `AudioEngine`      → playback + audio-module metadata
+ *  - `FreeBibleEngine`  → `setDbPath()`, `store()`, `reader()`
+ *  - `FreeBibleStore`   → catalog / shelves / installs / tasks
+ *  - `FreeBibleReader`  → books / chapters / verses / entities
+ *
+ * SWORD-family methods (getBibleModules, getBooks, getChapterContent, search,
+ * lookupDictionary, …) are not part of the current FFI and are therefore not
+ * wrapped here. Re-export them from Rust if the app needs them back.
  */
 @Singleton
 class BibleRepository @Inject constructor(private val application: Application) {
@@ -64,14 +78,11 @@ class BibleRepository @Inject constructor(private val application: Application) 
             }
         }.asCoroutineDispatcher()
 
-    @Volatile
-    private var engine: XBibleEngine? = null
-    @Volatile
-    private var freeBible: uniffi.xbible_engine.FreeBibleEngine? = null
-    @Volatile
-    private var freeBibleStore: FreeBibleStore? = null
-    @Volatile
-    private var freeBibleReader: FreeBibleReader? = null
+    @Volatile private var engine: XBibleEngine? = null
+    @Volatile private var audioEngine: AudioEngine? = null
+    @Volatile private var freeBible: FreeBibleEngine? = null
+    @Volatile private var freeBibleStore: FreeBibleStore? = null
+    @Volatile private var freeBibleReader: FreeBibleReader? = null
 
     private suspend fun <T> onEngine(block: () -> T): T =
         withContext(engineDispatcher) { block() }
@@ -99,8 +110,8 @@ class BibleRepository @Inject constructor(private val application: Application) 
             File(filesDir, "mods.d").mkdirs()
             File(filesDir, "modules").mkdirs()
 
-            initLogging()
-
+            // Logging is initialised inside XBibleEngine::new() on the Rust
+            // side. No separate initLogging() FFI call needed.
             val newEngine = XBibleEngine()
 
             // Grab the FreeBible sub-tree.
@@ -144,7 +155,9 @@ class BibleRepository @Inject constructor(private val application: Application) 
             freeBible = fb
             engine = newEngine
 
-            Log.d(TAG, "initialize: XBibleEngine + FreeBible constructed")
+            // AudioEngine is a real handle on XBibleEngine.
+            audioEngine = newEngine.audioEngine()
+
             Result.success(Unit)
         } catch (e: Throwable) {
             Log.e(TAG, "Failed to initialize XBibleEngine", e)
@@ -155,92 +168,48 @@ class BibleRepository @Inject constructor(private val application: Application) 
     fun isInitialized(): Boolean = engine != null
 
     // ══════════════════════════════════════════════════════════════════
-    // SWORD engine (unchanged — mirrors XBibleEngine's methods)
+    // Audio engine
     // ══════════════════════════════════════════════════════════════════
 
-    suspend fun getBibleModules(): List<SwordModule> = onEngine {
-        engine?.getBibleModules() ?: emptyList()
+    suspend fun getAudioModules(): List<AudioModuleInfo> = onEngine {
+        audioEngine?.getAudioModules() ?: emptyList()
     }
 
-    suspend fun getBooks(moduleName: String): List<ModuleBook> = onEngine {
-        engine?.getBooks(moduleName) ?: emptyList()
+    suspend fun getAudioModulesPath(): String = onEngine {
+        audioEngine?.getAudioModulesPath() ?: ""
     }
 
-    suspend fun getChapterContent(moduleName: String, reference: String): List<Section> =
-        onEngine { engine?.getChapterContent(moduleName, reference) ?: emptyList() }
-
-    suspend fun refreshModules(): List<SwordModule> = onEngine {
-        engine?.refreshInstalledModules() ?: emptyList()
+    suspend fun getAudioNavigationTree(): AudioNode? = onEngine {
+        audioEngine?.getNavigationTree()
     }
 
-    suspend fun getInstalledModules(): List<SwordModule> = onEngine {
-        engine?.refreshInstalledModules() ?: emptyList()
+    suspend fun getAudioPlaybackState(): PlaybackState? = onEngine {
+        audioEngine?.getPlaybackState()
     }
 
-    suspend fun getRemoteSources(): List<String> = onEngine {
-        engine?.getRemoteSources() ?: emptyList()
+    suspend fun peekAudioModuleMetadata(filePath: String): ModuleMetadata? = onEngine {
+        runCatching { audioEngine?.peekModuleMetadata(filePath) }.getOrNull()
     }
 
-    suspend fun fetchRemoteModules(sourceName: String): List<SwordModule> = onEngine {
-        engine?.fetchRemoteModules(sourceName) ?: emptyList()
+    suspend fun loadAudioModule(filePath: String): ByteArray? = onEngine {
+        runCatching { audioEngine?.loadAudioModule(filePath) }.getOrNull()
     }
 
-    suspend fun installModuleAsync(source: String, moduleName: String): String = onEngine {
-        engine?.installModuleAsync(source, moduleName) ?: ""
+    suspend fun getAudioModuleArtwork(filePath: String, kind: String): ByteArray? = onEngine {
+        runCatching { audioEngine?.getModuleArtwork(filePath, kind) }.getOrNull()
     }
 
-    suspend fun getTaskStatus(taskId: String): TaskStatus? = onEngine {
-        engine?.getTaskStatus(taskId)
+    suspend fun findActiveAudioNodeId(timeMs: Long): String? = onEngine {
+        audioEngine?.findActiveNodeId(timeMs)
     }
 
-    suspend fun cancelTask(taskId: String) = onEngine {
-        engine?.cancelTask(taskId); Unit
-    }
-
-    suspend fun isModuleInstalled(moduleName: String): Boolean = onEngine {
-        engine?.isModuleInstalled(moduleName) ?: false
-    }
-
-    suspend fun uninstallModule(moduleName: String): Int = onEngine {
-        engine?.uninstallModule(moduleName) ?: -1
-    }
-
-    suspend fun getDictionaryModules(): List<SwordModule> = onEngine {
-        engine?.getDictionaryModules() ?: emptyList()
-    }
-
-    suspend fun getLexiconModules(): List<SwordModule> = onEngine {
-        engine?.getLexiconModules() ?: emptyList()
-    }
-
-    suspend fun getCommentaryModules(): List<SwordModule> = onEngine {
-        engine?.getCommentaryModules() ?: emptyList()
-    }
-
-    suspend fun lookupDictionary(query: DictionaryQuery): DictionaryResponse = onEngine {
-        engine?.lookupDictionary(query) ?: DictionaryResponse(emptyList())
-    }
-
-    suspend fun lookupStrongsNumber(query: LexiconQuery): LexiconResponse = onEngine {
-        engine?.lookupStrongsNumber(query) ?: LexiconResponse(emptyList())
-    }
-
-    suspend fun search(
-        moduleName: String,
-        query: String,
-        searchType: SearchType,
-    ): SearchResults = onEngine {
-        engine?.search(moduleName, query, searchType)
-            ?: SearchResults(query, moduleName, emptyList())
-    }
-
-    suspend fun getSingleEntry(module: SwordModule, reference: String): List<Section> = onEngine {
-        engine?.getSingleEntry(module, reference) ?: emptyList()
-    }
-
-    suspend fun getTimelineData(): List<Period> = onEngine {
-        TimelineData().use { it.getData() }
-    }
+    suspend fun audioTogglePlayback() = onEngine { audioEngine?.togglePlayback(); Unit }
+    suspend fun audioStop() = onEngine { audioEngine?.stop(); Unit }
+    suspend fun audioSeekToTime(targetMs: Long) = onEngine { audioEngine?.seekToTime(targetMs); Unit }
+    suspend fun audioSeekToChapter(chapterId: String) = onEngine { audioEngine?.seekToChapter(chapterId); Unit }
+    suspend fun audioSkipForward(seconds: Long) = onEngine { audioEngine?.skipForward(seconds); Unit }
+    suspend fun audioSkipBackward(seconds: Long) = onEngine { audioEngine?.skipBackward(seconds); Unit }
+    suspend fun audioSetRepeatMode(mode: RepeatMode) = onEngine { audioEngine?.setRepeatMode(mode); Unit }
 
     // ══════════════════════════════════════════════════════════════════
     // FreeBible store
@@ -269,15 +238,14 @@ class BibleRepository @Inject constructor(private val application: Application) 
     suspend fun getFreeBibleShelf(
         shelfId: String,
         language: String?,
-        offset: Int,
-        limit: Int,
+        offset: UInt,
+        limit: UInt,
     ): List<StoreItem> = onEngine {
-        freeBibleStore?.getShelf(shelfId, language, offset.toUInt(), limit.toUInt())
-            ?: emptyList()
+        freeBibleStore?.getShelf(shelfId, language, offset, limit) ?: emptyList()
     }
 
-    suspend fun getFreeBibleShelfTotal(shelfId: String, language: String?): Int = onEngine {
-        freeBibleStore?.shelfTotal(shelfId, language)?.toInt() ?: 0
+    suspend fun getFreeBibleShelfTotal(shelfId: String, language: String?): UInt = onEngine {
+        freeBibleStore?.shelfTotal(shelfId, language) ?: 0u
     }
 
     suspend fun installFreeBibleTranslation(translationId: String): String = onEngine {
@@ -290,6 +258,10 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     suspend fun installFreeBibleEntitySet(datasetId: String, kind: String): String = onEngine {
         freeBibleStore?.installEntitySet(datasetId, kind) ?: ""
+    }
+
+    suspend fun listFreeBibleTasks(): List<FreeBibleTaskStatus> = onEngine {
+        freeBibleStore?.listTasks() ?: emptyList()
     }
 
     suspend fun pollFreeBibleTask(taskId: String): FreeBibleTaskStatus? = onEngine {
@@ -325,10 +297,6 @@ class BibleRepository @Inject constructor(private val application: Application) 
             freeBibleReader?.getBooks(translationId)?.firstOrNull { it.id == bookId }
         }
 
-    /**
-     * The main reading API. Returns everything needed to render one chapter:
-     * ordered blocks, footnotes, prev/next.
-     */
     suspend fun readFreeBibleChapter(
         translationId: String,
         bookId: String,
@@ -478,5 +446,13 @@ class BibleRepository @Inject constructor(private val application: Application) 
             }
         }
         seen.values.toList()
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // Timeline (standalone object, no engine dependency)
+    // ══════════════════════════════════════════════════════════════════
+
+    suspend fun getTimelineData(): List<Period> = onEngine {
+        TimelineData().use { it.getData() }
     }
 }

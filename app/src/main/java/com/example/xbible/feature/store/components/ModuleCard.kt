@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.xbible.viewmodel.AudioStoreViewModel
+import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.ModuleStatus
 import uniffi.xbible_engine.RemoteAudioModuleInfo
 
@@ -71,6 +72,7 @@ fun ModuleCard(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp)),
                 )
+
                 !live.artworkFile?.url.isNullOrBlank() -> AsyncImage(
                     model = live.artworkFile!!.url,
                     contentDescription = live.displayTitle,
@@ -79,6 +81,7 @@ fun ModuleCard(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp)),
                 )
+
                 else -> ArtworkPlaceholder()
             }
         }
@@ -198,6 +201,80 @@ fun ArtworkPlaceholder(modifier: Modifier = Modifier) {
             contentDescription = null,
             modifier = Modifier.size(32.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+
+/**
+ * Library-screen variant of [ModuleCard] for an installed FreeBible
+ * translation. Same visual language (1:1 artwork slot, title, subtitle,
+ * metadata line) but only surfaces fields that exist on
+ * [InstalledTranslation].
+ */
+@Composable
+fun TranslationCard(
+    translation: InstalledTranslation,
+    onClick: () -> Unit,
+    onDelete: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.clickable(onClick = onClick)) {
+        // 1:1 artwork slot — FreeBible translations have no artwork bytes,
+        // so this always renders the placeholder. Kept for visual parity
+        // with ModuleCard so the two lists look the same.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
+        ) {
+            ArtworkPlaceholder()
+        }
+
+        Spacer(Modifier.height(10.dp))
+
+        Text(
+            text = translation.name,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            minLines = 2,
+            lineHeight = 18.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = buildString {
+                    if (translation.englishName.isNotBlank() &&
+                        translation.englishName != translation.name
+                    ) {
+                        append(translation.englishName)
+                        append(" · ")
+                    }
+                    append(translation.shortName)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+        }
+
+        Spacer(Modifier.height(2.dp))
+
+        Text(
+            text = "${translation.bookCount} books · " +
+                    "${translation.chapterCount} chapters · " +
+                    "${translation.verseCount} verses",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

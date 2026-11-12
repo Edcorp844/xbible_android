@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.xbible.R
 import com.example.xbible.viewmodel.ReaderTab
-import com.example.xbible.viewmodel.TabType
+import com.example.xbible.viewmodel.ReaderTabType
 
 @Composable
 fun TabsPreview(
@@ -175,7 +175,7 @@ fun TabThumbnail(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (tab.type == TabType.SEARCH) {
+                        if (tab.type == ReaderTabType.SEARCH) {
                             Icon(
                                 Icons.Default.Search,
                                 contentDescription = null,
@@ -206,7 +206,7 @@ fun TabThumbnail(
                 }
 
                 Text(
-                    text = if (tab.type == TabType.SEARCH) {
+                    text = if (tab.type == ReaderTabType.SEARCH) {
                         stringResource(R.string.search_label, tab.searchQuery)
                     } else {
                         if (tab.bookName.isNotBlank()) {
@@ -231,10 +231,13 @@ fun TabThumbnail(
                         .padding(4.dp),
                 ) {
                     Column {
-                        if (tab.type == TabType.SEARCH) {
-                            tab.searchResults.take(5).forEach { hit ->
+                        if (tab.type == ReaderTabType.SEARCH) {
+                            // Search hits are now exposed as raw keys
+                            // (e.g. "GEN 1:1"). The content map holds
+                            // the loaded ReaderChapter per key.
+                            tab.searchHits.take(5).forEach { key ->
                                 Text(
-                                    text = hit.key,
+                                    text = key,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontSize = 8.sp,
                                     maxLines = 1,
@@ -263,9 +266,9 @@ fun TabThumbnail(
  * Produce up to 5 one-line previews from a [ReaderTab]'s chapter
  * for the thumbnail.
  *
- * The old version iterated `List<Section>` and picked the first
- * verse of each. A [ReaderChapter] is a flat list of blocks, so we
- * walk the verse blocks and take the first line of each.
+ * `ReaderChapter.blocks` is a flat list of [ReaderBlock]s. Verse-shaped
+ * blocks have `itemType == "verse"` and carry their inline text via
+ * `block.verses[*].text`; fall back to `block.text` for other block types.
  */
 private fun chapterPreviewLines(tab: ReaderTab): List<String> {
     val chapter = tab.chapterData ?: return emptyList()

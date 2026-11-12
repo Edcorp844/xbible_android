@@ -7,11 +7,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,12 +34,50 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalFloatingToolbar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
-import androidx.compose.material3.adaptive.layout.*
+import androidx.compose.material3.adaptive.layout.AdaptStrategy
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.LevitatedPaneScrim
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldDefaults
+import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
-import androidx.compose.runtime.*
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,33 +88,31 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.xbible.R
-import com.example.xbible.core.ui.components.PageView
-import com.example.xbible.core.ui.components.HighlightColor
 import com.example.xbible.core.ui.components.HighlightStyle
+import com.example.xbible.core.ui.components.PageView
+import com.example.xbible.core.ui.layout.LocalLayoutInfo
 import com.example.xbible.ui.icons.XBibleIcons
+import com.example.xbible.viewmodel.ReaderTabType
 import com.example.xbible.viewmodel.ReaderViewModel
-import com.example.xbible.viewmodel.StudyTool
-import com.example.xbible.viewmodel.TabType
 import uniffi.xbible_engine.ReaderWord
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3AdaptiveApi::class,
+)
 @Composable
 fun StudyScreen(
     readerViewModel: ReaderViewModel,
     onNavigateToStore: () -> Unit,
 ) {
     val adaptiveInfo = currentWindowAdaptiveInfoV2()
-    val isCompact = !adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
-        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
-    )
-    val isExpanded =
-        adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED
+    val layoutInfo = LocalLayoutInfo.current
+    val isCompact = layoutInfo.isCompactWidth
+    val isExpanded = layoutInfo.isExpandedWidth
 
     val clipboardManager = LocalClipboardManager.current
 
@@ -81,8 +131,6 @@ fun StudyScreen(
 
     // Chapter-wide entities (In This Chapter footer) — populated on chapter load.
     val chapterEntities by readerViewModel.chapterEntities.collectAsState()
-    // Per-verse entities (verse-actions sheet) — populated on verse tap.
-    val verseEntities by readerViewModel.verseEntities.collectAsState()
 
     // ── Local UI state ──────────────────────────────────────────
     var selectedWord by remember { mutableStateOf<ReaderWord?>(null) }
@@ -99,8 +147,7 @@ fun StudyScreen(
     var selectedVerseNumber by remember { mutableStateOf<Int?>(null) }
     var selectedVerseText by remember { mutableStateOf("") }
     var showVerseActions by remember { mutableStateOf(false) }
-    var selectedHighlightColor by remember { mutableStateOf(HighlightColor.Yellow) }
-    var selectedHighlightStyle by remember { mutableStateOf(HighlightStyle.Solid) }
+    val selectedHighlightStyle = remember { HighlightStyle.Solid }
 
     val moduleSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val referenceSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -227,7 +274,7 @@ fun StudyScreen(
                         }
                     },
                     trailingButton = {
-                        val isSearchTab = currentTab?.type == TabType.SEARCH
+                        val isSearchTab = currentTab?.type == ReaderTabType.SEARCH
                         val isSelected =
                             (if (isSearchTab) showSearchSettings else showReferencePicker) && !isCompact
                         SplitButtonDefaults.ElevatedTrailingButton(
@@ -428,14 +475,12 @@ fun StudyScreen(
                                         .weight(1f)
                                         .fillMaxHeight(),
                                 ) {
-                                    if (currentTab?.type == TabType.SEARCH) {
+                                    if (currentTab?.type == ReaderTabType.SEARCH) {
                                         SearchView(
                                             tab = currentTab,
                                             onSearch = readerViewModel::performSearch,
                                             onReferenceClick = { hitKey ->
-                                                currentTab.searchResults
-                                                    .find { it.key == hitKey }
-                                                    ?.let { readerViewModel.openSearchHit(it) }
+                                                readerViewModel.openSearchHit(hitKey)
                                             },
                                             onCopyVerse = { ref, chapter ->
                                                 val text = chapter.blocks
@@ -443,21 +488,15 @@ fun StudyScreen(
                                                     .joinToString(" ") { v -> v.text }
                                                 clipboardManager.setText(AnnotatedString("$ref: $text"))
                                             },
-                                            onOpenInNewTab = { hit ->
-                                                readerViewModel.openSearchHitInNewTab(hit)
+                                            onOpenInNewTab = { hitKey ->
+                                                readerViewModel.openSearchHitInNewTab(hitKey)
                                             },
                                             onPreviewChapter = { ref ->
-                                                currentTab.searchResults
-                                                    .find { it.key == ref }
-                                                    ?.let { readerViewModel.openSearchHit(it) }
+                                                readerViewModel.openSearchHit(ref)
                                             },
                                             onLexiconLookup = { ref ->
-                                                currentTab.searchResults
-                                                    .find { it.key == ref }
-                                                    ?.let {
-                                                        readerViewModel.openSearchHit(it)
-                                                        showLexicon = true
-                                                    }
+                                                readerViewModel.openSearchHit(ref)
+                                                showLexicon = true
                                             },
                                         )
                                     } else {
@@ -505,16 +544,16 @@ fun StudyScreen(
                                                         showLexicon = true
                                                     },
                                                     onVerseTap = { verse ->
-                                                        val verseObj = chapterData?.blocks?.flatMap { it.verses }?.find { it.number == verse }
+                                                        val verseObj = chapterData?.blocks
+                                                            ?.flatMap { it.verses }
+                                                            ?.find { it.number == verse }
                                                         selectedVerseNumber = verse
                                                         selectedVerseText = verseObj?.text ?: ""
                                                         showVerseActions = true
                                                         readerViewModel.showEntitiesForVerse(verse)
                                                     },
-                                                    // Chapter-wide entities for the
-                                                    // "IN THIS CHAPTER" footer.
                                                     chapterEntities = chapterEntities,
-                                                    onEntityTap = { entity ->
+                                                    onEntityTap = { _ ->
                                                         // TODO: navigate to entity detail
                                                         showLexicon = false
                                                     },
@@ -570,23 +609,26 @@ fun StudyScreen(
             supportingPane = {
                 if (isBibleDrawerVisible) {
                     AnimatedPane(
-                        modifier = Modifier
-                            .preferredHeight(1f)
-                            .width(400.dp),
+                        modifier = Modifier.preferredHeight(1f)
+                            .width(
+                            when {
+                                layoutInfo.isExpandedWidth -> 480.dp
+                                layoutInfo.isMediumWidth -> 400.dp
+                                else -> 360.dp
+                            }
+                        ),
                     ) {
                         Surface(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize() // fills the levitated pane content
+                                .statusBarsPadding()
+                                .padding(top = 16.dp),
                             shape = RectangleShape,
                             color = MaterialTheme.colorScheme.surfaceContainerLow,
                             tonalElevation = 3.dp,
                             shadowElevation = 16.dp,
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .statusBarsPadding()
-                                    .padding(top = 16.dp),
-                            ) {
+                            Column(modifier = Modifier.fillMaxSize()) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -610,54 +652,56 @@ fun StudyScreen(
 
                                 Spacer(Modifier.height(8.dp))
 
-                                when {
-                                    showModuleSelection -> {
-                                        ModuleSelectionContent(
-                                            translations = installedTranslations,
-                                            current = currentTranslation,
-                                        ) { translation ->
-                                            readerViewModel.selectTranslation(translation)
-                                            showModuleSelection = false
-                                        }
-                                    }
-                                    showSearchSettings -> {
-                                        currentTab?.let { tab ->
-                                            SearchSettingsContent(tab.searchType) { type ->
-                                                readerViewModel.updateSearchType(type)
-                                                showSearchSettings = false
+                                Box(modifier = Modifier.weight(1f)) {
+                                    when {
+                                        showModuleSelection -> {
+                                            ModuleSelectionContent(
+                                                translations = installedTranslations,
+                                                current = currentTranslation,
+                                            ) { translation ->
+                                                readerViewModel.selectTranslation(translation)
+                                                showModuleSelection = false
                                             }
                                         }
-                                    }
-                                    showReferencePicker -> {
-                                        ReferencePickerContent(
-                                            books = currentBooks,
-                                            currentBookId = chapterData?.bookId,
-                                            currentChapter = chapterData?.chapterNumber ?: 1,
-                                            onSelectBook = { bookId ->
-                                                readerViewModel.selectBook(bookId)
-                                            },
-                                            onSelectChapter = { ch ->
-                                                chapterData?.let { readerViewModel.openChapter(it.bookId, ch) }
-                                                showReferencePicker = false
-                                            },
-                                        )
-                                    }
-                                    showFontSettings -> {
-                                        FontSettingsContent(
-                                            config = wordConfig,
-                                            onConfigChange = { newConfig ->
-                                                readerViewModel.updateWordConfig { newConfig }
-                                            },
-                                            onResetConfig = { readerViewModel.resetWordConfig() },
-                                        )
-                                    }
-                                    showParallelMode -> {
-                                        ParallelModeContent(
-                                            translations = installedTranslations,
-                                            current = currentTranslation,
-                                            parallel = parallelTranslation,
-                                            onParallelSelected = { readerViewModel.selectParallelTranslation(it) },
-                                        )
+                                        showSearchSettings -> {
+                                            currentTab?.let { tab ->
+                                                SearchSettingsContent(tab.searchType) { type ->
+                                                    readerViewModel.updateSearchType(type)
+                                                    showSearchSettings = false
+                                                }
+                                            }
+                                        }
+                                        showReferencePicker -> {
+                                            ReferencePickerContent(
+                                                books = currentBooks,
+                                                currentBookId = chapterData?.bookId,
+                                                currentChapter = chapterData?.chapterNumber ?: 1,
+                                                onSelectBook = { bookId ->
+                                                    readerViewModel.selectBook(bookId)
+                                                },
+                                                onSelectChapter = { ch ->
+                                                    chapterData?.let { readerViewModel.openChapter(it.bookId, ch) }
+                                                    showReferencePicker = false
+                                                },
+                                            )
+                                        }
+                                        showFontSettings -> {
+                                            FontSettingsContent(
+                                                config = wordConfig,
+                                                onConfigChange = { newConfig ->
+                                                    readerViewModel.updateWordConfig { newConfig }
+                                                },
+                                                onResetConfig = { readerViewModel.resetWordConfig() },
+                                            )
+                                        }
+                                        showParallelMode -> {
+                                            ParallelModeContent(
+                                                translations = installedTranslations,
+                                                current = currentTranslation,
+                                                parallel = parallelTranslation,
+                                                onParallelSelected = { readerViewModel.selectParallelTranslation(it) },
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -750,8 +794,9 @@ fun StudyScreen(
         // ── VERSE ACTIONS SHEET ─────────────────────────────────
         if (showVerseActions) {
             ModalBottomSheet(
-                onDismissRequest = { showVerseActions = false
-                selectedVerseNumber = null
+                onDismissRequest = {
+                    showVerseActions = false
+                    selectedVerseNumber = null
                 },
                 sheetState = verseActionsSheetState,
             ) {
@@ -763,7 +808,9 @@ fun StudyScreen(
                     onDismiss = { showVerseActions = false },
                     onCopy = {
                         clipboardManager.setText(
-                            AnnotatedString("${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber $selectedVerseText")
+                            AnnotatedString(
+                                "${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber $selectedVerseText"
+                            )
                         )
                         selectedVerseNumber = null
                     },

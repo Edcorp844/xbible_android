@@ -29,28 +29,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Translate
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -65,29 +53,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import com.example.xbible.R
-import com.example.xbible.core.ui.components.SectionView
 import com.example.xbible.viewmodel.ReaderViewModel
 import com.example.xbible.viewmodel.StudyTool
-import uniffi.xbible_engine.DictionaryResult
 
 @Composable
 fun SplitDetailPane(
@@ -214,11 +194,18 @@ fun StudyToolPicker(
     }
 }
 
+// ── Dictionary ─────────────────────────────────────────────────────
+//
+// NOTE: `XBibleEngine.lookupDictionary` and `DictionaryResult` were
+// removed from the current FFI. This tab now renders a single
+// "not available" empty state. To restore it, re-export the dictionary
+// API from Rust, regenerate bindings, and re-add the `dictionaryResults`
+// / `isDictionaryLoading` state flows to `ReaderViewModel` (the
+// `lookupWord(...)` function is already stubbed there).
+
 @Composable
 fun DictionaryTabContent(readerViewModel: ReaderViewModel) {
     val selectedWord by readerViewModel.selectedWordForLookup.collectAsState()
-    val results by readerViewModel.dictionaryResults.collectAsState()
-    val isLoading by readerViewModel.isDictionaryLoading.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -251,99 +238,14 @@ fun DictionaryTabContent(readerViewModel: ReaderViewModel) {
             }
         }
 
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator() }
-        } else if (selectedWord.isEmpty()) {
+        if (selectedWord.isEmpty()) {
             DictionaryEmptyState()
-        } else if (results.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp, vertical = 20.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.outline,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.no_definitions_found, selectedWord),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.outline,
-                    )
-                }
-            }
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                items(results) { result -> DictionaryResultRow(result) }
-            }
-        }
-    }
-}
-
-@Composable
-fun DictionaryResultRow(result: DictionaryResult) {
-    val clipboard = LocalClipboardManager.current
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(4.dp),
-                ) {
-                    Text(
-                        text = result.moduleName,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        clipboard.setText(
-                            AnnotatedString("${result.key}\n\n${result.definition}"),
-                        )
-                    },
-                    modifier = Modifier.size(24.dp),
-                ) {
-                    Icon(
-                        Icons.Outlined.ContentCopy,
-                        contentDescription = stringResource(R.string.copy),
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = result.key,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+            FeatureUnavailableState(
+                icon = Icons.AutoMirrored.Outlined.MenuBook,
+                titleRes = R.string.dictionary_lookup,
+                bodyRes = R.string.dictionary_lookup_desc,
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            HtmlText(html = result.definition, key = result.key)
         }
     }
 }
@@ -379,14 +281,14 @@ fun DictionaryEmptyState() {
     }
 }
 
+// ── Lexicon ────────────────────────────────────────────────────────
+//
+// Same story as Dictionary — `lookupStrongsNumber`, `getLexiconModules`,
+// `LexiconResult`, `SwordModule` are all gone from the FFI.
+
 @Composable
 fun LexiconTabContent(readerViewModel: ReaderViewModel) {
     val selectedStrongs by readerViewModel.selectedStrongsForLookup.collectAsState()
-    val selectedModule by readerViewModel.selectedLexiconModule.collectAsState()
-    val availableLexicons by readerViewModel.availableLexicons.collectAsState()
-    val results by readerViewModel.lexiconResults.collectAsState()
-    val isLoading by readerViewModel.isLexiconLoading.collectAsState()
-    var showModuleMenu by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Surface(
@@ -404,63 +306,10 @@ fun LexiconTabContent(readerViewModel: ReaderViewModel) {
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
-                    if (availableLexicons.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.no_lexicons_installed),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    } else {
-                        Box {
-                            Surface(
-                                onClick = { showModuleMenu = true },
-                                shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                ) {
-                                    Text(
-                                        text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                            ?: selectedModule?.name
-                                            ?: stringResource(R.string.select_lexicon),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.labelSmall,
-                                    )
-                                    Icon(
-                                        Icons.Default.KeyboardArrowDown,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(12.dp),
-                                    )
-                                }
-                            }
-                            DropdownMenu(
-                                expanded = showModuleMenu,
-                                onDismissRequest = { showModuleMenu = false },
-                            ) {
-                                availableLexicons.forEach { module ->
-                                    DropdownMenuItem(
-                                        text = { Text(module.description.ifEmpty { module.name }) },
-                                        onClick = {
-                                            readerViewModel.selectLexiconModule(module)
-                                            showModuleMenu = false
-                                        },
-                                        trailingIcon = if (selectedModule?.name == module.name) {
-                                            {
-                                                Icon(
-                                                    Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(16.dp),
-                                                )
-                                            }
-                                        } else null,
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    Text(
+                        text = stringResource(R.string.no_lexicons_installed),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
                 }
                 if (selectedStrongs.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -490,61 +339,14 @@ fun LexiconTabContent(readerViewModel: ReaderViewModel) {
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
         )
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator() }
-        } else if (selectedStrongs.isEmpty()) {
+        if (selectedStrongs.isEmpty()) {
             LexiconEmptyState()
-        } else if (results.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.no_lexicon_entries_found,
-                        selectedStrongs,
-                        selectedModule?.name ?: "",
-                    ),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-            }
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                items(results) { result ->
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = result.moduleName,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "(${result.key})",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.outline,
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        HtmlText(
-                            html = result.definition,
-                            key = result.key,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                    }
-                }
-            }
+            FeatureUnavailableState(
+                icon = Icons.Outlined.Translate,
+                titleRes = R.string.lexicon_study,
+                bodyRes = R.string.lexicon_study_desc,
+            )
         }
     }
 }
@@ -580,15 +382,14 @@ fun LexiconEmptyState() {
     }
 }
 
+// ── Commentary ─────────────────────────────────────────────────────
+//
+// `getChapterContent` / `getCommentaryModules` / `Section` are all gone
+// from the FFI.
+
 @Composable
 fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
-    val selectedModule by readerViewModel.selectedCommentaryModule.collectAsState()
-    val availableCommentaries by readerViewModel.availableCommentaries.collectAsState()
-    val results by readerViewModel.commentaryResults.collectAsState()
-    val isLoading by readerViewModel.isCommentaryLoading.collectAsState()
     val currentReference by readerViewModel.currentCommentaryReference.collectAsState()
-    var showModuleMenu by remember { mutableStateOf(false) }
-    val clipboard = LocalClipboardManager.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         Surface(
@@ -606,69 +407,10 @@ fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
-                    if (availableCommentaries.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.no_commentaries_installed),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    } else {
-                        Box {
-                            Surface(
-                                onClick = { showModuleMenu = true },
-                                shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                ) {
-                                    Text(
-                                        text = selectedModule?.description?.takeIf { it.isNotEmpty() }
-                                            ?: selectedModule?.name
-                                            ?: stringResource(R.string.select_commentary),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.labelSmall,
-                                    )
-                                    Icon(
-                                        Icons.Default.KeyboardArrowDown,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(12.dp),
-                                    )
-                                }
-                            }
-                            DropdownMenu(
-                                expanded = showModuleMenu,
-                                onDismissRequest = { showModuleMenu = false },
-                                shape = RoundedCornerShape(24.dp),
-                            ) {
-                                availableCommentaries.forEach { module ->
-                                    DropdownMenuItem(
-                                        contentPadding = PaddingValues(
-                                            start = 16.dp,
-                                            end = 16.dp,
-                                            top = 16.dp,
-                                        ),
-                                        text = { Text(module.description.ifEmpty { module.name }) },
-                                        onClick = {
-                                            readerViewModel.selectCommentaryModule(module)
-                                            showModuleMenu = false
-                                        },
-                                        trailingIcon = if (selectedModule?.name == module.name) {
-                                            {
-                                                Icon(
-                                                    Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(16.dp),
-                                                )
-                                            }
-                                        } else null,
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    Text(
+                        text = stringResource(R.string.no_commentaries_installed),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Row(
@@ -688,80 +430,37 @@ fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
                             fontWeight = FontWeight.Bold,
                         )
                     }
-                    if (results.isNotEmpty()) {
-                        Button(
-                            onClick = {
-                                val text = results.joinToString("\n\n") { section ->
-                                    val title = section.title.joinToString(" ") { it.text }
-                                    val content = section.verses.joinToString("\n") { verse ->
-                                        "[${verse.number}] ${
-                                            verse.words.joinToString(" ") { it.text }
-                                        }"
-                                    }
-                                    "$title\n$content"
-                                }
-                                clipboard.setText(AnnotatedString(text))
-                            },
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                            modifier = Modifier.height(24.dp),
-                            colors = ButtonDefaults.textButtonColors(),
-                        ) {
-                            Icon(
-                                Icons.Outlined.ContentCopy,
-                                contentDescription = null,
-                                modifier = Modifier.size(12.dp),
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                stringResource(R.string.copy),
-                                style = MaterialTheme.typography.labelSmall,
-                            )
-                        }
-                    }
                 }
             }
         }
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
         )
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator() }
-        } else if (selectedModule == null) {
-            CommentaryEmptyState()
-        } else if (results.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.no_commentary_found,
-                        currentReference,
-                        selectedModule?.name ?: "",
-                    ),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                items(results) { section -> SectionView(section = section) }
-            }
-        }
+        FeatureUnavailableState(
+            icon = Icons.AutoMirrored.Filled.MenuBook,
+            titleRes = R.string.commentaries,
+            bodyRes = R.string.commentaries_desc,
+        )
     }
 }
 
 @Composable
 fun CommentaryEmptyState() {
+    FeatureUnavailableState(
+        icon = Icons.AutoMirrored.Filled.MenuBook,
+        titleRes = R.string.commentaries,
+        bodyRes = R.string.commentaries_desc,
+    )
+}
+
+// ── Shared "feature not available" empty state ────────────────────
+
+@Composable
+private fun FeatureUnavailableState(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    titleRes: Int,
+    bodyRes: Int,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -770,26 +469,28 @@ fun CommentaryEmptyState() {
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
-            Icons.AutoMirrored.Filled.MenuBook,
+            icon,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = stringResource(R.string.commentaries),
+            text = stringResource(titleRes),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = stringResource(R.string.commentaries_desc),
+            text = stringResource(bodyRes),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.outline,
         )
     }
 }
+
+// ── HTML rendering (kept verbatim — used when the panels come back) ──
 
 @Composable
 fun HtmlText(

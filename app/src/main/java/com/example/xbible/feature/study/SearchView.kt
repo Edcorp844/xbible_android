@@ -46,10 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.ReaderTab
-import uniffi.xbible_engine.ReaderBlock
 import uniffi.xbible_engine.ReaderChapter
-import uniffi.xbible_engine.ReaderVerse
-import uniffi.xbible_engine.SearchHit
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -58,7 +55,7 @@ fun SearchView(
     onSearch: (String) -> Unit,
     onReferenceClick: (String) -> Unit,
     onCopyVerse: (String, ReaderChapter) -> Unit,
-    onOpenInNewTab: (SearchHit) -> Unit,
+    onOpenInNewTab: (String) -> Unit,
     onPreviewChapter: (String) -> Unit,
     onLexiconLookup: (String) -> Unit,
 ) {
@@ -103,7 +100,7 @@ fun SearchView(
             )
         }
 
-        if (tab.searchResults.isEmpty() && tab.searchQuery.isNotEmpty() && !tab.isSearching) {
+        if (tab.searchHits.isEmpty() && tab.searchQuery.isNotEmpty() && !tab.isSearching) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("No results for \"${tab.searchQuery}\"")
             }
@@ -113,16 +110,16 @@ fun SearchView(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(tab.searchResults, key = { it.key + it.moduleName }) { hit ->
+                items(tab.searchHits, key = { it }) { hitKey ->
                     SearchHitItem(
-                        hit = hit,
-                        chapter = tab.searchHitsContent[hit.key],
+                        hitKey = hitKey,
+                        chapter = tab.searchHitsContent[hitKey],
                         query = tab.searchQuery,
-                        onReferenceClick = { onReferenceClick(hit.key) },
-                        onCopyVerse = { chapter -> onCopyVerse(hit.key, chapter) },
-                        onOpenInNewTab = { onOpenInNewTab(hit) },
-                        onPreviewChapter = { onPreviewChapter(hit.key) },
-                        onLexiconLookup = { onLexiconLookup(hit.key) },
+                        onReferenceClick = { onReferenceClick(hitKey) },
+                        onCopyVerse = { chapter -> onCopyVerse(hitKey, chapter) },
+                        onOpenInNewTab = { onOpenInNewTab(hitKey) },
+                        onPreviewChapter = { onPreviewChapter(hitKey) },
+                        onLexiconLookup = { onLexiconLookup(hitKey) },
                     )
                 }
             }
@@ -133,7 +130,7 @@ fun SearchView(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchHitItem(
-    hit: SearchHit,
+    hitKey: String,
     chapter: ReaderChapter?,
     query: String,
     onReferenceClick: () -> Unit,
@@ -153,7 +150,7 @@ fun SearchHitItem(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = hit.key,
+                text = hitKey,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = if (chapter != null) MaterialTheme.colorScheme.primary

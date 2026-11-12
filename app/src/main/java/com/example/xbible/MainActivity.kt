@@ -24,18 +24,19 @@ import com.example.xbible.core.ui.layout.ProvideLayoutInfo
 import com.example.xbible.feature.onboarding.EngineInitializationScreen
 import com.example.xbible.ui.XbibleApp
 import com.example.xbible.ui.theme.XbibleTheme
-import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.ReaderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val engineViewModel: EngineViewModel by viewModels()
-
     // Reader is scoped to the Activity so its state (tabs, current chapter,
     // lexicon lookup, reading preferences) survives navigation between
     // top-level destinations and configuration changes.
+    //
+    // The ReaderViewModel is also the single source of truth for engine
+    // readiness — it owns `isReady` / `errorMessage`, backed by
+    // `BibleRepository.initialize()`.
     private val readerViewModel: ReaderViewModel by viewModels()
 
     // Modern activity result launcher (replaces deprecated onRequestPermissionsResult).
@@ -63,12 +64,11 @@ class MainActivity : ComponentActivity() {
                 // Provide layout info to *everything* below — including the
                 // initialization screen, so it can adapt to landscape too.
                 ProvideLayoutInfo(windowSizeClass = windowSizeClass) {
-                    val isReady by engineViewModel.isReady.collectAsState()
-                    val errorMessage by engineViewModel.errorMessage.collectAsState()
+                    val isReady by readerViewModel.isReady.collectAsState()
+                    val errorMessage by readerViewModel.errorMessage.collectAsState()
 
                     when {
                         isReady -> XbibleApp(
-                            engineViewModel = engineViewModel,
                             readerViewModel = readerViewModel,
                         )
 

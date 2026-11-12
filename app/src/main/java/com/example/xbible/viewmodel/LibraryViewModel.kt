@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import uniffi.xbible_engine.SwordModule
+import uniffi.xbible_engine.InstalledTranslation
 import javax.inject.Inject
 
 private const val TAG = "LibraryViewModel"
@@ -29,14 +29,23 @@ class LibraryViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    private val _installedModules = MutableStateFlow<List<SwordModule>>(emptyList())
-    val installedModules: StateFlow<List<SwordModule>> = _installedModules.asStateFlow()
+    /** All installed FreeBible translations. */
+    private val _installedTranslations = MutableStateFlow<List<InstalledTranslation>>(emptyList())
+    val installedTranslations: StateFlow<List<InstalledTranslation>> =
+        _installedTranslations.asStateFlow()
 
-    private val _organizedModules = MutableStateFlow<Map<String, Map<String, List<SwordModule>>>>(emptyMap())
-    val organizedModules: StateFlow<Map<String, Map<String, List<SwordModule>>>> = _organizedModules.asStateFlow()
+    /**
+     * Translations grouped by language code → language name → list.
+     * Structure: Map<languageCode, Map<languageName, List<InstalledTranslation>>>
+     */
+    private val _organizedTranslations =
+        MutableStateFlow<Map<String, Map<String, List<InstalledTranslation>>>>(emptyMap())
+    val organizedTranslations: StateFlow<Map<String, Map<String, List<InstalledTranslation>>>> =
+        _organizedTranslations.asStateFlow()
 
-    private val _categories = MutableStateFlow<List<String>>(emptyList())
-    val categories: StateFlow<List<String>> = _categories.asStateFlow()
+    /** Language codes present in the installed set, sorted. */
+    private val _languages = MutableStateFlow<List<String>>(emptyList())
+    val languages: StateFlow<List<String>> = _languages.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -68,19 +77,27 @@ class LibraryViewModel @Inject constructor(
                     }
                 }
 
-                val modules = withContext(Dispatchers.IO) {
-                    repository.getInstalledModules()
+                val translations = withContext(Dispatchers.IO) {
+                    repository.getFreeBibleInstalledTranslations()
                 }
-                Log.d(TAG, "Loaded ${modules.size} installed modules")
-                modules.forEach {
-                    Log.d(TAG, "  module: name=${it.name}, category=${it.category}, language=${it.language}")
+                Log.d(TAG, "Loaded ${translations.size} installed translation(s)")
+                translations.forEach {
+                    Log.d(
+                        TAG,
+                        "  translation: id=${it.id}, name=${it.name}, " +
+                                "lang=${it.language}, books=${it.bookCount}, " +
+                                "chapters=${it.chapterCount}, verses=${it.verseCount}",
+                    )
                 }
 
-                _installedModules.value = modules
-                filterModules()
+                _installedTranslations.value = translations
+                filterTranslations()
 
-                if (modules.isEmpty()) {
-                    Log.w(TAG, "No modules returned from repository.getInstalledModules() — check module install path / repository logic")
+                if (translations.isEmpty()) {
+                    Log.w(
+                        TAG,
+                        "No installed translations returned — check FreeBible install path / DB contents",
+                    )
                 }
             } catch (e: Throwable) {
                 Log.e(TAG, "Failed to load library", e)
@@ -95,48 +112,54 @@ class LibraryViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
-        filterModules()
+        filterTranslations()
     }
 
-    private fun filterModules() {
+    private fun filterTranslations() {
         val query = _searchQuery.value.lowercase()
-        val modules = _installedModules.value
+        val translations = _installedTranslations.value
 
         val filtered = if (query.isEmpty()) {
-            modules
+            translations
         } else {
-            modules.filter {
+            translations.filter {
                 it.name.lowercase().contains(query) ||
-                        it.description.lowercase().contains(query) ||
+                        it.englishName.lowercase().contains(query) ||
+                        it.shortName.lowercase().contains(query) ||
+                        (it.languageName?.lowercase()?.contains(query) == true) ||
                         it.language.lowercase().contains(query)
             }
         }
 
-        Log.d(TAG, "filterModules(): query='$query' -> ${filtered.size}/${modules.size} modules match")
+        Log.d(
+            TAG,
+            "filterTranslations(): query='$query' -> ${filtered.size}/${translations.size} match",
+        )
 
-        // Organize modules by category and language
-        val organized = filtered.groupBy { it.category }
-            .mapValues { entry ->
-                entry.value.groupBy { it.language }
+        // Organize: languageCode -> languageName -> list
+        val organized = filtered
+            .groupBy { it.language }
+            .mapValues { (_, group) ->
+                group.groupBy { it.languageName ?: it.language }
             }
 
-        _organizedModules.value = organized
-        _categories.value = organized.keys.sorted()
+        _organizedTranslations.value = organized
+        _languages.value = organized.keys.sorted()
 
-        Log.d(TAG, "Organized into categories: ${_categories.value}")
+        Log.d(TAG, "Organized into languages: ${_languages.value}")
     }
 
-    fun deleteModule(moduleName: String) {
+    fun deleteTranslation(translationId: String) {
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    repository.uninstallModule(moduleName)
+                    repository.uninstallFreeBibleTranslation(translationId)
                 }
-                Log.d(TAG, "Deleted module: $moduleName")
+                Log.d(TAG, "Uninstalled translation: $translationId")
                 refreshLibrary()
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to delete module: $moduleName", e)
-                _errorMessage.value = "Failed to delete module: ${e.message}"
+                Log.e(TAG, "Failed to uninstall translation: $translationId", e)
+                _errorMessage.value = "Failed to uninstall translation: ${e.message}"
             }
         }
     }

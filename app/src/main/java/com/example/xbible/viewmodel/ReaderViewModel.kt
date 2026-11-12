@@ -5,13 +5,13 @@ import android.content.Context
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.xbible.data.BibleRepository
-import com.example.xbible.core.ui.components.WordConfig
 import com.example.xbible.core.ui.components.AddedWordStyle
-import com.example.xbible.core.ui.components.VerseLayout
 import com.example.xbible.core.ui.components.HighlightColor
 import com.example.xbible.core.ui.components.HighlightStyle
 import com.example.xbible.core.ui.components.VerseHighlight
+import com.example.xbible.core.ui.components.VerseLayout
+import com.example.xbible.core.ui.components.WordConfig
+import com.example.xbible.data.BibleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,26 +21,37 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import uniffi.xbible_engine.DictionaryQuery
-import uniffi.xbible_engine.DictionaryResult
 import uniffi.xbible_engine.EntityRef
 import uniffi.xbible_engine.FreeBibleBook
 import uniffi.xbible_engine.InstalledTranslation
-import uniffi.xbible_engine.LexiconQuery
-import uniffi.xbible_engine.LexiconResult
 import uniffi.xbible_engine.ReaderBlock
 import uniffi.xbible_engine.ReaderChapter
 import uniffi.xbible_engine.ReaderWord
-import uniffi.xbible_engine.SearchHit
-import uniffi.xbible_engine.SearchResults
-import uniffi.xbible_engine.SearchType
-import uniffi.xbible_engine.SwordModule
 import java.util.UUID
 import javax.inject.Inject
 
 // ── Tabs ────────────────────────────────────────────────────────────
 
 enum class ReaderTabType { READ, SEARCH }
+
+/**
+ * Local mirror of the Rust `SearchType` enum.
+ *
+ * The FFI no longer exports `SearchType` (it went away with the SWORD
+ * search surface). This enum keeps the search-settings UI + `ReaderTab`
+ * compiling. When the Rust search API is re-exported, delete this file
+ * and switch the imports in `ReaderViewModel.kt` / `StudySheets.kt`
+ * back to `uniffi.xbible_engine.SearchType`.
+ */
+enum class SearchType {
+    REGULAR_EXPRESSION,
+    PHRASE,
+    MULTI_WORD,
+}
+
+enum class StudyTool {
+    Dictionary, Lexicon, Commentary
+}
 
 data class ReaderTab(
     val id: String = UUID.randomUUID().toString(),
@@ -57,23 +68,19 @@ data class ReaderTab(
     // Content from FreeBible
     val chapterData: ReaderChapter? = null,
 
-    val type: TabType = TabType.READ,
+    val type: ReaderTabType = ReaderTabType.READ,
 
     // Search state
     val searchQuery: String = "",
-    val searchResults: List<SearchHit> = emptyList(),
+    val searchType: SearchType = SearchType.MULTI_WORD,
+    val searchHits: List<String> = emptyList(),          // keys like "GEN 1:1"
     val searchHitsContent: Map<String, ReaderChapter> = emptyMap(),
     val isSearching: Boolean = false,
     val searchLoadProgress: Float = 0f,
-    val searchType: SearchType = SearchType.MULTI_WORD,
 ) {
     val blocks: List<ReaderBlock> get() = chapterData?.blocks.orEmpty()
     val hasNextChapter: Boolean get() = chapterData?.nextChapter != null
     val hasPrevChapter: Boolean get() = chapterData?.prevChapter != null
-}
-
-enum class ReaderStudyTool {
-    Dictionary, Lexicon, Commentary
 }
 
 private const val THEOGRAPHIC_DATASET = "theographic"
@@ -146,52 +153,16 @@ class ReaderViewModel @Inject constructor(
     private val _verseEntities = MutableStateFlow<List<EntityRef>>(emptyList())
     val verseEntities: StateFlow<List<EntityRef>> = _verseEntities.asStateFlow()
 
-    // ── Study tools (unchanged — they still use SWORD modules) ──────
+    // ── Study tools (placeholder state — SWORD APIs are gone) ───────
 
     private val _selectedTool = MutableStateFlow(StudyTool.Dictionary)
     val selectedTool: StateFlow<StudyTool> = _selectedTool.asStateFlow()
 
-    // Dictionary
     private val _selectedWordForLookup = MutableStateFlow("")
     val selectedWordForLookup: StateFlow<String> = _selectedWordForLookup.asStateFlow()
 
-    private val _dictionaryResults = MutableStateFlow<List<DictionaryResult>>(emptyList())
-    val dictionaryResults: StateFlow<List<DictionaryResult>> = _dictionaryResults.asStateFlow()
-
-    private val _isDictionaryLoading = MutableStateFlow(false)
-    val isDictionaryLoading: StateFlow<Boolean> = _isDictionaryLoading.asStateFlow()
-
-    // Lexicon
     private val _selectedStrongsForLookup = MutableStateFlow("")
     val selectedStrongsForLookup: StateFlow<String> = _selectedStrongsForLookup.asStateFlow()
-
-    private val _selectedLexiconModule = MutableStateFlow<SwordModule?>(null)
-    val selectedLexiconModule: StateFlow<SwordModule?> = _selectedLexiconModule.asStateFlow()
-
-    private val _availableLexicons = MutableStateFlow<List<SwordModule>>(emptyList())
-    val availableLexicons: StateFlow<List<SwordModule>> = _availableLexicons.asStateFlow()
-
-    private val _lexiconResults = MutableStateFlow<List<LexiconResult>>(emptyList())
-    val lexiconResults: StateFlow<List<LexiconResult>> = _lexiconResults.asStateFlow()
-
-    private val _isLexiconLoading = MutableStateFlow(false)
-    val isLexiconLoading: StateFlow<Boolean> = _isLexiconLoading.asStateFlow()
-
-    // Commentary
-    private val _selectedCommentaryModule = MutableStateFlow<SwordModule?>(null)
-    val selectedCommentaryModule: StateFlow<SwordModule?> =
-        _selectedCommentaryModule.asStateFlow()
-
-    private val _availableCommentaries = MutableStateFlow<List<SwordModule>>(emptyList())
-    val availableCommentaries: StateFlow<List<SwordModule>> =
-        _availableCommentaries.asStateFlow()
-
-    private val _commentaryResults = MutableStateFlow<List<uniffi.xbible_engine.Section>>(emptyList())
-    val commentaryResults: StateFlow<List<uniffi.xbible_engine.Section>> =
-        _commentaryResults.asStateFlow()
-
-    private val _isCommentaryLoading = MutableStateFlow(false)
-    val isCommentaryLoading: StateFlow<Boolean> = _isCommentaryLoading.asStateFlow()
 
     private val _currentCommentaryReference = MutableStateFlow("")
     val currentCommentaryReference: StateFlow<String> =
@@ -326,9 +297,10 @@ class ReaderViewModel @Inject constructor(
 
         val restored = mutableListOf<ReaderTab>()
         for (i in 0 until savedCount) {
-            val typeStr = tabPrefs.getString("tab_${i}_type", TabType.READ.name)
-                ?: TabType.READ.name
-            val type = runCatching { TabType.valueOf(typeStr) }.getOrElse { TabType.READ }
+            val typeStr = tabPrefs.getString("tab_${i}_type", ReaderTabType.READ.name)
+                ?: ReaderTabType.READ.name
+            val type = runCatching { ReaderTabType.valueOf(typeStr) }
+                .getOrElse { ReaderTabType.READ }
 
             val translationId = tabPrefs.getString("tab_${i}_translation", null)
             val translation = translations.find { it.id == translationId }
@@ -338,8 +310,10 @@ class ReaderViewModel @Inject constructor(
             val chapter = tabPrefs.getInt("tab_${i}_chapter", 1)
 
             val searchQuery = tabPrefs.getString("tab_${i}_search_query", "") ?: ""
-            val searchTypeStr = tabPrefs.getString("tab_${i}_search_type", SearchType.MULTI_WORD.name)
-                ?: SearchType.MULTI_WORD.name
+            val searchTypeStr = tabPrefs.getString(
+                "tab_${i}_search_type",
+                SearchType.MULTI_WORD.name,
+            ) ?: SearchType.MULTI_WORD.name
             val searchType = runCatching { SearchType.valueOf(searchTypeStr) }
                 .getOrElse { SearchType.MULTI_WORD }
 
@@ -394,10 +368,8 @@ class ReaderViewModel @Inject constructor(
                     _currentChapterData.value = data
                     _currentTranslation.value = translation
 
-                    // Kick off entity fetch for the freshly loaded chapter.
                     loadChapterEntities(data)
 
-                    // If a parallel translation is active, load the same chapter there too.
                     _parallelTranslation.value?.let { parallel ->
                         if (parallel.id != translation.id) {
                             _parallelChapterData.value = withContext(Dispatchers.IO) {
@@ -428,10 +400,6 @@ class ReaderViewModel @Inject constructor(
     /**
      * Fetch every entity mentioned in [chapter] and publish it on
      * [chapterEntities] for the "In This Chapter" footer.
-     *
-     * The Rust FFI only exposes per-verse lookups, so we fan out over the
-     * chapter's verse numbers and de-dupe by (kind, id). The whole loop runs
-     * inside one `repository` call so it stays on the engine's single thread.
      */
     private fun loadChapterEntities(chapter: ReaderChapter) {
         val verseNumbers = chapter.blocks
@@ -510,7 +478,6 @@ class ReaderViewModel @Inject constructor(
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
         val data = tab.chapterData ?: return
         val next = data.nextChapter ?: run {
-            // Roll over to next book
             val idx = tab.books.indexOfFirst { it.id == tab.bookId }
             val nextBook = tab.books.getOrNull(idx + 1) ?: return
             openChapter(nextBook.id, 1)
@@ -537,12 +504,13 @@ class ReaderViewModel @Inject constructor(
     fun switchTab(index: Int) {
         if (index !in _tabs.value.indices) return
 
-        // Persist the current tab's live state before switching
-        updateCurrentTabInList { it.copy(
-            chapterData = _currentChapterData.value,
-            translation = _currentTranslation.value,
-            books = _currentBooks.value,
-        ) }
+        updateCurrentTabInList {
+            it.copy(
+                chapterData = _currentChapterData.value,
+                translation = _currentTranslation.value,
+                books = _currentBooks.value,
+            )
+        }
 
         _activeTabIndex.value = index
         updateActiveTab(_tabs.value[index])
@@ -571,7 +539,7 @@ class ReaderViewModel @Inject constructor(
 
     fun addSearchTab() {
         val tab = ReaderTab(
-            type = TabType.SEARCH,
+            type = ReaderTabType.SEARCH,
             translation = _currentTranslation.value,
         )
         _tabs.value = _tabs.value + tab
@@ -596,7 +564,7 @@ class ReaderViewModel @Inject constructor(
         _currentBooks.value = tab.books
         _currentChapterData.value = tab.chapterData
 
-        if (tab.type == TabType.READ
+        if (tab.type == ReaderTabType.READ
             && tab.chapterData == null
             && tab.translation != null
         ) {
@@ -624,111 +592,61 @@ class ReaderViewModel @Inject constructor(
     }
 
     // ── Search ──────────────────────────────────────────────────────
+    //
+    // NOTE: The current FreeBible FFI does not expose a text-search API.
+    // The SWORD `search(moduleName, query, searchType)` call was on
+    // `XBibleEngine` and is no longer exported. To restore search, add a
+    // `search(...)`-shaped method on `FreeBibleReader` (or a new
+    // `search` entry point on `FreeBibleEngine`) in Rust, regenerate
+    // bindings, and wire it up here.
 
     fun performSearch(query: String) {
         val tabIdx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(tabIdx) ?: return
-        if (tab.type != TabType.SEARCH) return
-        val translation = tab.translation ?: return
+        if (tab.type != ReaderTabType.SEARCH) return
         val trimmed = query.trim()
         if (trimmed.isEmpty()) {
             _tabs.update { tabs ->
                 tabs.mapIndexed { i, t ->
-                    if (i == tabIdx) t.copy(searchResults = emptyList(), searchQuery = "")
+                    if (i == tabIdx) t.copy(searchHits = emptyList(), searchQuery = "")
                     else t
                 }
             }
             return
         }
 
-        searchContentLoadingJob?.cancel()
-        viewModelScope.launch {
-            _tabs.update { tabs ->
-                tabs.mapIndexed { i, t ->
-                    if (i == tabIdx) t.copy(
-                        isSearching = true,
-                        searchQuery = query,
-                        searchResults = emptyList(),
-                        searchHitsContent = emptyMap(),
-                        searchLoadProgress = 0f,
-                    ) else t
-                }
-            }
-
-            try {
-                // FreeBible search returns SearchResults across the whole
-                // installed translation — same shape as the SWORD path.
-                val results: SearchResults = withContext(Dispatchers.IO) {
-                    repository.search(
-                        moduleName = translation.id,
-                        query = trimmed,
-                        searchType = tab.searchType,
-                    )
-                }
-
-                _tabs.update { tabs ->
-                    tabs.mapIndexed { i, t ->
-                        if (i == tabIdx) t.copy(
-                            searchResults = results.hits,
-                            isSearching = results.hits.isNotEmpty(),
-                        ) else t
-                    }
-                }
-
-                if (results.hits.isNotEmpty()) {
-                    loadSearchHitsSequentially(tabIdx, translation, results.hits)
-                } else {
-                    _tabs.update { tabs ->
-                        tabs.mapIndexed { i, t ->
-                            if (i == tabIdx) t.copy(isSearching = false) else t
-                        }
-                    }
-                }
-            } catch (e: Throwable) {
-                _errorMessage.value = "Search error: ${e.message}"
-                _tabs.update { tabs ->
-                    tabs.mapIndexed { i, t ->
-                        if (i == tabIdx) t.copy(isSearching = false) else t
-                    }
-                }
+        _errorMessage.value =
+            "Search is not available in the current engine build."
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == tabIdx) t.copy(
+                    isSearching = false,
+                    searchQuery = query,
+                    searchHits = emptyList(),
+                    searchHitsContent = emptyMap(),
+                    searchLoadProgress = 0f,
+                ) else t
             }
         }
     }
 
-    private fun loadSearchHitsSequentially(
-        tabIdx: Int,
-        translation: InstalledTranslation,
-        hits: List<SearchHit>,
-    ) {
-        searchContentLoadingJob = viewModelScope.launch {
-            for ((index, hit) in hits.withIndex()) {
-                // Hit key format from the backend: "BOOK_ID CHAP:VERSE" or
-                // "BOOK_ID CHAP" — we split it back out and load the chapter.
-                val (bookId, chapterNum) = parseHitKey(hit.key) ?: continue
+    /**
+     * Persist the chosen [SearchType] on the active tab. Kept even while
+     * search itself is stubbed — the settings sheet is still interactive
+     * and the value is restored from prefs on the next launch.
+     */
+    fun updateSearchType(searchType: SearchType) {
+        val idx = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(idx) ?: return
+        if (tab.type != ReaderTabType.SEARCH) return
 
-                try {
-                    val chapter = withContext(Dispatchers.IO) {
-                        repository.readFreeBibleChapter(
-                            translation.id, bookId, chapterNum,
-                        )
-                    }
-                    if (chapter != null) {
-                        _tabs.update { tabs ->
-                            if (tabIdx !in tabs.indices) return@update tabs
-                            tabs.mapIndexed { i, t ->
-                                if (i == tabIdx) t.copy(
-                                    searchHitsContent = t.searchHitsContent + (hit.key to chapter),
-                                    searchLoadProgress = (index + 1f) / hits.size,
-                                    isSearching = index < hits.size - 1,
-                                ) else t
-                            }
-                        }
-                    }
-                } catch (_: Throwable) {
-                    // Skip failed hit
-                }
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == idx) t.copy(searchType = searchType) else t
             }
         }
+        saveTabsState()
+        if (tab.searchQuery.isNotBlank()) performSearch(tab.searchQuery)
     }
 
     /** "GEN 1:1" or "GEN 1" → ("GEN", 1) */
@@ -740,15 +658,15 @@ class ReaderViewModel @Inject constructor(
         return bookId to chap
     }
 
-    fun openSearchHit(hit: SearchHit) {
+    fun openSearchHit(key: String) {
         val idx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(idx) ?: return
-        if (tab.type != TabType.SEARCH || tab.translation == null) return
+        if (tab.type != ReaderTabType.SEARCH || tab.translation == null) return
 
-        val (bookId, chapter) = parseHitKey(hit.key) ?: return
+        val (bookId, chapter) = parseHitKey(key) ?: return
 
         val updated = tab.copy(
-            type = TabType.READ,
+            type = ReaderTabType.READ,
             bookId = bookId,
             chapter = chapter,
             chapterData = null,
@@ -758,13 +676,13 @@ class ReaderViewModel @Inject constructor(
         openChapter(bookId, chapter)
     }
 
-    fun openSearchHitInNewTab(hit: SearchHit) {
+    fun openSearchHitInNewTab(key: String) {
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
-        if (tab.type != TabType.SEARCH || tab.translation == null) return
-        val (bookId, chapter) = parseHitKey(hit.key) ?: return
+        if (tab.type != ReaderTabType.SEARCH || tab.translation == null) return
+        val (bookId, chapter) = parseHitKey(key) ?: return
 
         val newTab = ReaderTab(
-            type = TabType.READ,
+            type = ReaderTabType.READ,
             translation = tab.translation,
             bookId = bookId,
             chapter = chapter,
@@ -773,18 +691,6 @@ class ReaderViewModel @Inject constructor(
         _activeTabIndex.value = _tabs.value.size - 1
         updateActiveTab(newTab)
         openChapter(bookId, chapter)
-    }
-
-    fun updateSearchType(searchType: SearchType) {
-        val idx = _activeTabIndex.value
-        val tab = _tabs.value.getOrNull(idx) ?: return
-        if (tab.type != TabType.SEARCH) return
-
-        _tabs.update { tabs ->
-            tabs.mapIndexed { i, t -> if (i == idx) t.copy(searchType = searchType) else t }
-        }
-        saveTabsState()
-        if (tab.searchQuery.isNotBlank()) performSearch(tab.searchQuery)
     }
 
     // ── Verse entities ──────────────────────────────────────────────
@@ -832,7 +738,13 @@ class ReaderViewModel @Inject constructor(
     private val _highlights = MutableStateFlow<Map<String, VerseHighlight>>(emptyMap())
     val highlights: StateFlow<Map<String, VerseHighlight>> = _highlights.asStateFlow()
 
-    fun setHighlight(bookId: String, chapter: Int, verse: Int, color: HighlightColor, style: HighlightStyle) {
+    fun setHighlight(
+        bookId: String,
+        chapter: Int,
+        verse: Int,
+        color: HighlightColor,
+        style: HighlightStyle,
+    ) {
         val key = "$bookId:$chapter:$verse"
         _highlights.update { current ->
             current + (key to VerseHighlight(color, style))
@@ -844,11 +756,18 @@ class ReaderViewModel @Inject constructor(
         _highlights.update { it - key }
     }
 
-    // ── Study tools (SWORD-backed, unchanged) ──────────────────────
+    // ── Study tools ─────────────────────────────────────────────────
+    //
+    // The SWORD dictionary / lexicon / commentary API was removed from
+    // `XBibleEngine`. These functions keep the plumbing so the UI still
+    // compiles, but they no longer hit Rust. When the dictionary /
+    // lexicon / commentary surface is re-exported (either on
+    // `XBibleEngine` again, or via `FreeBibleReader`), plug the
+    // `repository.…(...)` call back in at the marked spot.
 
     fun selectTool(tool: StudyTool) {
         _selectedTool.value = tool
-        if (tool == StudyTool.Commentary) loadCommentaryContent()
+        // TODO: loadCommentaryContent() once a commentary API exists.
     }
 
     fun lookupWord(word: ReaderWord) {
@@ -857,82 +776,14 @@ class ReaderViewModel @Inject constructor(
 
         _selectedWordForLookup.value = clean
         _selectedTool.value = StudyTool.Dictionary
-        _isDictionaryLoading.value = true
-
-        viewModelScope.launch {
-            val query = DictionaryQuery(
-                word = clean,
-                strongs = listOfNotNull(word.strongs),
-                language = "en",
-            )
-            val response = withContext(Dispatchers.IO) { repository.lookupDictionary(query) }
-            _dictionaryResults.value = response.results
-            _isDictionaryLoading.value = false
-        }
+        // TODO: call repository.lookupDictionary(...) once re-exported.
     }
 
     fun lookupStrongs(strongsCode: String) {
         if (strongsCode.isEmpty()) return
         _selectedStrongsForLookup.value = strongsCode
         _selectedTool.value = StudyTool.Lexicon
-
-        if (_availableLexicons.value.isEmpty()) {
-            viewModelScope.launch {
-                _availableLexicons.value = withContext(Dispatchers.IO) {
-                    repository.getLexiconModules()
-                }
-                if (_selectedLexiconModule.value == null) {
-                    _selectedLexiconModule.value = _availableLexicons.value.firstOrNull()
-                }
-                loadLexiconContent()
-            }
-        } else {
-            loadLexiconContent()
-        }
-    }
-
-    fun selectLexiconModule(module: SwordModule) {
-        _selectedLexiconModule.value = module
-        loadLexiconContent()
-    }
-
-    fun loadLexiconContent() {
-        val strongs = _selectedStrongsForLookup.value
-        if (strongs.isEmpty()) {
-            _lexiconResults.value = emptyList()
-            return
-        }
-        val module = _selectedLexiconModule.value
-        _isLexiconLoading.value = true
-        val lang = module?.language ?: "en"
-
-        viewModelScope.launch {
-            val query = LexiconQuery(strongsNumber = strongs, language = lang)
-            val response = withContext(Dispatchers.IO) { repository.lookupStrongsNumber(query) }
-            _lexiconResults.value = response.results
-            _isLexiconLoading.value = false
-        }
-    }
-
-    fun selectCommentaryModule(module: SwordModule) {
-        _selectedCommentaryModule.value = module
-        loadCommentaryContent()
-    }
-
-    fun loadCommentaryContent() {
-        val module = _selectedCommentaryModule.value ?: return
-        val data = _currentChapterData.value ?: return
-        val reference = "${data.bookName} ${data.chapterNumber}"
-
-        _isCommentaryLoading.value = true
-        _currentCommentaryReference.value = reference
-
-        viewModelScope.launch {
-            _commentaryResults.value = withContext(Dispatchers.IO) {
-                repository.getChapterContent(module.name, reference)
-            }
-            _isCommentaryLoading.value = false
-        }
+        // TODO: call repository.lookupStrongsNumber(...) once re-exported.
     }
 
     // ── Refresh ─────────────────────────────────────────────────────
@@ -942,18 +793,6 @@ class ReaderViewModel @Inject constructor(
         viewModelScope.launch {
             _installedTranslations.value = withContext(Dispatchers.IO) {
                 repository.getFreeBibleInstalledTranslations()
-            }
-            _availableLexicons.value = withContext(Dispatchers.IO) {
-                repository.getLexiconModules()
-            }
-            _availableCommentaries.value = withContext(Dispatchers.IO) {
-                repository.getCommentaryModules()
-            }
-            if (_selectedLexiconModule.value == null) {
-                _selectedLexiconModule.value = _availableLexicons.value.firstOrNull()
-            }
-            if (_selectedCommentaryModule.value == null) {
-                _selectedCommentaryModule.value = _availableCommentaries.value.firstOrNull()
             }
         }
     }

@@ -50,9 +50,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.xbible.R
+import com.example.xbible.viewmodel.SearchType
 import uniffi.xbible_engine.FreeBibleBook
 import uniffi.xbible_engine.InstalledTranslation
-import uniffi.xbible_engine.SearchType
 
 // ── Translation selection ────────────────────────────────────────
 
@@ -86,8 +86,14 @@ fun ModuleSelectionContent(
         ) {
             groupedByLanguage.keys.sorted().forEach { langCode ->
                 val items = groupedByLanguage[langCode] ?: emptyList()
+
+                // Extract the language name from the first translation in the group.
+                // Fallback to uppercase code if the name is missing.
+                val languageName = items.firstOrNull()?.languageName?.takeIf { it.isNotBlank() }
+                    ?: langCode.uppercase()
+
                 item(key = "lang:$langCode") {
-                    SettingsGroup(title = langCode.uppercase()) {
+                    SettingsGroup(title = languageName) {
                         items.forEach { t ->
                             val isSelected = current?.id == t.id
                             ListItem(

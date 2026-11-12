@@ -23,7 +23,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaul
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,14 +55,12 @@ import com.example.xbible.feature.tools.audiobible.AudioBiblePlayerScreen
 import com.example.xbible.feature.tools.timeline.TimelineScreen
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.AudioBibleViewModel
-import com.example.xbible.viewmodel.EngineViewModel
 import com.example.xbible.viewmodel.FreeBibleStoreViewModel
 import com.example.xbible.viewmodel.ReaderViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun XbibleApp(
-    engineViewModel: EngineViewModel,
     readerViewModel: ReaderViewModel,
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.STUDY) }
@@ -154,7 +151,6 @@ fun XbibleApp(
                     destination = currentDestination,
                     storeRoute = storeRoute,
                     onStoreRouteChange = { storeRoute = it },
-                    engineViewModel = engineViewModel,
                     readerViewModel = readerViewModel,
                     audioBibleViewModel = audioBibleViewModel,
                     freeBibleStoreViewModel = freeBibleStoreViewModel,
@@ -190,7 +186,6 @@ fun MainContent(
     destination: AppDestinations,
     storeRoute: StoreRoute?,
     onStoreRouteChange: (StoreRoute?) -> Unit,
-    engineViewModel: EngineViewModel,
     readerViewModel: ReaderViewModel,
     audioBibleViewModel: AudioBibleViewModel,
     freeBibleStoreViewModel: FreeBibleStoreViewModel,
@@ -215,8 +210,11 @@ fun MainContent(
             )
 
             AppDestinations.LIBRARY -> LibraryScreen(
-                onOpenModule = { module ->
-                    engineViewModel.selectModule(module)
+                onOpenTranslation = { translation ->
+                    // Feed the translation into the reader tab and switch to
+                    // the study destination. `selectTranslation` also loads
+                    // the book list and opens the first book's chapter.
+                    readerViewModel.selectTranslation(translation)
                     onNavigate(AppDestinations.STUDY)
                 }
             )
@@ -259,6 +257,7 @@ private fun StoreHost(
                 onRouteChange(StoreRoute.Language(code))
             },
             onSeeAllLanguages = { onRouteChange(StoreRoute.Languages) },
+            onOpenAudioStore = {},
         )
 
         is StoreRoute.Section -> {

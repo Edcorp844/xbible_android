@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CardDefaults
@@ -39,13 +40,17 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -86,6 +91,7 @@ fun FreeBibleStoreScreen(
     onSeeAllLanguages: () -> Unit = {},
     activeLanguage: String? = null,
     onClearLanguage: () -> Unit = {},
+    onOpenAudioStore: () -> Unit,
 ) {
     val allShelves by viewModel.shelves.collectAsStateWithLifecycle()
     val languages by viewModel.languages.collectAsStateWithLifecycle()
@@ -138,6 +144,15 @@ fun FreeBibleStoreScreen(
                     )
                 },
                 actions = {
+                    TooltipBox(
+                        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                        tooltip = { PlainTooltip { Text("Audio Store") } },
+                        state = rememberTooltipState(),
+                    ) {
+                        IconButton(onClick = onOpenAudioStore) {
+                            Icon(Icons.Outlined.Headphones, contentDescription = "Audio Store")
+                        }
+                    }
                     if (showAppBarSearch) {
                         IconButton(
                             onClick = {
