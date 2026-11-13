@@ -105,6 +105,7 @@
     <string name="no_commentary_found">No commentary found for \"%1$s\" in %2$s.</string>
     <string name="commentaries">Commentaries</string>
     <string name="commentaries_desc">Select or install a commentary module from the Store to read study notes, theological essays, and explanations for the active scripture chapter.</string>
+    <string name="open_in_new_tab">New tab</string>
 
     <!-- Study Selection -->
     <string name="select_bible_version">Select Bible Version</string>

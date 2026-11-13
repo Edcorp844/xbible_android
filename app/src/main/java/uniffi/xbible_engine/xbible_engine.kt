@@ -781,6 +781,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_get_verse_refs(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblereader_is_commentary_installed(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_is_entity_set_installed(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_is_installed(
@@ -795,6 +797,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_search_entities(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path(
@@ -804,6 +808,8 @@ internal object IntegrityCheckingUniffiLib {
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_get_shelf(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_home_feed(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblestore_install_commentary(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set(
     ): Int
@@ -822,6 +828,8 @@ internal object IntegrityCheckingUniffiLib {
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_search(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_shelf_total(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_commentary(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation(
     ): Int
@@ -1051,6 +1059,8 @@ external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse(`ptr`: Lon
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_is_commentary_installed(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Byte
 external fun uniffi_xbible_engine_fn_method_freebiblereader_is_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
 external fun uniffi_xbible_engine_fn_method_freebiblereader_is_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -1064,6 +1074,8 @@ external fun uniffi_xbible_engine_fn_method_freebiblereader_list_people(`ptr`: L
 external fun uniffi_xbible_engine_fn_method_freebiblereader_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblereader_read_commentary_chapter(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblereader_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1080,6 +1092,8 @@ external fun uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(`ptr`: Lo
 external fun uniffi_xbible_engine_fn_method_freebiblestore_get_shelf(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_xbible_engine_fn_method_freebiblestore_install_commentary(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kindStr`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
@@ -1099,6 +1113,8 @@ external fun uniffi_xbible_engine_fn_method_freebiblestore_search(`ptr`: Long,`q
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Int
+external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_commentary(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -1439,6 +1455,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse_refs() != 56545) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_commentary_installed() != 32090) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_entity_set_installed() != 58881) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1460,6 +1479,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter() != 32094) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter() != 20402) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_search_entities() != 61509) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1473,6 +1495,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_home_feed() != 19050) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_commentary() != 1389) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set() != 62256) {
@@ -1500,6 +1525,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_shelf_total() != 14542) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_commentary() != 60788) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation() != 1570) {
@@ -3175,6 +3203,8 @@ public interface FreeBibleReaderInterface {
     
     fun `getVerseRefs`(`datasetId`: kotlin.String, `kind`: kotlin.String, `id`: kotlin.String): List<VerseRange>
     
+    fun `isCommentaryInstalled`(`commentaryId`: kotlin.String): kotlin.Boolean
+    
     fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean
     
     fun `isInstalled`(`translationId`: kotlin.String): kotlin.Boolean
@@ -3188,6 +3218,8 @@ public interface FreeBibleReaderInterface {
     fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
     
     fun `readChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): ReaderChapter?
+    
+    fun `readCommentaryChapter`(`commentaryId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): CommentaryChapter?
     
     fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
     
@@ -3430,6 +3462,20 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     }
     
 
+    
+    @Throws(FreeBibleException::class)override fun `isCommentaryInstalled`(`commentaryId`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_is_commentary_installed(
+        it,
+        FfiConverterString.lower(`commentaryId`),_status)
+}
+    }
+    )
+    }
+    
+
     override fun `isEntitySetInstalled`(`datasetId`: kotlin.String, `kind`: kotlin.String): kotlin.Boolean {
             return FfiConverterBoolean.lift(
     callWithHandle {
@@ -3516,6 +3562,20 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(
         it,
         FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `readCommentaryChapter`(`commentaryId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): CommentaryChapter? {
+            return FfiConverterOptionalTypeCommentaryChapter.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_read_commentary_chapter(
+        it,
+        FfiConverterString.lower(`commentaryId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
 }
     }
     )
@@ -3698,6 +3758,13 @@ public interface FreeBibleStoreInterface {
     
     fun `homeFeed`(`language`: kotlin.String?): List<StoreShelf>
     
+    /**
+     * Install a commentary. Commentaries have no `complete.json`,
+     * so this fetches the book list once and then per-chapter.
+     * One writer job per book.
+     */
+    fun `installCommentary`(`commentaryId`: kotlin.String): kotlin.String
+    
     fun `installEntitySet`(`datasetId`: kotlin.String, `kindStr`: kotlin.String): kotlin.String
     
     fun `installTranslation`(`translationId`: kotlin.String): kotlin.String
@@ -3715,6 +3782,8 @@ public interface FreeBibleStoreInterface {
     fun `search`(`query`: kotlin.String): List<StoreItem>
     
     fun `shelfTotal`(`shelfId`: kotlin.String, `language`: kotlin.String?): kotlin.UInt
+    
+    fun `uninstallCommentary`(`commentaryId`: kotlin.String): kotlin.String
     
     fun `uninstallTranslation`(`translationId`: kotlin.String): kotlin.String
     
@@ -3872,6 +3941,25 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     
 
     
+    /**
+     * Install a commentary. Commentaries have no `complete.json`,
+     * so this fetches the book list once and then per-chapter.
+     * One writer job per book.
+     */
+    @Throws(FreeBibleException::class)override fun `installCommentary`(`commentaryId`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_install_commentary(
+        it,
+        FfiConverterString.lower(`commentaryId`),_status)
+}
+    }
+    )
+    }
+    
+
+    
     @Throws(FreeBibleException::class)override fun `installEntitySet`(`datasetId`: kotlin.String, `kindStr`: kotlin.String): kotlin.String {
             return FfiConverterString.lift(
     callWithHandle {
@@ -3984,6 +4072,20 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(
         it,
         FfiConverterString.lower(`shelfId`),FfiConverterOptionalString.lower(`language`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `uninstallCommentary`(`commentaryId`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_uninstall_commentary(
+        it,
+        FfiConverterString.lower(`commentaryId`),_status)
 }
     }
     )
@@ -6457,6 +6559,107 @@ public object FfiConverterTypeAudioNode: FfiConverterRustBuffer<AudioNode> {
             FfiConverterOptionalLong.write(value.`endMs`, buf)
             FfiConverterOptionalString.write(value.`text`, buf)
             FfiConverterSequenceTypeAudioNode.write(value.`children`, buf)
+    }
+}
+
+
+
+data class CommentaryBlock (
+    var `verseNumber`: kotlin.Int
+    , 
+    var `text`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCommentaryBlock: FfiConverterRustBuffer<CommentaryBlock> {
+    override fun read(buf: ByteBuffer): CommentaryBlock {
+        return CommentaryBlock(
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CommentaryBlock) = (
+            FfiConverterInt.allocationSize(value.`verseNumber`) +
+            FfiConverterString.allocationSize(value.`text`)
+    )
+
+    override fun write(value: CommentaryBlock, buf: ByteBuffer) {
+            FfiConverterInt.write(value.`verseNumber`, buf)
+            FfiConverterString.write(value.`text`, buf)
+    }
+}
+
+
+
+data class CommentaryChapter (
+    var `commentaryId`: kotlin.String
+    , 
+    var `bookId`: kotlin.String
+    , 
+    var `bookName`: kotlin.String
+    , 
+    var `chapterNumber`: kotlin.Int
+    , 
+    var `blocks`: List<CommentaryBlock>
+    , 
+    var `nextChapter`: kotlin.Int?
+    , 
+    var `prevChapter`: kotlin.Int?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCommentaryChapter: FfiConverterRustBuffer<CommentaryChapter> {
+    override fun read(buf: ByteBuffer): CommentaryChapter {
+        return CommentaryChapter(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterSequenceTypeCommentaryBlock.read(buf),
+            FfiConverterOptionalInt.read(buf),
+            FfiConverterOptionalInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CommentaryChapter) = (
+            FfiConverterString.allocationSize(value.`commentaryId`) +
+            FfiConverterString.allocationSize(value.`bookId`) +
+            FfiConverterString.allocationSize(value.`bookName`) +
+            FfiConverterInt.allocationSize(value.`chapterNumber`) +
+            FfiConverterSequenceTypeCommentaryBlock.allocationSize(value.`blocks`) +
+            FfiConverterOptionalInt.allocationSize(value.`nextChapter`) +
+            FfiConverterOptionalInt.allocationSize(value.`prevChapter`)
+    )
+
+    override fun write(value: CommentaryChapter, buf: ByteBuffer) {
+            FfiConverterString.write(value.`commentaryId`, buf)
+            FfiConverterString.write(value.`bookId`, buf)
+            FfiConverterString.write(value.`bookName`, buf)
+            FfiConverterInt.write(value.`chapterNumber`, buf)
+            FfiConverterSequenceTypeCommentaryBlock.write(value.`blocks`, buf)
+            FfiConverterOptionalInt.write(value.`nextChapter`, buf)
+            FfiConverterOptionalInt.write(value.`prevChapter`, buf)
     }
 }
 
@@ -10212,6 +10415,38 @@ public object FfiConverterOptionalTypeAudioNode: FfiConverterRustBuffer<AudioNod
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeCommentaryChapter: FfiConverterRustBuffer<CommentaryChapter?> {
+    override fun read(buf: ByteBuffer): CommentaryChapter? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeCommentaryChapter.read(buf)
+    }
+
+    override fun allocationSize(value: CommentaryChapter?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeCommentaryChapter.allocationSize(value)
+        }
+    }
+
+    override fun write(value: CommentaryChapter?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeCommentaryChapter.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypeEntityRef: FfiConverterRustBuffer<EntityRef?> {
     override fun read(buf: ByteBuffer): EntityRef? {
         if (buf.get().toInt() == 0) {
@@ -10874,6 +11109,34 @@ public object FfiConverterSequenceTypeAudioNode: FfiConverterRustBuffer<List<Aud
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeAudioNode.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeCommentaryBlock: FfiConverterRustBuffer<List<CommentaryBlock>> {
+    override fun read(buf: ByteBuffer): List<CommentaryBlock> {
+        val len = buf.getInt()
+        return List<CommentaryBlock>(len) {
+            FfiConverterTypeCommentaryBlock.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<CommentaryBlock>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeCommentaryBlock.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<CommentaryBlock>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeCommentaryBlock.write(it, buf)
         }
     }
 }

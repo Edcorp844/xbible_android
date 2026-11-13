@@ -21,12 +21,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import uniffi.xbible_engine.CommentaryBlock
+import uniffi.xbible_engine.CommentaryChapter
 import uniffi.xbible_engine.EntityRef
 import uniffi.xbible_engine.FreeBibleBook
 import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.ReaderBlock
 import uniffi.xbible_engine.ReaderChapter
 import uniffi.xbible_engine.ReaderWord
+import uniffi.xbible_engine.StoreItem
 import java.util.UUID
 import javax.inject.Inject
 
@@ -53,34 +56,60 @@ enum class StudyTool {
     Dictionary, Lexicon, Commentary
 }
 
+/**
+ * One reader tab.
+ *
+ * A tab in [ReaderTabType.READ] mode is *either* a translation read
+ * ([translation] set, [chapterData] populated) *or* a commentary read
+ * ([commentaryId] set, [commentaryData] populated) — never both.
+ * [isCommentary] is the single source of truth for that distinction.
+ */
 data class ReaderTab(
     val id: String = UUID.randomUUID().toString(),
 
-    // Which translation is this tab reading?
+    // ── Source selection (mutually exclusive in READ mode) ─────
     val translation: InstalledTranslation? = null,
+    val commentaryId: String? = null,
+    val commentaryName: String = "",
 
-    // Book + chapter
+    // ── Book + chapter (shared by translations and commentaries) ─
     val books: List<FreeBibleBook> = emptyList(),
     val bookId: String? = null,
     val bookName: String = "",
     val chapter: Int = 1,
 
-    // Content from FreeBible
+    // ── Content from FreeBible ─────────────────────────────────
     val chapterData: ReaderChapter? = null,
+    val commentaryData: CommentaryChapter? = null,
 
     val type: ReaderTabType = ReaderTabType.READ,
 
-    // Search state
+    // ── Search state ───────────────────────────────────────────
     val searchQuery: String = "",
     val searchType: SearchType = SearchType.MULTI_WORD,
-    val searchHits: List<String> = emptyList(),          // keys like "GEN 1:1"
+    val searchHits: List<String> = emptyList(),
     val searchHitsContent: Map<String, ReaderChapter> = emptyMap(),
     val isSearching: Boolean = false,
     val searchLoadProgress: Float = 0f,
 ) {
+    val isCommentary: Boolean get() = commentaryId != null && translation == null
+
     val blocks: List<ReaderBlock> get() = chapterData?.blocks.orEmpty()
-    val hasNextChapter: Boolean get() = chapterData?.nextChapter != null
-    val hasPrevChapter: Boolean get() = chapterData?.prevChapter != null
+    val commentaryBlocks: List<CommentaryBlock> get() = commentaryData?.blocks.orEmpty()
+
+    /**
+     * Forward navigation hint. For translations this is the Rust
+     * `ReaderChapter.nextChapter`; for commentaries the ViewModel
+     * falls back to book-index arithmetic when `CommentaryChapter`
+     * doesn't expose `nextChapter`.
+     */
+    val hasNextChapter: Boolean
+        get() = if (isCommentary) commentaryData?.nextChapter != null
+        else chapterData?.nextChapter != null
+
+    val hasPrevChapter: Boolean
+        get() = if (isCommentary) commentaryData?.prevChapter != null
+        else chapterData?.prevChapter != null
 }
 
 private const val THEOGRAPHIC_DATASET = "theographic"
@@ -115,7 +144,12 @@ class ReaderViewModel @Inject constructor(
     val parallelTranslation: StateFlow<InstalledTranslation?> =
         _parallelTranslation.asStateFlow()
 
-    // ── Current chapter (mirrors the active tab) ────────────────────
+    // ── Installed commentaries (catalogue for the study panel) ─────
+
+    private val _commentaries = MutableStateFlow<List<StoreItem>>(emptyList())
+    val commentaries: StateFlow<List<StoreItem>> = _commentaries.asStateFlow()
+
+    // ── Current chapter (translation reads) ────────────────────────
 
     private val _currentChapterData = MutableStateFlow<ReaderChapter?>(null)
     val currentChapterData: StateFlow<ReaderChapter?> =
@@ -128,6 +162,41 @@ class ReaderViewModel @Inject constructor(
     private val _parallelChapterData = MutableStateFlow<ReaderChapter?>(null)
     val parallelChapterData: StateFlow<ReaderChapter?> =
         _parallelChapterData.asStateFlow()
+
+    // ── Current commentary (commentary reads in the active tab) ────
+
+    private val _currentCommentaryId = MutableStateFlow<String?>(null)
+    val currentCommentaryId: StateFlow<String?> = _currentCommentaryId.asStateFlow()
+
+    private val _currentCommentaryName = MutableStateFlow<String>("")
+    val currentCommentaryName: StateFlow<String> = _currentCommentaryName.asStateFlow()
+
+    private val _currentCommentaryData = MutableStateFlow<CommentaryChapter?>(null)
+    val currentCommentaryData: StateFlow<CommentaryChapter?> =
+        _currentCommentaryData.asStateFlow()
+
+    // ── Study panel commentary (independent of the active tab) ─────
+    //
+    // The study-tools Commentary tab reads a commentary at the reader's
+    // current chapter without switching tabs. `studyCommentaryId` is
+    // persisted; `loadStudyCommentary` sets it; `openStudyCommentaryInNewTab`
+    // promotes it to a dedicated reader tab.
+
+    private val _studyCommentaryId = MutableStateFlow<String?>(null)
+    val studyCommentaryId: StateFlow<String?> = _studyCommentaryId.asStateFlow()
+
+    private val _studyCommentaryName = MutableStateFlow<String>("")
+    val studyCommentaryName: StateFlow<String> = _studyCommentaryName.asStateFlow()
+
+    private val _studyCommentaryData = MutableStateFlow<CommentaryChapter?>(null)
+    val studyCommentaryData: StateFlow<CommentaryChapter?> =
+        _studyCommentaryData.asStateFlow()
+
+    private val _studyCommentaryLoading = MutableStateFlow(false)
+    val studyCommentaryLoading: StateFlow<Boolean> =
+        _studyCommentaryLoading.asStateFlow()
+
+    // ── Books / loading ────────────────────────────────────────────
 
     private val _currentBooks = MutableStateFlow<List<FreeBibleBook>>(emptyList())
     val currentBooksFlow: StateFlow<List<FreeBibleBook>> = _currentBooks.asStateFlow()
@@ -153,7 +222,7 @@ class ReaderViewModel @Inject constructor(
     private val _verseEntities = MutableStateFlow<List<EntityRef>>(emptyList())
     val verseEntities: StateFlow<List<EntityRef>> = _verseEntities.asStateFlow()
 
-    // ── Study tools (placeholder state — SWORD APIs are gone) ───────
+    // ── Study tools ─────────────────────────────────────────────────
 
     private val _selectedTool = MutableStateFlow(StudyTool.Dictionary)
     val selectedTool: StateFlow<StudyTool> = _selectedTool.asStateFlow()
@@ -173,12 +242,14 @@ class ReaderViewModel @Inject constructor(
     private var searchContentLoadingJob: Job? = null
     private var entitiesJob: Job? = null
     private var chapterEntitiesJob: Job? = null
+    private var studyCommentaryJob: Job? = null
 
     private val prefs = application.getSharedPreferences("word_config", Context.MODE_PRIVATE)
     private val tabPrefs = application.getSharedPreferences("reader_tabs_state", Context.MODE_PRIVATE)
 
     init {
         loadConfig()
+        restoreStudyCommentaryChoice()
         setupEngine()
     }
 
@@ -249,12 +320,20 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
+    private fun restoreStudyCommentaryChoice() {
+        val savedId = prefs.getString("study_commentary_id", null) ?: return
+        val savedName = prefs.getString("study_commentary_name", "") ?: ""
+        _studyCommentaryId.value = savedId
+        _studyCommentaryName.value = savedName
+    }
+
     private fun setupEngine() {
         viewModelScope.launch {
             repository.initialize()
                 .onSuccess {
                     _isReady.value = true
                     loadInstalledTranslations()
+                    loadCommentaries()
                 }
                 .onFailure { e ->
                     _errorMessage.value = "Failed to initialize Bible engine: ${e.message}"
@@ -262,7 +341,7 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    // ── Installed translations ──────────────────────────────────────
+    // ── Installed translations / commentaries ───────────────────────
 
     private fun loadInstalledTranslations() {
         viewModelScope.launch {
@@ -271,7 +350,6 @@ class ReaderViewModel @Inject constructor(
             }
             _installedTranslations.value = translations
 
-            // Restore tabs from disk, or seed a default one.
             val restored = tryRestoreTabs(translations)
             if (restored != null) {
                 _tabs.value = restored
@@ -286,6 +364,14 @@ class ReaderViewModel @Inject constructor(
             val newTab = ReaderTab(translation = seed)
             _tabs.value = listOf(newTab)
             updateActiveTab(newTab)
+        }
+    }
+
+    private fun loadCommentaries() {
+        viewModelScope.launch {
+            _commentaries.value = withContext(Dispatchers.IO) {
+                repository.getInstalledCommentaries()
+            }
         }
     }
 
@@ -306,6 +392,9 @@ class ReaderViewModel @Inject constructor(
             val translation = translations.find { it.id == translationId }
                 ?: translations.firstOrNull()
 
+            val commentaryId = tabPrefs.getString("tab_${i}_commentary_id", null)
+            val commentaryName = tabPrefs.getString("tab_${i}_commentary_name", "") ?: ""
+
             val bookId = tabPrefs.getString("tab_${i}_book_id", null)
             val chapter = tabPrefs.getInt("tab_${i}_chapter", 1)
 
@@ -319,7 +408,9 @@ class ReaderViewModel @Inject constructor(
 
             restored += ReaderTab(
                 type = type,
-                translation = translation,
+                translation = if (commentaryId == null) translation else null,
+                commentaryId = commentaryId,
+                commentaryName = commentaryName,
                 bookId = bookId,
                 chapter = chapter,
                 searchQuery = searchQuery,
@@ -337,6 +428,8 @@ class ReaderViewModel @Inject constructor(
             tabs.forEachIndexed { i, t ->
                 putString("tab_${i}_type", t.type.name)
                 putString("tab_${i}_translation", t.translation?.id)
+                putString("tab_${i}_commentary_id", t.commentaryId)
+                putString("tab_${i}_commentary_name", t.commentaryName)
                 putString("tab_${i}_book_id", t.bookId)
                 putInt("tab_${i}_chapter", t.chapter)
                 putString("tab_${i}_search_query", t.searchQuery)
@@ -346,13 +439,12 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    // ── Chapter loading ─────────────────────────────────────────────
+    // ── Chapter loading (translation) ──────────────────────────────
 
     fun openChapter(bookId: String, chapter: Int) {
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
         val translation = tab.translation ?: return
 
-        // Any in-flight entity lookup belongs to a different chapter now.
         chapterEntitiesJob?.cancel()
         _chapterEntities.value = emptyList()
 
@@ -368,6 +460,12 @@ class ReaderViewModel @Inject constructor(
                     _currentChapterData.value = data
                     _currentTranslation.value = translation
 
+                    // Translation mode: clear commentary-side state so the
+                    // UI doesn't render a stale commentary underneath.
+                    _currentCommentaryId.value = null
+                    _currentCommentaryName.value = ""
+                    _currentCommentaryData.value = null
+
                     loadChapterEntities(data)
 
                     _parallelTranslation.value?.let { parallel ->
@@ -382,12 +480,19 @@ class ReaderViewModel @Inject constructor(
 
                     updateCurrentTabInList {
                         it.copy(
+                            translation = translation,
+                            commentaryId = null,
+                            commentaryName = "",
                             bookId = bookId,
                             bookName = data.bookName,
                             chapter = chapter,
                             chapterData = data,
+                            commentaryData = null,
                         )
                     }
+
+                    // Keep the study panel synced with the new chapter.
+                    refreshStudyCommentary()
                 }
             } catch (e: Throwable) {
                 _errorMessage.value = "Error loading chapter: ${e.message}"
@@ -440,9 +545,12 @@ class ReaderViewModel @Inject constructor(
             updateCurrentTabInList {
                 it.copy(
                     translation = translation,
+                    commentaryId = null,
+                    commentaryName = "",
                     books = books,
                     bookId = null,
                     chapterData = null,
+                    commentaryData = null,
                 )
             }
 
@@ -452,6 +560,16 @@ class ReaderViewModel @Inject constructor(
     }
 
     fun selectBook(bookId: String) {
+        val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
+        if (tab.isCommentary) {
+            openCommentaryChapter(
+                commentaryId = tab.commentaryId ?: return,
+                commentaryName = tab.commentaryName,
+                bookId = bookId,
+                chapter = 1,
+            )
+            return
+        }
         val book = _currentBooks.value.firstOrNull { it.id == bookId } ?: return
         openChapter(book.id, 1)
     }
@@ -472,10 +590,265 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
+    // ── Commentary reading (active tab) ────────────────────────────
+
+    /**
+     * Open a chapter of an installed commentary in the active tab.
+     *
+     * Commentaries reuse the same book-id space as translations
+     * (`GEN`, `EXO`, …) but read via `readCommentaryChapter`, which
+     * returns a `CommentaryChapter` (homiletical blocks), not a
+     * `ReaderChapter`.
+     */
+    fun openCommentaryChapter(
+        commentaryId: String,
+        commentaryName: String,
+        bookId: String,
+        chapter: Int,
+    ) {
+        chapterEntitiesJob?.cancel()
+        _chapterEntities.value = emptyList()
+
+        viewModelScope.launch {
+            _isLoadingContent.value = true
+            try {
+                val data = withContext(Dispatchers.IO) {
+                    repository.readCommentaryChapter(commentaryId, bookId, chapter)
+                }
+                if (data == null) {
+                    _errorMessage.value = "No commentary for $bookId $chapter"
+                } else {
+                    _currentCommentaryId.value = commentaryId
+                    _currentCommentaryName.value = commentaryName
+                    _currentCommentaryData.value = data
+
+                    // Commentary mode: clear translation-side state.
+                    _currentChapterData.value = null
+                    _currentTranslation.value = null
+                    _parallelChapterData.value = null
+
+                    if (_currentBooks.value.isEmpty()) {
+                        loadBooksForCommentaryPicker()
+                    }
+
+                    updateCurrentTabInList {
+                        it.copy(
+                            translation = null,
+                            commentaryId = commentaryId,
+                            commentaryName = commentaryName,
+                            bookId = bookId,
+                            bookName = data.bookName,
+                            chapter = chapter,
+                            chapterData = null,
+                            commentaryData = data,
+                        )
+                    }
+                }
+            } catch (e: Throwable) {
+                _errorMessage.value = "Error loading commentary: ${e.message}"
+            } finally {
+                _isLoadingContent.value = false
+            }
+        }
+    }
+
+    /**
+     * Open a commentary in the active tab, seeding it with a book list
+     * and jumping to the first book (or [startBookId] / [startChapter]
+     * if given).
+     */
+    fun openCommentary(
+        commentaryId: String,
+        commentaryName: String,
+        startBookId: String? = null,
+        startChapter: Int = 1,
+    ) {
+        viewModelScope.launch {
+            val books = withContext(Dispatchers.IO) {
+                val sourceId = _currentTranslation.value?.id
+                    ?: _installedTranslations.value.firstOrNull()?.id
+                if (sourceId != null) {
+                    repository.getFreeBibleBooks(sourceId)
+                } else {
+                    emptyList()
+                }
+            }
+            _currentBooks.value = books
+
+            val bookId = startBookId ?: books.firstOrNull()?.id
+            if (bookId != null) {
+                openCommentaryChapter(
+                    commentaryId = commentaryId,
+                    commentaryName = commentaryName,
+                    bookId = bookId,
+                    chapter = startChapter,
+                )
+            } else {
+                _errorMessage.value = "No books available to index the commentary"
+            }
+        }
+    }
+
+    /**
+     * Called by the study-tools Commentary tab. Opens the current
+     * translation chapter's reference in the given commentary, in a
+     * *new* tab so the translation the user was reading stays put.
+     */
+    fun openCommentaryForCurrentChapter(
+        commentaryId: String,
+        commentaryName: String,
+    ) {
+        val data = _currentChapterData.value ?: run {
+            _errorMessage.value = "No chapter loaded to cross-reference"
+            return
+        }
+        val bookId = data.bookId
+        val chapter = data.chapterNumber
+        val books = _currentBooks.value
+
+        val newTab = ReaderTab(
+            translation = null,
+            commentaryId = commentaryId,
+            commentaryName = commentaryName,
+            books = books,
+            bookId = bookId,
+            chapter = chapter,
+        )
+        _tabs.value = _tabs.value + newTab
+        _activeTabIndex.value = _tabs.value.size - 1
+        updateActiveTab(newTab)
+        openCommentaryChapter(commentaryId, commentaryName, bookId, chapter)
+    }
+
+    /**
+     * Replaces the active tab's translation with the given commentary at
+     * the same reference. Use when the user expects an in-place swap.
+     */
+    fun replaceCurrentTabWithCommentary(
+        commentaryId: String,
+        commentaryName: String,
+    ) {
+        val data = _currentChapterData.value ?: run {
+            _errorMessage.value = "No chapter loaded to cross-reference"
+            return
+        }
+        openCommentaryChapter(
+            commentaryId = commentaryId,
+            commentaryName = commentaryName,
+            bookId = data.bookId,
+            chapter = data.chapterNumber,
+        )
+    }
+
+    private suspend fun loadBooksForCommentaryPicker() {
+        val sourceId = _installedTranslations.value.firstOrNull()?.id ?: return
+        val books = withContext(Dispatchers.IO) {
+            repository.getFreeBibleBooks(sourceId)
+        }
+        _currentBooks.value = books
+        updateCurrentTabInList { it.copy(books = books) }
+    }
+
+    // ── Study-panel commentary (independent of active tab) ─────────
+
+    /**
+     * Called by the study panel to load a specific commentary at the
+     * currently-loaded translation chapter. Does NOT change the reader tab.
+     */
+    fun loadStudyCommentary(commentaryId: String, commentaryName: String) {
+        _studyCommentaryId.value = commentaryId
+        _studyCommentaryName.value = commentaryName
+        prefs.edit()
+            .putString("study_commentary_id", commentaryId)
+            .putString("study_commentary_name", commentaryName)
+            .apply()
+        refreshStudyCommentary()
+    }
+
+    /**
+     * Clears the remembered study commentary. Panel goes back to the
+     * "choose a commentary" empty state.
+     */
+    fun clearStudyCommentary() {
+        _studyCommentaryId.value = null
+        _studyCommentaryName.value = ""
+        _studyCommentaryData.value = null
+        prefs.edit()
+            .remove("study_commentary_id")
+            .remove("study_commentary_name")
+            .apply()
+    }
+
+    /**
+     * Promotes the study commentary to a new reader tab at the current
+     * chapter. Leaves the translation tab the user was reading in place.
+     */
+    fun openStudyCommentaryInNewTab() {
+        val id = _studyCommentaryId.value ?: return
+        val name = _studyCommentaryName.value
+        openCommentaryForCurrentChapter(id, name)
+    }
+
+    /**
+     * Re-fetches the study commentary at the reader's current chapter.
+     * Fired automatically by `openChapter` so the panel tracks the
+     * reader without any user action.
+     */
+    private fun refreshStudyCommentary() {
+        val id = _studyCommentaryId.value ?: return
+        val name = _studyCommentaryName.value
+        val data = _currentChapterData.value
+        if (data == null) {
+            _studyCommentaryData.value = null
+            return
+        }
+
+        studyCommentaryJob?.cancel()
+        studyCommentaryJob = viewModelScope.launch {
+            _studyCommentaryLoading.value = true
+            try {
+                _studyCommentaryData.value = withContext(Dispatchers.IO) {
+                    repository.readCommentaryChapter(
+                        commentaryId = id,
+                        bookId = data.bookId,
+                        chapter = data.chapterNumber,
+                    )
+                }
+            } catch (e: Throwable) {
+                _studyCommentaryData.value = null
+                _errorMessage.value = "Commentary load failed: ${e.message}"
+            } finally {
+                _studyCommentaryLoading.value = false
+            }
+        }
+    }
+
     // ── Navigation ──────────────────────────────────────────────────
 
     fun nextChapter() {
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
+
+        if (tab.isCommentary) {
+            val commentaryId = tab.commentaryId ?: return
+            val name = tab.commentaryName
+            val data = tab.commentaryData ?: return
+
+            data.nextChapter?.let { next ->
+                openCommentaryChapter(commentaryId, name, data.bookId, next)
+                return
+            }
+            val book = tab.books.firstOrNull { it.id == data.bookId }
+            if (book != null && data.chapterNumber < book.numberOfChapters) {
+                openCommentaryChapter(commentaryId, name, data.bookId, data.chapterNumber + 1)
+                return
+            }
+            val idx = tab.books.indexOfFirst { it.id == data.bookId }
+            val nextBook = tab.books.getOrNull(idx + 1) ?: return
+            openCommentaryChapter(commentaryId, name, nextBook.id, 1)
+            return
+        }
+
+        // ── Translation path ───────────────────────────────────────
         val data = tab.chapterData ?: return
         val next = data.nextChapter ?: run {
             val idx = tab.books.indexOfFirst { it.id == tab.bookId }
@@ -488,6 +861,28 @@ class ReaderViewModel @Inject constructor(
 
     fun previousChapter() {
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
+
+        if (tab.isCommentary) {
+            val commentaryId = tab.commentaryId ?: return
+            val name = tab.commentaryName
+            val data = tab.commentaryData ?: return
+
+            data.prevChapter?.let { prev ->
+                openCommentaryChapter(commentaryId, name, data.bookId, prev)
+                return
+            }
+            if (data.chapterNumber > 1) {
+                openCommentaryChapter(commentaryId, name, data.bookId, data.chapterNumber - 1)
+                return
+            }
+            val idx = tab.books.indexOfFirst { it.id == data.bookId }
+            if (idx <= 0) return
+            val prevBook = tab.books[idx - 1]
+            openCommentaryChapter(commentaryId, name, prevBook.id, prevBook.numberOfChapters)
+            return
+        }
+
+        // ── Translation path ───────────────────────────────────────
         val data = tab.chapterData ?: return
         val prev = data.prevChapter ?: run {
             val idx = tab.books.indexOfFirst { it.id == tab.bookId }
@@ -507,6 +902,9 @@ class ReaderViewModel @Inject constructor(
         updateCurrentTabInList {
             it.copy(
                 chapterData = _currentChapterData.value,
+                commentaryData = _currentCommentaryData.value,
+                commentaryId = _currentCommentaryId.value,
+                commentaryName = _currentCommentaryName.value,
                 translation = _currentTranslation.value,
                 books = _currentBooks.value,
             )
@@ -561,22 +959,35 @@ class ReaderViewModel @Inject constructor(
 
     private fun updateActiveTab(tab: ReaderTab) {
         _currentTranslation.value = tab.translation
+        _currentCommentaryId.value = tab.commentaryId
+        _currentCommentaryName.value = tab.commentaryName
         _currentBooks.value = tab.books
         _currentChapterData.value = tab.chapterData
+        _currentCommentaryData.value = tab.commentaryData
 
-        if (tab.type == ReaderTabType.READ
-            && tab.chapterData == null
-            && tab.translation != null
-        ) {
-            viewModelScope.launch {
-                val books = withContext(Dispatchers.IO) {
-                    repository.getFreeBibleBooks(tab.translation.id)
+        if (tab.type != ReaderTabType.READ) return
+        if (tab.chapterData != null || tab.commentaryData != null) return
+
+        val bookId = tab.bookId ?: tab.books.firstOrNull()?.id
+        when {
+            tab.isCommentary && bookId != null -> {
+                openCommentaryChapter(
+                    commentaryId = tab.commentaryId!!,
+                    commentaryName = tab.commentaryName,
+                    bookId = bookId,
+                    chapter = tab.chapter,
+                )
+            }
+            tab.translation != null -> {
+                viewModelScope.launch {
+                    val books = withContext(Dispatchers.IO) {
+                        repository.getFreeBibleBooks(tab.translation.id)
+                    }
+                    _currentBooks.value = books
+                    updateCurrentTabInList { it.copy(books = books) }
+                    val bid = bookId ?: books.firstOrNull()?.id
+                    if (bid != null) openChapter(bid, tab.chapter)
                 }
-                _currentBooks.value = books
-                updateCurrentTabInList { it.copy(books = books) }
-
-                val bookId = tab.bookId ?: books.firstOrNull()?.id
-                if (bookId != null) openChapter(bookId, tab.chapter)
             }
         }
     }
@@ -630,11 +1041,6 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Persist the chosen [SearchType] on the active tab. Kept even while
-     * search itself is stubbed — the settings sheet is still interactive
-     * and the value is restored from prefs on the next launch.
-     */
     fun updateSearchType(searchType: SearchType) {
         val idx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(idx) ?: return
@@ -670,6 +1076,9 @@ class ReaderViewModel @Inject constructor(
             bookId = bookId,
             chapter = chapter,
             chapterData = null,
+            commentaryId = null,
+            commentaryName = "",
+            commentaryData = null,
         )
         _tabs.value = _tabs.value.toMutableList().also { it[idx] = updated }
         updateActiveTab(updated)
@@ -757,17 +1166,15 @@ class ReaderViewModel @Inject constructor(
     }
 
     // ── Study tools ─────────────────────────────────────────────────
-    //
-    // The SWORD dictionary / lexicon / commentary API was removed from
-    // `XBibleEngine`. These functions keep the plumbing so the UI still
-    // compiles, but they no longer hit Rust. When the dictionary /
-    // lexicon / commentary surface is re-exported (either on
-    // `XBibleEngine` again, or via `FreeBibleReader`), plug the
-    // `repository.…(...)` call back in at the marked spot.
 
     fun selectTool(tool: StudyTool) {
         _selectedTool.value = tool
-        // TODO: loadCommentaryContent() once a commentary API exists.
+        if (tool == StudyTool.Commentary) {
+            val data = _currentChapterData.value
+            _currentCommentaryReference.value =
+                if (data != null) "${data.bookName} ${data.chapterNumber}"
+                else ""
+        }
     }
 
     fun lookupWord(word: ReaderWord) {
@@ -788,11 +1195,33 @@ class ReaderViewModel @Inject constructor(
 
     // ── Refresh ─────────────────────────────────────────────────────
 
+    /**
+     * Re-reads the installed-translations list and the commentary
+     * catalogue. Called by the study screen on entry, and after any
+     * install/uninstall triggered from the store screen.
+     */
     fun refreshEngine() {
         if (!repository.isInitialized()) return
         viewModelScope.launch {
             _installedTranslations.value = withContext(Dispatchers.IO) {
                 repository.getFreeBibleInstalledTranslations()
+            }
+            _commentaries.value = withContext(Dispatchers.IO) {
+                repository.getInstalledCommentaries()
+            }
+        }
+    }
+
+    /**
+     * Re-reads only the commentary catalogue. Lighter than
+     * [refreshEngine]; use when only commentary install/uninstall
+     * state may have changed.
+     */
+    fun refreshCommentaries() {
+        if (!repository.isInitialized()) return
+        viewModelScope.launch {
+            _commentaries.value = withContext(Dispatchers.IO) {
+                repository.getInstalledCommentaries()
             }
         }
     }
@@ -800,6 +1229,11 @@ class ReaderViewModel @Inject constructor(
     // ── Books helpers (exposed for the book picker sheet) ──────────
 
     fun loadBooksForCurrentTranslation() {
+        val tab = _tabs.value.getOrNull(_activeTabIndex.value)
+        if (tab?.isCommentary == true) {
+            viewModelScope.launch { loadBooksForCommentaryPicker() }
+            return
+        }
         val translation = _currentTranslation.value ?: return
         viewModelScope.launch {
             _currentBooks.value = withContext(Dispatchers.IO) {

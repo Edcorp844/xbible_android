@@ -66,7 +66,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.xbible.core.ui.components.SectionHeader
-import com.example.xbible.feature.store.components.ActionView
+import com.example.xbible.feature.store.components.StoreActionView
 import com.example.xbible.feature.store.components.CollectionTile
 import com.example.xbible.feature.store.components.TranslationCard
 import com.example.xbible.feature.store.components.TranslationCardStatus
@@ -811,7 +811,7 @@ private fun HorizontalShelfSection(
                 TranslationCard(
                     item = item,
                     status = status,
-                    onInstall = { viewModel.installTranslation(item.id) },
+                    onInstall = { viewModel.install(item) },
                     onOpen = {
                         when (item.kind) {
                             "translation" -> onOpenTranslation(item.id, item.name)
@@ -864,9 +864,14 @@ private fun VerticalListShelfSection(
                     activeInstall = activeInstall,
                     isInstalled = viewModel.isInstalled(item.id),
                 )
-                CollectionTile(item = item, onClick = {}, trailing = {ActionView(status = status, onInstall = {viewModel.installTranslation(item.id)}, onOpen = {
-                    onOpenItem(item)
-                })})
+                CollectionTile(item = item, onClick = {}, trailing = {
+                    StoreActionView(
+                        status = status,
+                        onInstall = { viewModel.install(item) },
+                        onOpen = {
+                            onOpenItem(item)
+                        })
+                })
             }
         }
     }

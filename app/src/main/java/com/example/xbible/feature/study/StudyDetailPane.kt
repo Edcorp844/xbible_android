@@ -29,16 +29,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -49,11 +55,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -68,6 +77,10 @@ import androidx.core.text.HtmlCompat
 import com.example.xbible.R
 import com.example.xbible.viewmodel.ReaderViewModel
 import com.example.xbible.viewmodel.StudyTool
+import uniffi.xbible_engine.CommentaryChapter
+import uniffi.xbible_engine.StoreItem
+
+// ── Main split pane ────────────────────────────────────────────────
 
 @Composable
 fun SplitDetailPane(
@@ -111,6 +124,8 @@ fun SplitDetailPane(
         }
     }
 }
+
+// ── Tool picker ────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -195,13 +210,6 @@ fun StudyToolPicker(
 }
 
 // ── Dictionary ─────────────────────────────────────────────────────
-//
-// NOTE: `XBibleEngine.lookupDictionary` and `DictionaryResult` were
-// removed from the current FFI. This tab now renders a single
-// "not available" empty state. To restore it, re-export the dictionary
-// API from Rust, regenerate bindings, and re-add the `dictionaryResults`
-// / `isDictionaryLoading` state flows to `ReaderViewModel` (the
-// `lookupWord(...)` function is already stubbed there).
 
 @Composable
 fun DictionaryTabContent(readerViewModel: ReaderViewModel) {
@@ -282,9 +290,6 @@ fun DictionaryEmptyState() {
 }
 
 // ── Lexicon ────────────────────────────────────────────────────────
-//
-// Same story as Dictionary — `lookupStrongsNumber`, `getLexiconModules`,
-// `LexiconResult`, `SwordModule` are all gone from the FFI.
 
 @Composable
 fun LexiconTabContent(readerViewModel: ReaderViewModel) {
@@ -384,14 +389,25 @@ fun LexiconEmptyState() {
 
 // ── Commentary ─────────────────────────────────────────────────────
 //
-// `getChapterContent` / `getCommentaryModules` / `Section` are all gone
-// from the FFI.
+// The catalogue comes from ReaderViewModel.commentaries, which is
+// populated from BibleRepository.getInstalledCommentaries() on engine
+// setup and on every refreshEngine(). No store-VM dependency; the
+// study panel only knows about the reader ViewModel.
 
 @Composable
 fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
     val currentReference by readerViewModel.currentCommentaryReference.collectAsState()
+    val studyCommentaryId by readerViewModel.studyCommentaryId.collectAsState()
+    val studyCommentaryName by readerViewModel.studyCommentaryName.collectAsState()
+    val studyCommentaryData by readerViewModel.studyCommentaryData.collectAsState()
+    val studyLoading by readerViewModel.studyCommentaryLoading.collectAsState()
+
+    val availableCommentaries by readerViewModel.commentaries.collectAsState()
+
+    var showPicker by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // ── Header ──────────────────────────────────────────────
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -402,22 +418,51 @@ fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = stringResource(R.string.commentary),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        text = stringResource(R.string.no_commentaries_installed),
-                        style = MaterialTheme.typography.labelSmall,
-                    )
+                    // Tappable name → picker. Disabled (silent no-op) when
+                    // nothing is installed; the body below shows the
+                    // "install one from the store" empty state.
+                    TextButton(
+                        onClick = {
+                            if (availableCommentaries.isNotEmpty()) {
+                                showPicker = true
+                            }
+                        },
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                    ) {
+                        Text(
+                            text = studyCommentaryName.ifEmpty {
+                                stringResource(R.string.commentary)
+                            },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Icon(
+                            Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+
+                    // "Open in new tab" — only when a commentary is loaded
+                    if (studyCommentaryId != null) {
+                        TextButton(
+                            onClick = { readerViewModel.openStudyCommentaryInNewTab() },
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.OpenInNew,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                "New tab",
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(2.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
+
+                if (currentReference.isNotEmpty()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(R.string.reference_label),
@@ -433,24 +478,161 @@ fun CommentaryTabContent(readerViewModel: ReaderViewModel) {
                 }
             }
         }
+
+        DropdownMenu(
+            expanded = showPicker,
+            onDismissRequest = { showPicker = false },
+        ) {
+            availableCommentaries.forEach { item: StoreItem ->
+                DropdownMenuItem(
+                    text = { Text(item.name) },
+                    onClick = {
+                        readerViewModel.loadStudyCommentary(item.id, item.name)
+                        showPicker = false
+                    },
+                )
+            }
+        }
+
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
         )
-        FeatureUnavailableState(
-            icon = Icons.AutoMirrored.Filled.MenuBook,
-            titleRes = R.string.commentaries,
-            bodyRes = R.string.commentaries_desc,
+
+        // ── Body ───────────────────────────────────────────────
+        when {
+            availableCommentaries.isEmpty() -> CommentaryNoInstallState()
+
+            studyCommentaryId == null -> CommentaryNoSelectionState(
+                onPick = { showPicker = true },
+            )
+
+            studyLoading -> Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) { CircularProgressIndicator() }
+
+            studyCommentaryData == null -> CommentaryNoContentState()
+
+            else -> CommentaryPanelBody(studyCommentaryData!!)
+        }
+    }
+}
+
+@Composable
+private fun CommentaryNoInstallState() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.MenuBook,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.commentaries),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = "Install a commentary from the Bible Store to read it here.",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline,
         )
     }
 }
 
 @Composable
+private fun CommentaryNoSelectionState(onPick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.MenuBook,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.commentaries),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.commentaries_desc),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline,
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        TextButton(onClick = onPick) {
+            Text("Choose commentary")
+        }
+    }
+}
+
+@Composable
+private fun CommentaryNoContentState() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "No notes for this chapter in the selected commentary.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun CommentaryPanelBody(chapter: CommentaryChapter) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        items(
+            items = chapter.blocks,
+            key = { it.verseNumber to it.text.hashCode() },
+        ) { block ->
+            Column {
+                Text(
+                    text = "Verse ${block.verseNumber}",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = block.text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun CommentaryEmptyState() {
-    FeatureUnavailableState(
-        icon = Icons.AutoMirrored.Filled.MenuBook,
-        titleRes = R.string.commentaries,
-        bodyRes = R.string.commentaries_desc,
-    )
+    CommentaryNoInstallState()
 }
 
 // ── Shared "feature not available" empty state ────────────────────

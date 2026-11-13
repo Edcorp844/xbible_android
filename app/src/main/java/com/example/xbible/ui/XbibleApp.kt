@@ -216,7 +216,9 @@ fun MainContent(
                     // the book list and opens the first book's chapter.
                     readerViewModel.selectTranslation(translation)
                     onNavigate(AppDestinations.STUDY)
-                }
+                },
+                viewModel = hiltViewModel(),
+                storeViewModel = hiltViewModel()
             )
 
             AppDestinations.TIMELINE -> TimelineScreen(

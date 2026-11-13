@@ -216,20 +216,42 @@ class FreeBibleStoreViewModel @Inject constructor(
 
     // ── Install ──────────────────────────────────────────────────
 
-    fun installTranslation(itemId: String) {
+    /**
+     * Installs any store item, dispatching on [StoreItem.kind].
+     *
+     * This is the *only* correct way to install from the UI. Passing
+     * `item.id` alone is not enough — "adam-clarke" is a commentary id,
+     * "theographic:person" is an entity-set id, "kjv" is a translation
+     * id, and none of them are distinguishable from the id alone.
+     */
+    fun install(item: StoreItem) = installItem(itemId = item.id, kind = item.kind)
+
+    /**
+     * Installs by explicit id + kind. Prefer [install] when you already
+     * have the [StoreItem].
+     */
+    fun installItem(itemId: String, kind: String) {
         if (_activeInstall.value?.done == false) {
             Log.w(TAG, "install already in progress")
             return
         }
 
+        Log.d(TAG, "installItem id=$itemId kind=$kind")
+
         viewModelScope.launch {
             try {
                 val taskId = withContext(Dispatchers.IO) {
-                    if (itemId.contains(':')) {
-                        val (dataset, kind) = itemId.split(':', limit = 2)
-                        repository.installFreeBibleEntitySet(dataset, kind)
-                    } else {
-                        repository.installFreeBibleTranslation(itemId)
+                    when (kind) {
+                        "translation" -> repository.installFreeBibleTranslation(itemId)
+
+                        "entity_set" -> {
+                            val (dataset, entityKind) = itemId.split(':', limit = 2)
+                            repository.installFreeBibleEntitySet(dataset, entityKind)
+                        }
+
+                        "commentary" -> repository.installFreeBibleCommentary(itemId)
+
+                        else -> error("unsupported store item kind: $kind (id=$itemId)")
                     }
                 }
                 _activeInstall.value = InstallState(
@@ -239,7 +261,7 @@ class FreeBibleStoreViewModel @Inject constructor(
                 )
                 startPolling(taskId, itemId)
             } catch (e: Throwable) {
-                Log.e(TAG, "installTranslation failed to start", e)
+                Log.e(TAG, "installItem failed to start", e)
                 _activeInstall.value = InstallState(
                     translationId = itemId,
                     taskId = "",
@@ -248,6 +270,26 @@ class FreeBibleStoreViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    /**
+     * Deprecated shim. Kept for source compatibility, but refuses
+     * ambiguous ids so a forgotten call site fails loudly here instead
+     * of issuing a network request to the wrong URL.
+     *
+     * - Entity-set ids (contain `:`) route to the entity branch.
+     * - Any other id is *assumed* to be a translation. If you get a
+     *   404 because it was actually a commentary, replace the call
+     *   site with `install(item)` or `installItem(id, kind)`.
+     */
+    @Deprecated(
+        "Use install(item: StoreItem) — an id alone cannot distinguish " +
+                "translations from commentaries.",
+        ReplaceWith("install(item)"),
+    )
+    fun installTranslation(itemId: String) {
+        val kind = if (itemId.contains(':')) "entity_set" else "translation"
+        installItem(itemId = itemId, kind = kind)
     }
 
     fun uninstallTranslation(translationId: String) {
