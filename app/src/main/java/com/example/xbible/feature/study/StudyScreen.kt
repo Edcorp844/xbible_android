@@ -583,6 +583,14 @@ fun StudyScreen(
                                                         commentaryName = commentaryName,
                                                         config = wordConfig,
                                                         state = listState,
+                                                        selectedVerseNumber = selectedVerseNumber,
+                                                        onVerseLongPress = { verse ->
+                                                            val verseObj = commentaryData?.blocks
+                                                                ?.find { it.verseNumber == verse }
+                                                            selectedVerseNumber = verse
+                                                            selectedVerseText = verseObj?.text ?: ""
+                                                            showVerseActions = true
+                                                        },
                                                     )
                                                 }
                                             }
@@ -909,19 +917,24 @@ fun StudyScreen(
 
         // ── VERSE ACTIONS SHEET ─────────────────────────────────
         if (showVerseActions) {
+            val targetBookName = chapterData?.bookName ?: commentaryData?.bookName ?: currentTab?.bookName ?: ""
+            val targetChapterNum = chapterData?.chapterNumber ?: commentaryData?.chapterNumber ?: currentTab?.chapter ?: 1
+            val targetBookId = chapterData?.bookId ?: commentaryData?.bookId ?: currentTab?.bookId ?: ""
+            val activeHighlight = selectedVerseNumber?.let { highlights["$targetBookId:$targetChapterNum:$it"] }
+
             ModalBottomSheet(
                 onDismissRequest = { closeVerseActions() },
                 sheetState = verseActionsSheetState,
             ) {
                 VerseActionsSheet(
-                    reference = "${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber",
-                    currentHighlight = null,
-                    currentStyle = selectedHighlightStyle,
+                    reference = "$targetBookName $targetChapterNum:$selectedVerseNumber",
+                    currentHighlight = activeHighlight?.color,
+                    currentStyle = activeHighlight?.style ?: selectedHighlightStyle,
                     onDismiss = { closeVerseActions() },
                     onCopy = {
                         clipboardManager.setText(
                             AnnotatedString(
-                                "${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber $selectedVerseText"
+                                "$targetBookName $targetChapterNum:$selectedVerseNumber $selectedVerseText"
                             )
                         )
                         closeVerseActions()
@@ -932,17 +945,17 @@ fun StudyScreen(
                         readerViewModel.selectTool(StudyTool.Dictionary)
                     },
                     onHighlight = { color, style ->
-                        chapterData?.let { ch ->
+                        if (targetBookId.isNotBlank()) {
                             selectedVerseNumber?.let { vNum ->
-                                readerViewModel.setHighlight(ch.bookId, ch.chapterNumber, vNum, color, style)
+                                readerViewModel.setHighlight(targetBookId, targetChapterNum, vNum, color, style)
                             }
                         }
                         closeVerseActions()
                     },
                     onClearHighlight = {
-                        chapterData?.let { ch ->
+                        if (targetBookId.isNotBlank()) {
                             selectedVerseNumber?.let { vNum ->
-                                readerViewModel.removeHighlight(ch.bookId, ch.chapterNumber, vNum)
+                                readerViewModel.removeHighlight(targetBookId, targetChapterNum, vNum)
                             }
                         }
                         closeVerseActions()
@@ -984,7 +997,7 @@ fun StudyScreen(
                     onShare = {
                         clipboardManager.setText(
                             AnnotatedString(
-                                "${chapterData?.bookName} ${chapterData?.chapterNumber}:$selectedVerseNumber — $selectedVerseText"
+                                "$targetBookName $targetChapterNum:$selectedVerseNumber — $selectedVerseText"
                             )
                         )
                         closeVerseActions()

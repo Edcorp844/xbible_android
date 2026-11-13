@@ -2,6 +2,7 @@ package com.example.xbible.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -246,11 +247,34 @@ class ReaderViewModel @Inject constructor(
 
     private val prefs = application.getSharedPreferences("word_config", Context.MODE_PRIVATE)
     private val tabPrefs = application.getSharedPreferences("reader_tabs_state", Context.MODE_PRIVATE)
+    private val highlightsPrefs = application.getSharedPreferences("bible_highlights", Context.MODE_PRIVATE)
+
+    // ── Highlights ──────────────────────────────────────────────────
+    private val _highlights = MutableStateFlow<Map<String, VerseHighlight>>(emptyMap())
+    val highlights: StateFlow<Map<String, VerseHighlight>> = _highlights.asStateFlow()
 
     init {
         loadConfig()
+        loadHighlights()
         restoreStudyCommentaryChoice()
         setupEngine()
+    }
+
+    private fun loadHighlights() {
+        val map = mutableMapOf<String, VerseHighlight>()
+        highlightsPrefs.all.forEach { (key, value) ->
+            if (value is String) {
+                val parts = value.split(":")
+                if (parts.size == 2) {
+                    try {
+                        val color = HighlightColor.valueOf(parts[0])
+                        val style = HighlightStyle.valueOf(parts[1])
+                        map[key] = VerseHighlight(color, style)
+                    } catch (_: Exception) {}
+                }
+            }
+        }
+        _highlights.value = map
     }
 
     // ── Bootstrap ───────────────────────────────────────────────────
@@ -1014,29 +1038,68 @@ class ReaderViewModel @Inject constructor(
     fun performSearch(query: String) {
         val tabIdx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(tabIdx) ?: return
-        if (tab.type != ReaderTabType.SEARCH) return
+        if (tab.type != ReaderTabType.SEARCH || tab.translation == null) return
         val trimmed = query.trim()
         if (trimmed.isEmpty()) {
             _tabs.update { tabs ->
                 tabs.mapIndexed { i, t ->
-                    if (i == tabIdx) t.copy(searchHits = emptyList(), searchQuery = "")
+                    if (i == tabIdx) t.copy(searchHits = emptyList(), searchQuery = "", searchHitsContent = emptyMap())
                     else t
                 }
             }
             return
         }
 
-        _errorMessage.value =
-            "Search is not available in the current engine build."
+        val translationId = tab.translation.id
+
         _tabs.update { tabs ->
             tabs.mapIndexed { i, t ->
                 if (i == tabIdx) t.copy(
-                    isSearching = false,
+                    isSearching = true,
                     searchQuery = query,
                     searchHits = emptyList(),
                     searchHitsContent = emptyMap(),
                     searchLoadProgress = 0f,
                 ) else t
+            }
+        }
+
+        viewModelScope.launch {
+            try {
+                val results = withContext(Dispatchers.IO) {
+                    repository.searchBible(translationId, trimmed) { progress ->
+                        _tabs.update { tabs ->
+                            tabs.mapIndexed { i, t ->
+                                if (i == tabIdx && t.searchQuery == query) {
+                                    t.copy(searchLoadProgress = progress)
+                                } else t
+                            }
+                        }
+                    }
+                }
+                val hits = results.map { it.first }
+                val content = results.toMap()
+
+                _tabs.update { tabs ->
+                    tabs.mapIndexed { i, t ->
+                        if (i == tabIdx && t.searchQuery == query) {
+                            t.copy(
+                                isSearching = false,
+                                searchHits = hits,
+                                searchHitsContent = content,
+                                searchLoadProgress = 1f,
+                            )
+                        } else t
+                    }
+                }
+            } catch (e: Throwable) {
+                Log.e("ReaderSearch", "performSearch failed", e)
+                _tabs.update { tabs ->
+                    tabs.mapIndexed { i, t ->
+                        if (i == tabIdx) t.copy(isSearching = false) else t
+                    }
+                }
+                _errorMessage.value = e.message ?: "Search failed"
             }
         }
     }
@@ -1143,9 +1206,7 @@ class ReaderViewModel @Inject constructor(
         saveConfig(def)
     }
 
-    // ── Highlights ──────────────────────────────────────────────────
-    private val _highlights = MutableStateFlow<Map<String, VerseHighlight>>(emptyMap())
-    val highlights: StateFlow<Map<String, VerseHighlight>> = _highlights.asStateFlow()
+
 
     fun setHighlight(
         bookId: String,
@@ -1158,11 +1219,13 @@ class ReaderViewModel @Inject constructor(
         _highlights.update { current ->
             current + (key to VerseHighlight(color, style))
         }
+        highlightsPrefs.edit().putString(key, "${color.name}:${style.name}").apply()
     }
 
     fun removeHighlight(bookId: String, chapter: Int, verse: Int) {
         val key = "$bookId:$chapter:$verse"
         _highlights.update { it - key }
+        highlightsPrefs.edit().remove(key).apply()
     }
 
     // ── Study tools ─────────────────────────────────────────────────

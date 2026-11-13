@@ -1,9 +1,18 @@
 package com.example.xbible.viewmodel
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.xbible.MainActivity
 import com.example.xbible.data.BibleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +30,7 @@ import uniffi.xbible_engine.LanguageFacet
 import uniffi.xbible_engine.StoreItem
 import uniffi.xbible_engine.StoreShelf
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "FreeBibleStoreVM"
 
@@ -81,6 +91,103 @@ class FreeBibleStoreViewModel @Inject constructor(
 
     private val _activeInstall = MutableStateFlow<InstallState?>(null)
     val activeInstall: StateFlow<InstallState?> = _activeInstall.asStateFlow()
+
+    private val notificationManager by lazy {
+        NotificationManagerCompat.from(getApplication())
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                INSTALL_CHANNEL_ID,
+                "Bible Downloads & Installations",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Shows progress of downloading Bible translations and modules"
+            }
+            val manager = getApplication<Application>().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun updateInstallNotification(state: InstallState) {
+        createNotificationChannel()
+
+        val context = getApplication<Application>()
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val title = when {
+            state.failed != null -> "Installation Failed: ${state.translationId.uppercase()}"
+            state.done -> "${state.translationId.uppercase()} Installed"
+            state.fraction <= 0f -> "Preparing ${state.translationId.uppercase()}"
+            else -> "Downloading ${state.translationId.uppercase()}"
+        }
+
+        val contentText = when {
+            state.failed != null -> state.failed
+            state.done -> "Download complete"
+            state.message.isNotBlank() -> state.message
+            else -> "Downloading..."
+        }
+
+        val builder = NotificationCompat.Builder(context, INSTALL_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setContentTitle(title)
+            .setContentText(contentText)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+
+        if (state.done) {
+            builder.setOngoing(false)
+                .setAutoCancel(true)
+                .setProgress(0, 0, false)
+            if (state.failed != null) {
+                builder.setSmallIcon(android.R.drawable.stat_notify_error)
+            } else {
+                builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
+            }
+        } else {
+            builder.setOngoing(true)
+                .setAutoCancel(false)
+            val progress = (state.fraction * 100).toInt()
+            if (state.fraction <= 0f) {
+                builder.setProgress(100, 0, true)
+            } else {
+                builder.setProgress(100, progress, false)
+            }
+        }
+
+        try {
+            notificationManager.notify(INSTALL_NOTIFICATION_ID, builder.build())
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Failed to post notification (permission missing?)", e)
+        }
+    }
+
+    private fun cancelInstallNotification() {
+        try {
+            notificationManager.cancel(INSTALL_NOTIFICATION_ID)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to cancel notification", e)
+        }
+    }
+
+    private fun updateActiveInstall(state: InstallState?) {
+        _activeInstall.value = state
+        if (state != null) {
+            updateInstallNotification(state)
+        } else {
+            cancelInstallNotification()
+        }
+    }
 
     // ── Browse state ─────────────────────────────────────────────
 
@@ -195,7 +302,7 @@ class FreeBibleStoreViewModel @Inject constructor(
         }
 
         searchJob = viewModelScope.launch {
-            delay(250)
+            delay(250.milliseconds)
             try {
                 val results = withContext(Dispatchers.IO) {
                     repository.searchFreeBibleStore(query)
@@ -254,42 +361,26 @@ class FreeBibleStoreViewModel @Inject constructor(
                         else -> error("unsupported store item kind: $kind (id=$itemId)")
                     }
                 }
-                _activeInstall.value = InstallState(
-                    translationId = itemId,
-                    taskId = taskId,
-                    message = "Queued",
+                updateActiveInstall(
+                    InstallState(
+                        translationId = itemId,
+                        taskId = taskId,
+                        message = "Queued",
+                    )
                 )
                 startPolling(taskId, itemId)
             } catch (e: Throwable) {
                 Log.e(TAG, "installItem failed to start", e)
-                _activeInstall.value = InstallState(
-                    translationId = itemId,
-                    taskId = "",
-                    failed = e.message ?: "install failed",
-                    done = true,
+                updateActiveInstall(
+                    InstallState(
+                        translationId = itemId,
+                        taskId = "",
+                        failed = e.message ?: "install failed",
+                        done = true,
+                    )
                 )
             }
         }
-    }
-
-    /**
-     * Deprecated shim. Kept for source compatibility, but refuses
-     * ambiguous ids so a forgotten call site fails loudly here instead
-     * of issuing a network request to the wrong URL.
-     *
-     * - Entity-set ids (contain `:`) route to the entity branch.
-     * - Any other id is *assumed* to be a translation. If you get a
-     *   404 because it was actually a commentary, replace the call
-     *   site with `install(item)` or `installItem(id, kind)`.
-     */
-    @Deprecated(
-        "Use install(item: StoreItem) — an id alone cannot distinguish " +
-                "translations from commentaries.",
-        ReplaceWith("install(item)"),
-    )
-    fun installTranslation(itemId: String) {
-        val kind = if (itemId.contains(':')) "entity_set" else "translation"
-        installItem(itemId = itemId, kind = kind)
     }
 
     fun uninstallTranslation(translationId: String) {
@@ -298,10 +389,12 @@ class FreeBibleStoreViewModel @Inject constructor(
                 val taskId = withContext(Dispatchers.IO) {
                     repository.uninstallFreeBibleTranslation(translationId)
                 }
-                _activeInstall.value = InstallState(
-                    translationId = translationId,
-                    taskId = taskId,
-                    message = "Queued",
+                updateActiveInstall(
+                    InstallState(
+                        translationId = translationId,
+                        taskId = taskId,
+                        message = "Queued",
+                    )
                 )
                 startPolling(taskId, translationId)
             } catch (e: Throwable) {
@@ -333,7 +426,7 @@ class FreeBibleStoreViewModel @Inject constructor(
             return
         }
         pollJob?.cancel()
-        _activeInstall.value = null
+        updateActiveInstall(null)
     }
 
     private fun startPolling(taskId: String, itemId: String) {
@@ -352,10 +445,12 @@ class FreeBibleStoreViewModel @Inject constructor(
                 }
 
                 if (status == null) {
-                    _activeInstall.value = _activeInstall.value?.copy(
+                updateActiveInstall(
+                    _activeInstall.value?.copy(
                         failed = "Task not found",
                         done = true,
                     )
+                )
                     return@launch
                 }
 
@@ -367,11 +462,11 @@ class FreeBibleStoreViewModel @Inject constructor(
                     taskId = taskId,
                     fraction = p.fraction.toFloat().coerceIn(0f, 1f),
                     message = p.message,
-                    chaptersDone = p.chaptersDone.toInt(),
-                    chaptersTotal = p.chaptersTotal.toInt(),
-                    versesDone = p.versesDone.toInt(),
+                    chaptersDone = p.chaptersDone,
+                    chaptersTotal = p.chaptersTotal,
+                    versesDone = p.versesDone,
                     currentBook = p.currentBookName,
-                    currentChapter = p.currentChapter.toInt(),
+                    currentChapter = p.currentChapter,
                     failed = when (state) {
                         is FreeBibleTaskState.Failed -> state.error
                         else -> null
@@ -385,7 +480,7 @@ class FreeBibleStoreViewModel @Inject constructor(
                     },
                 )
 
-                _activeInstall.value = updated
+                updateActiveInstall(updated)
 
                 if (updated.done) {
                     // Force-refresh so installed flags update on the cards.
@@ -514,11 +609,12 @@ class FreeBibleStoreViewModel @Inject constructor(
     override fun onCleared() {
         pollJob?.cancel()
         searchJob?.cancel()
-        super.onCleared()
     }
 
     companion object {
         private const val REFRESH_COOLDOWN_MS = 5 * 60 * 1000L
         private const val PAGE_SIZE = 100
+        private const val INSTALL_CHANNEL_ID = "bible_install_channel"
+        private const val INSTALL_NOTIFICATION_ID = 1001
     }
 }

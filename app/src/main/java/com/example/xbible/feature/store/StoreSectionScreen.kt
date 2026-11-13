@@ -342,7 +342,7 @@ private fun SectionItemCard(
         item = item,
         status = status,
         cardWidth = null,   // ← fill the grid cell
-        onInstall = { viewModel.installTranslation(item.id) },
+        onInstall = { viewModel.install(item) },
         onOpen = {
             when (item.kind) {
                 "translation" -> onOpenTranslation(item.id, item.name)

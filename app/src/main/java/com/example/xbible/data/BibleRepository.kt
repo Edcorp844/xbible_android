@@ -606,6 +606,44 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     // ── Search / cross-reference ───────────────────────────────────
 
+    /** Full-text search across the installed translation chapters. */
+    suspend fun searchBible(
+        translationId: String,
+        query: String,
+        onProgress: (Float) -> Unit = {},
+    ): List<Pair<String, ReaderChapter>> = onEngine {
+        val results = mutableListOf<Pair<String, ReaderChapter>>()
+        val reader = freeBibleReader ?: return@onEngine results
+        val books = reader.getBooks(translationId)
+        val q = query.trim().lowercase()
+        if (q.isEmpty()) return@onEngine results
+
+        val totalChapters = books.sumOf { it.numberOfChapters }.toFloat().coerceAtLeast(1f)
+        var chaptersChecked = 0f
+
+        for (book in books) {
+            for (ch in 1..book.numberOfChapters) {
+                val chapter = reader.readChapter(translationId, book.id, ch)
+                chaptersChecked += 1f
+                onProgress(chaptersChecked / totalChapters)
+
+                if (chapter == null) continue
+                val matches = chapter.blocks.any { block ->
+                    when (block.itemType) {
+                        "verse" -> block.verses.any { v -> v.text.lowercase().contains(q) }
+                        "heading", "hebrew_subtitle" -> block.text.lowercase().contains(q)
+                        else -> false
+                    }
+                }
+                if (matches) {
+                    val hitKey = "${book.id} $ch"
+                    results.add(hitKey to chapter)
+                }
+            }
+        }
+        results
+    }
+
     suspend fun searchFreeBibleEntities(
         datasetId: String, query: String,
     ): List<EntitySummary> = onEngine {

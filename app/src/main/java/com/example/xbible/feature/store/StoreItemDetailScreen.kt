@@ -266,7 +266,7 @@ fun StoreItemDetailScreen(
 
                 else -> {
                     FilledTonalButton(
-                        onClick = { viewModel.installTranslation(item.id) },
+                        onClick = { viewModel.install(item) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = CircleShape,
                     ) {
