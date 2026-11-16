@@ -16,6 +16,7 @@ import com.example.xbible.data.BibleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +31,8 @@ import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.ReaderBlock
 import uniffi.xbible_engine.ReaderChapter
 import uniffi.xbible_engine.ReaderWord
+import uniffi.xbible_engine.SearchHit
+import uniffi.xbible_engine.SearchResults
 import uniffi.xbible_engine.StoreItem
 import java.util.UUID
 import javax.inject.Inject
@@ -38,15 +41,6 @@ import javax.inject.Inject
 
 enum class ReaderTabType { READ, SEARCH }
 
-/**
- * Local mirror of the Rust `SearchType` enum.
- *
- * The FFI no longer exports `SearchType` (it went away with the SWORD
- * search surface). This enum keeps the search-settings UI + `ReaderTab`
- * compiling. When the Rust search API is re-exported, delete this file
- * and switch the imports in `ReaderViewModel.kt` / `StudySheets.kt`
- * back to `uniffi.xbible_engine.SearchType`.
- */
 enum class SearchType {
     REGULAR_EXPRESSION,
     PHRASE,
@@ -63,7 +57,6 @@ enum class StudyTool {
  * A tab in [ReaderTabType.READ] mode is *either* a translation read
  * ([translation] set, [chapterData] populated) *or* a commentary read
  * ([commentaryId] set, [commentaryData] populated) — never both.
- * [isCommentary] is the single source of truth for that distinction.
  */
 data class ReaderTab(
     val id: String = UUID.randomUUID().toString(),
@@ -88,22 +81,16 @@ data class ReaderTab(
     // ── Search state ───────────────────────────────────────────
     val searchQuery: String = "",
     val searchType: SearchType = SearchType.MULTI_WORD,
-    val searchHits: List<String> = emptyList(),
-    val searchHitsContent: Map<String, ReaderChapter> = emptyMap(),
+    val searchResults: SearchResults? = null,
     val isSearching: Boolean = false,
-    val searchLoadProgress: Float = 0f,
+    val searchProgress: Float = 0f,
+    val searchError: String? = null,
 ) {
     val isCommentary: Boolean get() = commentaryId != null && translation == null
 
     val blocks: List<ReaderBlock> get() = chapterData?.blocks.orEmpty()
     val commentaryBlocks: List<CommentaryBlock> get() = commentaryData?.blocks.orEmpty()
 
-    /**
-     * Forward navigation hint. For translations this is the Rust
-     * `ReaderChapter.nextChapter`; for commentaries the ViewModel
-     * falls back to book-index arithmetic when `CommentaryChapter`
-     * doesn't expose `nextChapter`.
-     */
     val hasNextChapter: Boolean
         get() = if (isCommentary) commentaryData?.nextChapter != null
         else chapterData?.nextChapter != null
@@ -145,7 +132,7 @@ class ReaderViewModel @Inject constructor(
     val parallelTranslation: StateFlow<InstalledTranslation?> =
         _parallelTranslation.asStateFlow()
 
-    // ── Installed commentaries (catalogue for the study panel) ─────
+    // ── Installed commentaries ─────────────────────────────────────
 
     private val _commentaries = MutableStateFlow<List<StoreItem>>(emptyList())
     val commentaries: StateFlow<List<StoreItem>> = _commentaries.asStateFlow()
@@ -156,7 +143,6 @@ class ReaderViewModel @Inject constructor(
     val currentChapterData: StateFlow<ReaderChapter?> =
         _currentChapterData.asStateFlow()
 
-    /** All entities mentioned anywhere in the currently loaded chapter. */
     private val _chapterEntities = MutableStateFlow<List<EntityRef>>(emptyList())
     val chapterEntities: StateFlow<List<EntityRef>> = _chapterEntities.asStateFlow()
 
@@ -164,7 +150,7 @@ class ReaderViewModel @Inject constructor(
     val parallelChapterData: StateFlow<ReaderChapter?> =
         _parallelChapterData.asStateFlow()
 
-    // ── Current commentary (commentary reads in the active tab) ────
+    // ── Current commentary (active tab) ────────────────────────────
 
     private val _currentCommentaryId = MutableStateFlow<String?>(null)
     val currentCommentaryId: StateFlow<String?> = _currentCommentaryId.asStateFlow()
@@ -176,12 +162,7 @@ class ReaderViewModel @Inject constructor(
     val currentCommentaryData: StateFlow<CommentaryChapter?> =
         _currentCommentaryData.asStateFlow()
 
-    // ── Study panel commentary (independent of the active tab) ─────
-    //
-    // The study-tools Commentary tab reads a commentary at the reader's
-    // current chapter without switching tabs. `studyCommentaryId` is
-    // persisted; `loadStudyCommentary` sets it; `openStudyCommentaryInNewTab`
-    // promotes it to a dedicated reader tab.
+    // ── Study panel commentary ─────────────────────────────────────
 
     private val _studyCommentaryId = MutableStateFlow<String?>(null)
     val studyCommentaryId: StateFlow<String?> = _studyCommentaryId.asStateFlow()
@@ -218,7 +199,7 @@ class ReaderViewModel @Inject constructor(
     private val _activeTabIndex = MutableStateFlow(0)
     val activeTabIndex: StateFlow<Int> = _activeTabIndex.asStateFlow()
 
-    // ── Verse entities (for the "who's here" sheet) ─────────────────
+    // ── Verse entities ─────────────────────────────────────────────
 
     private val _verseEntities = MutableStateFlow<List<EntityRef>>(emptyList())
     val verseEntities: StateFlow<List<EntityRef>> = _verseEntities.asStateFlow()
@@ -240,7 +221,7 @@ class ReaderViewModel @Inject constructor(
 
     // ── Internal state ──────────────────────────────────────────────
 
-    private var searchContentLoadingJob: Job? = null
+    private var searchJob: Job? = null
     private var entitiesJob: Job? = null
     private var chapterEntitiesJob: Job? = null
     private var studyCommentaryJob: Job? = null
@@ -250,6 +231,7 @@ class ReaderViewModel @Inject constructor(
     private val highlightsPrefs = application.getSharedPreferences("bible_highlights", Context.MODE_PRIVATE)
 
     // ── Highlights ──────────────────────────────────────────────────
+
     private val _highlights = MutableStateFlow<Map<String, VerseHighlight>>(emptyMap())
     val highlights: StateFlow<Map<String, VerseHighlight>> = _highlights.asStateFlow()
 
@@ -484,8 +466,6 @@ class ReaderViewModel @Inject constructor(
                     _currentChapterData.value = data
                     _currentTranslation.value = translation
 
-                    // Translation mode: clear commentary-side state so the
-                    // UI doesn't render a stale commentary underneath.
                     _currentCommentaryId.value = null
                     _currentCommentaryName.value = ""
                     _currentCommentaryData.value = null
@@ -515,7 +495,6 @@ class ReaderViewModel @Inject constructor(
                         )
                     }
 
-                    // Keep the study panel synced with the new chapter.
                     refreshStudyCommentary()
                 }
             } catch (e: Throwable) {
@@ -526,10 +505,6 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Fetch every entity mentioned in [chapter] and publish it on
-     * [chapterEntities] for the "In This Chapter" footer.
-     */
     private fun loadChapterEntities(chapter: ReaderChapter) {
         val verseNumbers = chapter.blocks
             .flatMap { it.verses }
@@ -616,14 +591,6 @@ class ReaderViewModel @Inject constructor(
 
     // ── Commentary reading (active tab) ────────────────────────────
 
-    /**
-     * Open a chapter of an installed commentary in the active tab.
-     *
-     * Commentaries reuse the same book-id space as translations
-     * (`GEN`, `EXO`, …) but read via `readCommentaryChapter`, which
-     * returns a `CommentaryChapter` (homiletical blocks), not a
-     * `ReaderChapter`.
-     */
     fun openCommentaryChapter(
         commentaryId: String,
         commentaryName: String,
@@ -646,7 +613,6 @@ class ReaderViewModel @Inject constructor(
                     _currentCommentaryName.value = commentaryName
                     _currentCommentaryData.value = data
 
-                    // Commentary mode: clear translation-side state.
                     _currentChapterData.value = null
                     _currentTranslation.value = null
                     _parallelChapterData.value = null
@@ -676,11 +642,6 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Open a commentary in the active tab, seeding it with a book list
-     * and jumping to the first book (or [startBookId] / [startChapter]
-     * if given).
-     */
     fun openCommentary(
         commentaryId: String,
         commentaryName: String,
@@ -713,11 +674,6 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Called by the study-tools Commentary tab. Opens the current
-     * translation chapter's reference in the given commentary, in a
-     * *new* tab so the translation the user was reading stays put.
-     */
     fun openCommentaryForCurrentChapter(
         commentaryId: String,
         commentaryName: String,
@@ -744,10 +700,6 @@ class ReaderViewModel @Inject constructor(
         openCommentaryChapter(commentaryId, commentaryName, bookId, chapter)
     }
 
-    /**
-     * Replaces the active tab's translation with the given commentary at
-     * the same reference. Use when the user expects an in-place swap.
-     */
     fun replaceCurrentTabWithCommentary(
         commentaryId: String,
         commentaryName: String,
@@ -773,12 +725,8 @@ class ReaderViewModel @Inject constructor(
         updateCurrentTabInList { it.copy(books = books) }
     }
 
-    // ── Study-panel commentary (independent of active tab) ─────────
+    // ── Study-panel commentary ─────────────────────────────────────
 
-    /**
-     * Called by the study panel to load a specific commentary at the
-     * currently-loaded translation chapter. Does NOT change the reader tab.
-     */
     fun loadStudyCommentary(commentaryId: String, commentaryName: String) {
         _studyCommentaryId.value = commentaryId
         _studyCommentaryName.value = commentaryName
@@ -789,10 +737,6 @@ class ReaderViewModel @Inject constructor(
         refreshStudyCommentary()
     }
 
-    /**
-     * Clears the remembered study commentary. Panel goes back to the
-     * "choose a commentary" empty state.
-     */
     fun clearStudyCommentary() {
         _studyCommentaryId.value = null
         _studyCommentaryName.value = ""
@@ -803,24 +747,14 @@ class ReaderViewModel @Inject constructor(
             .apply()
     }
 
-    /**
-     * Promotes the study commentary to a new reader tab at the current
-     * chapter. Leaves the translation tab the user was reading in place.
-     */
     fun openStudyCommentaryInNewTab() {
         val id = _studyCommentaryId.value ?: return
         val name = _studyCommentaryName.value
         openCommentaryForCurrentChapter(id, name)
     }
 
-    /**
-     * Re-fetches the study commentary at the reader's current chapter.
-     * Fired automatically by `openChapter` so the panel tracks the
-     * reader without any user action.
-     */
     private fun refreshStudyCommentary() {
         val id = _studyCommentaryId.value ?: return
-        val name = _studyCommentaryName.value
         val data = _currentChapterData.value
         if (data == null) {
             _studyCommentaryData.value = null
@@ -872,7 +806,6 @@ class ReaderViewModel @Inject constructor(
             return
         }
 
-        // ── Translation path ───────────────────────────────────────
         val data = tab.chapterData ?: return
         val next = data.nextChapter ?: run {
             val idx = tab.books.indexOfFirst { it.id == tab.bookId }
@@ -906,7 +839,6 @@ class ReaderViewModel @Inject constructor(
             return
         }
 
-        // ── Translation path ───────────────────────────────────────
         val data = tab.chapterData ?: return
         val prev = data.prevChapter ?: run {
             val idx = tab.books.indexOfFirst { it.id == tab.bookId }
@@ -1027,79 +959,104 @@ class ReaderViewModel @Inject constructor(
     }
 
     // ── Search ──────────────────────────────────────────────────────
-    //
-    // NOTE: The current FreeBible FFI does not expose a text-search API.
-    // The SWORD `search(moduleName, query, searchType)` call was on
-    // `XBibleEngine` and is no longer exported. To restore search, add a
-    // `search(...)`-shaped method on `FreeBibleReader` (or a new
-    // `search` entry point on `FreeBibleEngine`) in Rust, regenerate
-    // bindings, and wire it up here.
 
+    fun updateSearchQuery(query: String) {
+        val idx = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(idx) ?: return
+        if (tab.type != ReaderTabType.SEARCH) return
+
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == idx) {
+                    t.copy(
+                        searchQuery = query,
+                        isSearching = query.isNotBlank(),
+                    )
+                } else t
+            }
+        }
+    }
+
+    /**
+     * Runs a search against the active tab's translation using the Rust FTS5 engine.
+     */
     fun performSearch(query: String) {
         val tabIdx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(tabIdx) ?: return
         if (tab.type != ReaderTabType.SEARCH || tab.translation == null) return
+
         val trimmed = query.trim()
         if (trimmed.isEmpty()) {
-            _tabs.update { tabs ->
-                tabs.mapIndexed { i, t ->
-                    if (i == tabIdx) t.copy(searchHits = emptyList(), searchQuery = "", searchHitsContent = emptyMap())
-                    else t
-                }
-            }
+            clearSearch()
             return
         }
 
+        searchJob?.cancel()
         val translationId = tab.translation.id
 
+        // Reset state for the new search
         _tabs.update { tabs ->
             tabs.mapIndexed { i, t ->
                 if (i == tabIdx) t.copy(
                     isSearching = true,
                     searchQuery = query,
-                    searchHits = emptyList(),
-                    searchHitsContent = emptyMap(),
-                    searchLoadProgress = 0f,
+                    searchResults = null,
+                    searchProgress = 0f,
+                    searchError = null,
                 ) else t
             }
         }
 
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
             try {
+                // Debounce so we don't spam the engine on every keystroke.
+                // The UI calls updateSearchQuery on every keystroke, and the
+                // Compose side can call performSearch on submit or on a timer.
+                // Here, we add a small delay if this is called directly.
+                delay(300)
+
                 val results = withContext(Dispatchers.IO) {
-                    repository.searchBible(translationId, trimmed) { progress ->
-                        _tabs.update { tabs ->
-                            tabs.mapIndexed { i, t ->
-                                if (i == tabIdx && t.searchQuery == query) {
-                                    t.copy(searchLoadProgress = progress)
-                                } else t
+                    repository.searchBible(
+                        query = trimmed,
+                        translationId = translationId,
+                        limit = 200,
+                        onProgress = { progress ->
+                            _tabs.update { tabs ->
+                                tabs.mapIndexed { i, t ->
+                                    if (i == tabIdx && t.searchQuery == query) {
+                                        t.copy(searchProgress = progress.fraction.toFloat())
+                                    } else t
+                                }
                             }
                         }
-                    }
+                    )
                 }
-                val hits = results.map { it.first }
-                val content = results.toMap()
 
+                // Only apply results if the query hasn't changed
                 _tabs.update { tabs ->
                     tabs.mapIndexed { i, t ->
                         if (i == tabIdx && t.searchQuery == query) {
                             t.copy(
                                 isSearching = false,
-                                searchHits = hits,
-                                searchHitsContent = content,
-                                searchLoadProgress = 1f,
+                                searchResults = results,
+                                searchProgress = 1f,
                             )
                         } else t
                     }
                 }
             } catch (e: Throwable) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
                 Log.e("ReaderSearch", "performSearch failed", e)
                 _tabs.update { tabs ->
                     tabs.mapIndexed { i, t ->
-                        if (i == tabIdx) t.copy(isSearching = false) else t
+                        if (i == tabIdx && t.searchQuery == query) {
+                            t.copy(
+                                isSearching = false,
+                                searchError = e.message ?: "Search failed"
+                            )
+                        } else t
                     }
                 }
-                _errorMessage.value = e.message ?: "Search failed"
             }
         }
     }
@@ -1118,26 +1075,53 @@ class ReaderViewModel @Inject constructor(
         if (tab.searchQuery.isNotBlank()) performSearch(tab.searchQuery)
     }
 
-    /** "GEN 1:1" or "GEN 1" → ("GEN", 1) */
-    private fun parseHitKey(key: String): Pair<String, Int>? {
-        val parts = key.trim().split(Regex("\\s+"))
-        if (parts.size < 2) return null
-        val bookId = parts[0]
-        val chap = parts[1].substringBefore(':').toIntOrNull() ?: return null
-        return bookId to chap
+    fun cancelSearch() {
+        searchJob?.cancel()
+        searchJob = null
+        val idx = _activeTabIndex.value
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == idx) t.copy(isSearching = false) else t
+            }
+        }
     }
 
-    fun openSearchHit(key: String) {
+    fun clearSearch() {
+        val idx = _activeTabIndex.value
+        searchJob?.cancel()
+        searchJob = null
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == idx) t.copy(
+                    searchQuery = "",
+                    searchResults = null,
+                    isSearching = false,
+                    searchProgress = 0f,
+                    searchError = null,
+                ) else t
+            }
+        }
+    }
+
+    /**
+     * Opens a search hit as a reading tab. A [SearchHit] already
+     * carries the translation id, book id, and chapter, so no
+     * parsing of a rendered "GEN 1:1" string is required.
+     */
+    fun openSearchHit(hit: SearchHit) {
         val idx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(idx) ?: return
-        if (tab.type != ReaderTabType.SEARCH || tab.translation == null) return
+        if (tab.type != ReaderTabType.SEARCH) return
 
-        val (bookId, chapter) = parseHitKey(key) ?: return
+        val translation = _installedTranslations.value.find { it.id == hit.translationId }
+            ?: tab.translation ?: return
 
         val updated = tab.copy(
             type = ReaderTabType.READ,
-            bookId = bookId,
-            chapter = chapter,
+            translation = translation,
+            bookId = hit.bookId,
+            bookName = hit.bookName,
+            chapter = hit.chapter,
             chapterData = null,
             commentaryId = null,
             commentaryName = "",
@@ -1145,24 +1129,27 @@ class ReaderViewModel @Inject constructor(
         )
         _tabs.value = _tabs.value.toMutableList().also { it[idx] = updated }
         updateActiveTab(updated)
-        openChapter(bookId, chapter)
+        openChapter(hit.bookId, hit.chapter)
     }
 
-    fun openSearchHitInNewTab(key: String) {
+    fun openSearchHitInNewTab(hit: SearchHit) {
         val tab = _tabs.value.getOrNull(_activeTabIndex.value) ?: return
-        if (tab.type != ReaderTabType.SEARCH || tab.translation == null) return
-        val (bookId, chapter) = parseHitKey(key) ?: return
+        if (tab.type != ReaderTabType.SEARCH) return
+
+        val translation = _installedTranslations.value.find { it.id == hit.translationId }
+            ?: _currentTranslation.value ?: return
 
         val newTab = ReaderTab(
             type = ReaderTabType.READ,
-            translation = tab.translation,
-            bookId = bookId,
-            chapter = chapter,
+            translation = translation,
+            bookId = hit.bookId,
+            bookName = hit.bookName,
+            chapter = hit.chapter,
         )
         _tabs.value = _tabs.value + newTab
         _activeTabIndex.value = _tabs.value.size - 1
         updateActiveTab(newTab)
-        openChapter(bookId, chapter)
+        openChapter(hit.bookId, hit.chapter)
     }
 
     // ── Verse entities ──────────────────────────────────────────────
@@ -1206,7 +1193,7 @@ class ReaderViewModel @Inject constructor(
         saveConfig(def)
     }
 
-
+    // ── Highlights ──────────────────────────────────────────────────
 
     fun setHighlight(
         bookId: String,
@@ -1258,11 +1245,6 @@ class ReaderViewModel @Inject constructor(
 
     // ── Refresh ─────────────────────────────────────────────────────
 
-    /**
-     * Re-reads the installed-translations list and the commentary
-     * catalogue. Called by the study screen on entry, and after any
-     * install/uninstall triggered from the store screen.
-     */
     fun refreshEngine() {
         if (!repository.isInitialized()) return
         viewModelScope.launch {
@@ -1275,11 +1257,6 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Re-reads only the commentary catalogue. Lighter than
-     * [refreshEngine]; use when only commentary install/uninstall
-     * state may have changed.
-     */
     fun refreshCommentaries() {
         if (!repository.isInitialized()) return
         viewModelScope.launch {
@@ -1289,7 +1266,7 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
-    // ── Books helpers (exposed for the book picker sheet) ──────────
+    // ── Books helpers ───────────────────────────────────────────────
 
     fun loadBooksForCurrentTranslation() {
         val tab = _tabs.value.getOrNull(_activeTabIndex.value)

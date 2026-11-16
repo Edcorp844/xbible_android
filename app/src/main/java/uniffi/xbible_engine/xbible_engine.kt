@@ -106,6 +106,43 @@ internal open class ForeignBytes : Structure() {
 
     class ByValue : ForeignBytes(), Structure.ByValue
 }
+
+// Converter for `&[u8]` / `[ByRef] bytes` arguments.
+//
+// Only `lower` is valid — zero-copy byte buffers only flow foreign -> Rust,
+// and only in argument position. `lift`, `read`, `write`, and
+// `allocationSize` have no sound implementation here and all panic at
+// runtime. The `FfiConverter` interface is implemented so that the
+// compiler enforces the full method set (rather than relying on eyeball).
+//
+// The provided `ByteBuffer` MUST be direct — only direct buffers have a
+// stable native address that JNA can expose via `getDirectBufferPointer`.
+// The returned `ForeignBytes.ByValue` is only valid for the duration of
+// the FFI call; the Rust side treats it as a borrow.
+internal object FfiConverterByRefBytes : FfiConverter<java.nio.ByteBuffer, ForeignBytes.ByValue> {
+    override fun lower(value: java.nio.ByteBuffer): ForeignBytes.ByValue {
+        require(value.isDirect) { "UniFFI zero-copy &[u8] requires a direct ByteBuffer. Use ByteBuffer.allocateDirect()." }
+        val remaining = value.remaining()
+        val fb = ForeignBytes.ByValue()
+        fb.len = remaining
+        // Zero-length direct buffers: skip getDirectBufferPointer (platform-variable behavior)
+        // and pass null. The Rust side treats (null, 0) as &[].
+        fb.data = if (remaining == 0) null else com.sun.jna.Native.getDirectBufferPointer(value)
+        return fb
+    }
+
+    override fun lift(value: ForeignBytes.ByValue): java.nio.ByteBuffer =
+        error("ByRef bytes cannot be lifted: zero-copy &[u8] only flows foreign->Rust")
+
+    override fun read(buf: java.nio.ByteBuffer): java.nio.ByteBuffer =
+        error("ByRef bytes cannot be read from a buffer: zero-copy &[u8] is only supported in argument position, not nested in records/options/etc.")
+
+    override fun write(value: java.nio.ByteBuffer, buf: java.nio.ByteBuffer): Unit =
+        error("ByRef bytes cannot be written to a buffer: zero-copy &[u8] is only supported in argument position, not nested in records/options/etc.")
+
+    override fun allocationSize(value: java.nio.ByteBuffer): ULong =
+        error("ByRef bytes have no RustBuffer allocation size: zero-copy &[u8] is only supported in argument position, not nested in records/options/etc.")
+}
 /**
  * The FfiConverter interface handles converter types to and from the FFI
  *
@@ -620,6 +657,28 @@ internal open class UniffiForeignFutureResultVoid(
 internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
     fun callback(`callbackData`: Long,`result`: UniffiForeignFutureResultVoid.UniffiByValue,)
 }
+internal interface UniffiCallbackInterfaceSearchProgressListenerMethod0 : com.sun.jna.Callback {
+    fun callback(`uniffiHandle`: Long,`progress`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
+}
+@Structure.FieldOrder("uniffiFree", "uniffiClone", "onProgress")
+internal open class UniffiVTableCallbackInterfaceSearchProgressListener(
+    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+    @JvmField internal var `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+    @JvmField internal var `onProgress`: UniffiCallbackInterfaceSearchProgressListenerMethod0? = null,
+) : Structure() {
+    class UniffiByValue(
+        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+        `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+        `onProgress`: UniffiCallbackInterfaceSearchProgressListenerMethod0? = null,
+    ): UniffiVTableCallbackInterfaceSearchProgressListener(`uniffiFree`,`uniffiClone`,`onProgress`,), Structure.ByValue
+
+   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceSearchProgressListener) {
+        `uniffiFree` = other.`uniffiFree`
+        `uniffiClone` = other.`uniffiClone`
+        `onProgress` = other.`onProgress`
+    }
+
+}
 
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
@@ -643,6 +702,8 @@ internal object IntegrityCheckingUniffiLib {
         uniffiCheckContractApiVersion(this)
         uniffiCheckApiChecksums(this)
     }
+
+    internal fun ensureInitialized() = Unit
     external fun uniffi_xbible_engine_checksum_func_init_logging(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_timelinedata_get_data(
@@ -799,6 +860,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblereader_search(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_search_entities(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path(
@@ -857,6 +920,8 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_constructor_xbibleengine_new(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_searchprogresslistener_on_progress(
+    ): Int
     external fun ffi_xbible_engine_uniffi_contract_version(
     ): Int
 
@@ -873,368 +938,375 @@ internal object UniffiLib {
 
     init {
         Native.register(UniffiLib::class.java, findLibraryName(componentName = "xbible_engine"))
+        uniffiCallbackInterfaceSearchProgressListener.register(this)
         
     }
-    external fun uniffi_xbible_engine_fn_clone_timelinedata(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_timelinedata(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_timelinedata_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_timelinedata_get_data(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_clone_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_audioengine_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_audioengine_find_active_node_id(`ptr`: Long,`timeMs`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_module_artwork(`ptr`: Long,`filePath`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_navigation_tree(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_get_playback_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_load_audio_module(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_peek_module_metadata(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_chapter(`ptr`: Long,`chapterId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_time(`ptr`: Long,`targetMs`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_set_repeat_mode(`ptr`: Long,`mode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_skip_backward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_skip_forward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_stop(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_audioengine_toggle_playback(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_clone_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_storeapiclient_new(`endpointUrl`: RustBuffer.ByValue,`authToken`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(`ptr`: Long,`module`: RustBuffer.ByValue,`modulesRootPath`: RustBuffer.ByValue,`location`: RustBuffer.ByValue,`collection`: RustBuffer.ByValue,`album`: RustBuffer.ByValue,`contributor`: RustBuffer.ByValue,`progressListener`: Long,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_album(`ptr`: Long,`id`: RustBuffer.ByValue,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums_by_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collection(`ptr`: Long,`id`: RustBuffer.ByValue,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_by_language(`ptr`: Long,`code`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_with_albums(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributor(`ptr`: Long,`id`: RustBuffer.ByValue,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors_by_role(`ptr`: Long,`role`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_language(`ptr`: Long,`id`: RustBuffer.ByValue,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages_with_collections(`ptr`: Long,`first`: Int,`skip`: Int,
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_narrators_for_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,
-): Long
-external fun uniffi_xbible_engine_fn_clone_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_storedownloadprogresslistener_new(`uniqueIdFilter`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_storedownloadprogresslistener_on_progress(`ptr`: Long,`uniqueId`: RustBuffer.ByValue,`bytesWritten`: Long,`totalBytes`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_clone_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_storeapiservice_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_album(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums_by_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collection(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_by_language(`ptr`: Long,`code`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_with_albums(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributor(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors_by_role(`ptr`: Long,`role`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_language(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages_with_collections(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_get_cached_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_install_module(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`progressListener`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_is_module_installed(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`version`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_storeapiservice_load_audio_modules(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_load_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_storeapiservice_load_installed_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_clone_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_artwork_new(`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_artwork_extract_colors(`ptr`: Long,`count`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_artwork_image_bytes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_clone_freebibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_freebibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_freebibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_freebibleengine_reader(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_freebibleengine_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_freebibleengine_store(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_clone_freebiblereader(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_freebiblereader(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_freebiblereader_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_installed_translations(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_related(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_is_commentary_installed(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_freebiblereader_is_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_freebiblereader_is_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun uniffi_xbible_engine_fn_method_freebiblereader_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_read_commentary_chapter(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblereader_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_clone_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_freebiblestore_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_freebiblestore_get_shelf(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_install_commentary(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kindStr`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_install_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_item(`ptr`: Long,`id`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_languages(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_list_tasks(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_poll_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_refresh(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_method_freebiblestore_search(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Int
-external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_commentary(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_free_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_xbible_engine_fn_constructor_xbibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_xbibleengine_audio_engine(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_method_xbibleengine_freebible(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun uniffi_xbible_engine_fn_func_init_logging(uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun ffi_xbible_engine_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun ffi_xbible_engine_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun ffi_xbible_engine_rustbuffer_free(`buf`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun ffi_xbible_engine_rustbuffer_reserve(`buf`: RustBuffer.ByValue,`additional`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun ffi_xbible_engine_rust_future_poll_u8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_u8(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_u8(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_u8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Int
-external fun ffi_xbible_engine_rust_future_poll_i8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_i8(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_i8(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_i8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Byte
-external fun ffi_xbible_engine_rust_future_poll_u16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_u16(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_u16(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_u16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Int
-external fun ffi_xbible_engine_rust_future_poll_i16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_i16(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_i16(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_i16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Short
-external fun ffi_xbible_engine_rust_future_poll_u32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_u32(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_u32(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_u32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Int
-external fun ffi_xbible_engine_rust_future_poll_i32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_i32(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_i32(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_i32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Int
-external fun ffi_xbible_engine_rust_future_poll_u64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_u64(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_u64(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_u64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun ffi_xbible_engine_rust_future_poll_i64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_i64(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_i64(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_i64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Long
-external fun ffi_xbible_engine_rust_future_poll_f32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_f32(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_f32(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_f32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Float
-external fun ffi_xbible_engine_rust_future_poll_f64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_f64(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_f64(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_f64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Double
-external fun ffi_xbible_engine_rust_future_poll_rust_buffer(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_rust_buffer(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_rust_buffer(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_rust_buffer(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
-external fun ffi_xbible_engine_rust_future_poll_void(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_cancel_void(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_free_void(`handle`: Long,
-): Unit
-external fun ffi_xbible_engine_rust_future_complete_void(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
 
-    
+    internal fun ensureInitialized() = Unit
+    external fun uniffi_xbible_engine_fn_clone_timelinedata(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_timelinedata(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_timelinedata_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_timelinedata_get_data(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_clone_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_audioengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_audioengine_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_audioengine_find_active_node_id(`ptr`: Long,`timeMs`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_get_module_artwork(`ptr`: Long,`filePath`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_get_navigation_tree(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_get_playback_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_load_audio_module(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_peek_module_metadata(`ptr`: Long,`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_chapter(`ptr`: Long,`chapterId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_audioengine_seek_to_time(`ptr`: Long,`targetMs`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_audioengine_set_repeat_mode(`ptr`: Long,`mode`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_audioengine_skip_backward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_audioengine_skip_forward(`ptr`: Long,`seconds`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_audioengine_stop(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_audioengine_toggle_playback(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_clone_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_storeapiclient(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_storeapiclient_new(`endpointUrl`: RustBuffer.ByValue,`authToken`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(`ptr`: Long,`module`: RustBuffer.ByValue,`modulesRootPath`: RustBuffer.ByValue,`location`: RustBuffer.ByValue,`collection`: RustBuffer.ByValue,`album`: RustBuffer.ByValue,`contributor`: RustBuffer.ByValue,`progressListener`: Long,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_album(`ptr`: Long,`id`: RustBuffer.ByValue,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums_by_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collection(`ptr`: Long,`id`: RustBuffer.ByValue,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_by_language(`ptr`: Long,`code`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_with_albums(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributor(`ptr`: Long,`id`: RustBuffer.ByValue,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors_by_role(`ptr`: Long,`role`: RustBuffer.ByValue,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_language(`ptr`: Long,`id`: RustBuffer.ByValue,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages_with_collections(`ptr`: Long,`first`: Int,`skip`: Int,
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiclient_fetch_narrators_for_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,
+    ): Long
+    external fun uniffi_xbible_engine_fn_clone_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_storedownloadprogresslistener(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_storedownloadprogresslistener_new(`uniqueIdFilter`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storedownloadprogresslistener_on_progress(`ptr`: Long,`uniqueId`: RustBuffer.ByValue,`bytesWritten`: Long,`totalBytes`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_clone_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_storeapiservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_storeapiservice_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_album(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums_by_collection(`ptr`: Long,`collectionId`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collection(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_by_language(`ptr`: Long,`code`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_with_albums(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributor(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors_by_role(`ptr`: Long,`role`: RustBuffer.ByValue,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_language(`ptr`: Long,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages_with_collections(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_get_audio_modules_path(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_get_cached_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_install_module(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`progressListener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_is_module_installed(`ptr`: Long,`moduleId`: RustBuffer.ByValue,`version`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_load_audio_modules(`ptr`: Long,`first`: Int,`skip`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_load_catalog(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_storeapiservice_load_installed_modules(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_clone_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_artwork(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_artwork_new(`filePath`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_artwork_extract_colors(`ptr`: Long,`count`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_artwork_image_bytes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_clone_freebibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_freebibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_freebibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_freebibleengine_reader(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_freebibleengine_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_freebibleengine_store(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_clone_freebiblereader(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_freebiblereader(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_freebiblereader_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_books(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_entities_for_verse(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`book`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_event(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_group(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_installed_translations(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_person(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_place(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_related(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,`relation`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,`verse`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_get_verse_refs(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`id`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_is_commentary_installed(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_is_entity_set_installed(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_is_installed(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_list_events(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_list_groups(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_list_people(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_read_commentary_chapter(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_search(`ptr`: Long,`query`: RustBuffer.ByValue,`translationId`: RustBuffer.ByValue,`limit`: Int,`listener`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_clone_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_freebiblestore_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_get_shelf(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_home_feed(`ptr`: Long,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_install_commentary(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`kindStr`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_install_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_item(`ptr`: Long,`id`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_languages(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_list_tasks(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_poll_task(`ptr`: Long,`taskId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_refresh(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_search(`ptr`: Long,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(`ptr`: Long,`shelfId`: RustBuffer.ByValue,`language`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Int
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_commentary(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_clone_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_free_xbibleengine(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_constructor_xbibleengine_new(uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_xbibleengine_audio_engine(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_method_xbibleengine_freebible(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun uniffi_xbible_engine_fn_init_callback_vtable_searchprogresslistener(`vtable`: UniffiVTableCallbackInterfaceSearchProgressListener,
+    ): Unit
+    external fun uniffi_xbible_engine_fn_func_init_logging(uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun ffi_xbible_engine_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun ffi_xbible_engine_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun ffi_xbible_engine_rustbuffer_free(`buf`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun ffi_xbible_engine_rustbuffer_reserve(`buf`: RustBuffer.ByValue,`additional`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun ffi_xbible_engine_rust_future_poll_u8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_u8(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_u8(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_u8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Int
+    external fun ffi_xbible_engine_rust_future_poll_i8(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_i8(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_i8(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_i8(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
+    external fun ffi_xbible_engine_rust_future_poll_u16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_u16(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_u16(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_u16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Int
+    external fun ffi_xbible_engine_rust_future_poll_i16(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_i16(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_i16(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_i16(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Short
+    external fun ffi_xbible_engine_rust_future_poll_u32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_u32(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_u32(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_u32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Int
+    external fun ffi_xbible_engine_rust_future_poll_i32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_i32(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_i32(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_i32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Int
+    external fun ffi_xbible_engine_rust_future_poll_u64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_u64(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_u64(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_u64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun ffi_xbible_engine_rust_future_poll_i64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_i64(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_i64(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_i64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Long
+    external fun ffi_xbible_engine_rust_future_poll_f32(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_f32(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_f32(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_f32(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Float
+    external fun ffi_xbible_engine_rust_future_poll_f64(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_f64(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_f64(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_f64(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Double
+    external fun ffi_xbible_engine_rust_future_poll_rust_buffer(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_rust_buffer(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_rust_buffer(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_rust_buffer(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun ffi_xbible_engine_rust_future_poll_void(`handle`: Long,`callback`: UniffiRustFutureContinuationCallback,`callbackData`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_cancel_void(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_free_void(`handle`: Long,
+    ): Unit
+    external fun ffi_xbible_engine_rust_future_complete_void(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+
+        
 }
 
 private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
@@ -1248,325 +1320,331 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
-    if (lib.uniffi_xbible_engine_checksum_func_init_logging() != 55253) {
+    if ((lib.uniffi_xbible_engine_checksum_func_init_logging() and 0xFFFF) != 24321) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_timelinedata_get_data() != 9534) {
+    if ((lib.uniffi_xbible_engine_checksum_method_timelinedata_get_data() and 0xFFFF) != 37312) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id() != 7264) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_find_active_node_id() and 0xFFFF) != 3945) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules() != 22482) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules() and 0xFFFF) != 48425) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path() != 23605) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_get_audio_modules_path() and 0xFFFF) != 44543) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_module_artwork() != 25093) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_get_module_artwork() and 0xFFFF) != 24801) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree() != 50914) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_get_navigation_tree() and 0xFFFF) != 30375) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_get_playback_state() != 14626) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_get_playback_state() and 0xFFFF) != 39303) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_load_audio_module() != 7872) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_load_audio_module() and 0xFFFF) != 36901) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata() != 41593) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_peek_module_metadata() and 0xFFFF) != 44784) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter() != 12491) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_chapter() and 0xFFFF) != 50997) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_time() != 33296) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_seek_to_time() and 0xFFFF) != 16380) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode() != 34845) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_set_repeat_mode() and 0xFFFF) != 53744) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_backward() != 31543) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_skip_backward() and 0xFFFF) != 45129) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_skip_forward() != 40871) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_skip_forward() and 0xFFFF) != 2890) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_stop() != 7988) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_stop() and 0xFFFF) != 47025) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_audioengine_toggle_playback() != 54972) {
+    if ((lib.uniffi_xbible_engine_checksum_method_audioengine_toggle_playback() and 0xFFFF) != 2345) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module() != 38018) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_download_and_install_module() and 0xFFFF) != 15883) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_album() != 48753) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_album() and 0xFFFF) != 14004) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums() != 27310) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums() and 0xFFFF) != 56517) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums_by_collection() != 40645) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_albums_by_collection() and 0xFFFF) != 38257) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules() != 39291) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_audio_modules() and 0xFFFF) != 63366) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collection() != 64733) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collection() and 0xFFFF) != 17269) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections() != 30236) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections() and 0xFFFF) != 51846) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_by_language() != 59210) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_by_language() and 0xFFFF) != 47180) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_with_albums() != 40076) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_collections_with_albums() and 0xFFFF) != 48675) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributor() != 60714) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributor() and 0xFFFF) != 64984) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors() != 49760) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors() and 0xFFFF) != 50714) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors_by_role() != 56129) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_contributors_by_role() and 0xFFFF) != 62232) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_language() != 31301) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_language() and 0xFFFF) != 53663) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages() != 63652) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages() and 0xFFFF) != 24919) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages_with_collections() != 24062) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_languages_with_collections() and 0xFFFF) != 50707) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_narrators_for_collection() != 17321) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiclient_fetch_narrators_for_collection() and 0xFFFF) != 65381) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress() != 50095) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storedownloadprogresslistener_on_progress() and 0xFFFF) != 20346) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_album() != 12383) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_album() and 0xFFFF) != 52595) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums() != 47103) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums() and 0xFFFF) != 25860) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums_by_collection() != 60008) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_albums_by_collection() and 0xFFFF) != 8652) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collection() != 59417) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collection() and 0xFFFF) != 20849) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections() != 49754) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections() and 0xFFFF) != 20736) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_by_language() != 7686) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_by_language() and 0xFFFF) != 48908) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_with_albums() != 1697) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_collections_with_albums() and 0xFFFF) != 45140) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributor() != 55973) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributor() and 0xFFFF) != 59953) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors() != 26287) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors() and 0xFFFF) != 21951) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors_by_role() != 62078) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_contributors_by_role() and 0xFFFF) != 7980) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_language() != 55210) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_language() and 0xFFFF) != 28287) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages() != 64140) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages() and 0xFFFF) != 59026) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages_with_collections() != 44841) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_fetch_languages_with_collections() and 0xFFFF) != 56852) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path() != 17367) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_audio_modules_path() and 0xFFFF) != 12975) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog() != 6199) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_get_cached_catalog() and 0xFFFF) != 12932) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_install_module() != 43943) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_install_module() and 0xFFFF) != 52938) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_is_module_installed() != 25678) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_is_module_installed() and 0xFFFF) != 30012) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_audio_modules() != 60729) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_audio_modules() and 0xFFFF) != 26107) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog() != 18774) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_catalog() and 0xFFFF) != 14969) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_installed_modules() != 62599) {
+    if ((lib.uniffi_xbible_engine_checksum_method_storeapiservice_load_installed_modules() and 0xFFFF) != 51540) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_artwork_extract_colors() != 50120) {
+    if ((lib.uniffi_xbible_engine_checksum_method_artwork_extract_colors() and 0xFFFF) != 44258) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_artwork_image_bytes() != 35402) {
+    if ((lib.uniffi_xbible_engine_checksum_method_artwork_image_bytes() and 0xFFFF) != 26280) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebibleengine_reader() != 32797) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebibleengine_reader() and 0xFFFF) != 59703) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebibleengine_set_db_path() != 37190) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebibleengine_set_db_path() and 0xFFFF) != 53760) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebibleengine_store() != 48456) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebibleengine_store() and 0xFFFF) != 64489) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_books() != 2437) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_books() and 0xFFFF) != 60131) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_entities_for_verse() != 31880) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_entities_for_verse() and 0xFFFF) != 36837) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_event() != 13047) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_event() and 0xFFFF) != 65310) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_group() != 6689) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_group() and 0xFFFF) != 4298) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_installed_translations() != 25065) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_installed_translations() and 0xFFFF) != 26894) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_person() != 14022) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_person() and 0xFFFF) != 23180) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_place() != 21551) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_place() and 0xFFFF) != 30880) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_related() != 5712) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_related() and 0xFFFF) != 47027) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse() != 39045) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse() and 0xFFFF) != 10057) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse_refs() != 56545) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_verse_refs() and 0xFFFF) != 24685) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_commentary_installed() != 32090) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_commentary_installed() and 0xFFFF) != 9415) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_entity_set_installed() != 58881) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_entity_set_installed() and 0xFFFF) != 23491) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_installed() != 56620) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_is_installed() and 0xFFFF) != 54811) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_events() != 5968) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_events() and 0xFFFF) != 25069) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_groups() != 6952) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_groups() and 0xFFFF) != 43661) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_people() != 1671) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_people() and 0xFFFF) != 60573) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_places() != 6436) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_places() and 0xFFFF) != 28571) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter() != 32094) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter() and 0xFFFF) != 46274) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter() != 20402) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter() and 0xFFFF) != 15495) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_search_entities() != 61509) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_search() and 0xFFFF) != 4220) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path() != 55613) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_search_entities() and 0xFFFF) != 25724) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task() != 25949) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path() and 0xFFFF) != 43137) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_shelf() != 55711) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task() and 0xFFFF) != 55388) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_home_feed() != 19050) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_get_shelf() and 0xFFFF) != 39537) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_commentary() != 1389) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_home_feed() and 0xFFFF) != 64601) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set() != 62256) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_commentary() and 0xFFFF) != 12120) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_translation() != 17363) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_entity_set() and 0xFFFF) != 39667) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_item() != 47960) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_install_translation() and 0xFFFF) != 60894) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_languages() != 33532) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_item() and 0xFFFF) != 17677) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_tasks() != 48491) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_languages() and 0xFFFF) != 40660) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_poll_task() != 34218) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_list_tasks() and 0xFFFF) != 19330) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_refresh() != 54228) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_poll_task() and 0xFFFF) != 56172) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_search() != 16495) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_refresh() and 0xFFFF) != 57975) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_shelf_total() != 14542) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_search() and 0xFFFF) != 43863) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_commentary() != 60788) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_shelf_total() and 0xFFFF) != 34115) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation() != 1570) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_commentary() and 0xFFFF) != 30943) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_audio_engine() != 64169) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_uninstall_translation() and 0xFFFF) != 6469) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_method_xbibleengine_freebible() != 12521) {
+    if ((lib.uniffi_xbible_engine_checksum_method_xbibleengine_audio_engine() and 0xFFFF) != 12904) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_timelinedata_new() != 19980) {
+    if ((lib.uniffi_xbible_engine_checksum_method_xbibleengine_freebible() and 0xFFFF) != 32680) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_audioengine_new() != 33430) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_timelinedata_new() and 0xFFFF) != 28995) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_storeapiclient_new() != 19502) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_audioengine_new() and 0xFFFF) != 14665) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new() != 25131) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_storeapiclient_new() and 0xFFFF) != 11044) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_storeapiservice_new() != 43960) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_storedownloadprogresslistener_new() and 0xFFFF) != 24268) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_artwork_new() != 38662) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_storeapiservice_new() and 0xFFFF) != 24070) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_freebibleengine_new() != 19552) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_artwork_new() and 0xFFFF) != 56124) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_freebiblereader_new() != 24958) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_freebibleengine_new() and 0xFFFF) != 18457) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_freebiblestore_new() != 54384) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_freebiblereader_new() and 0xFFFF) != 22448) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_xbible_engine_checksum_constructor_xbibleengine_new() != 31845) {
+    if ((lib.uniffi_xbible_engine_checksum_constructor_freebiblestore_new() and 0xFFFF) != 56889) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_xbible_engine_checksum_constructor_xbibleengine_new() and 0xFFFF) != 21862) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_xbible_engine_checksum_method_searchprogresslistener_on_progress() and 0xFFFF) != 34458) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1575,10 +1653,10 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
  * @suppress
  */
 public fun uniffiEnsureInitialized() {
-    IntegrityCheckingUniffiLib
-    // UniffiLib() initialized as objects are used, but we still need to explicitly
-    // reference it so initialization across crates works as expected.
-    UniffiLib
+    // Call arbitrary methods on IntegrityCheckingUniffiLib and UniffiLib to ensure that
+    // their init blocks run. This ensures initialization across crates works as expected.
+    IntegrityCheckingUniffiLib.ensureInitialized()
+    UniffiLib.ensureInitialized()
 }
 
 // Async support
@@ -1700,7 +1778,38 @@ object UniffiWithHandle
  *
  * @suppress
  * */
-object NoHandle
+object NoHandle// Magic number for the Rust proxy to call using the same mechanism as every other method,
+// to free the callback once it's dropped by Rust.
+internal const val IDX_CALLBACK_FREE = 0
+// Callback return codes
+internal const val UNIFFI_CALLBACK_SUCCESS = 0
+internal const val UNIFFI_CALLBACK_ERROR = 1
+internal const val UNIFFI_CALLBACK_UNEXPECTED_ERROR = 2
+
+/**
+ * @suppress
+ */
+public abstract class FfiConverterCallbackInterface<CallbackInterface: Any>: FfiConverter<CallbackInterface, Long> {
+    internal val handleMap = UniffiHandleMap<CallbackInterface>()
+
+    internal fun drop(handle: Long) {
+        handleMap.remove(handle)
+    }
+
+    override fun lift(value: Long): CallbackInterface {
+        return handleMap.get(value)
+    }
+
+    override fun read(buf: ByteBuffer) = lift(buf.getLong())
+
+    override fun lower(value: CallbackInterface) = handleMap.insert(value)
+
+    override fun allocationSize(value: CallbackInterface) = 8UL
+
+    override fun write(value: CallbackInterface, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
 /**
  * The cleaner interface for Object finalization code to run.
  * This is the entry point to any implementation that we're using.
@@ -2117,6 +2226,7 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_artwork_new(
     
+        
         FfiConverterString.lower(`filePath`),_status)
 }
     )
@@ -2126,6 +2236,11 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
 
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
+
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
 
     override fun destroy() {
         // Only allow a single call to this method.
@@ -2201,6 +2316,7 @@ open class Artwork: Disposable, AutoCloseable, ArtworkInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_artwork_extract_colors(
         it,
+        
         FfiConverterUInt.lower(`count`),_status)
 }
     }
@@ -2440,6 +2556,11 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
 
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
+
     override fun destroy() {
         // Only allow a single call to this method.
         // TODO: maybe we should log a warning if called more than once?
@@ -2511,6 +2632,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_find_active_node_id(
         it,
+        
         FfiConverterLong.lower(`timeMs`),_status)
 }
     }
@@ -2559,7 +2681,9 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCallWithError(AudioEngineException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_get_module_artwork(
         it,
-        FfiConverterString.lower(`filePath`),FfiConverterString.lower(`kind`),_status)
+        
+        FfiConverterString.lower(`filePath`),
+        FfiConverterString.lower(`kind`),_status)
 }
     }
     )
@@ -2599,6 +2723,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCallWithError(AudioEngineException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_load_audio_module(
         it,
+        
         FfiConverterString.lower(`filePath`),_status)
 }
     }
@@ -2616,6 +2741,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCallWithError(AudioEngineException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_peek_module_metadata(
         it,
+        
         FfiConverterString.lower(`filePath`),_status)
 }
     }
@@ -2629,6 +2755,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_seek_to_chapter(
         it,
+        
         FfiConverterString.lower(`chapterId`),_status)
 }
     }
@@ -2641,6 +2768,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_seek_to_time(
         it,
+        
         FfiConverterLong.lower(`targetMs`),_status)
 }
     }
@@ -2653,6 +2781,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_set_repeat_mode(
         it,
+        
         FfiConverterTypeRepeatMode.lower(`mode`),_status)
 }
     }
@@ -2665,6 +2794,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_skip_backward(
         it,
+        
         FfiConverterLong.lower(`seconds`),_status)
 }
     }
@@ -2677,6 +2807,7 @@ open class AudioEngine: Disposable, AutoCloseable, AudioEngineInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_audioengine_skip_forward(
         it,
+        
         FfiConverterLong.lower(`seconds`),_status)
 }
     }
@@ -2925,6 +3056,11 @@ open class FreeBibleEngine: Disposable, AutoCloseable, FreeBibleEngineInterface
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
 
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
+
     override fun destroy() {
         // Only allow a single call to this method.
         // TODO: maybe we should log a warning if called more than once?
@@ -3025,6 +3161,7 @@ open class FreeBibleEngine: Disposable, AutoCloseable, FreeBibleEngineInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebibleengine_set_db_path(
         it,
+        
         FfiConverterString.lower(`path`),_status)
 }
     }
@@ -3221,6 +3358,8 @@ public interface FreeBibleReaderInterface {
     
     fun `readCommentaryChapter`(`commentaryId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): CommentaryChapter?
     
+    fun `search`(`query`: kotlin.String, `translationId`: kotlin.String?, `limit`: kotlin.Int, `listener`: SearchProgressListener?): SearchResults
+    
     fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
     
     fun `setDbPath`(`path`: kotlin.String)
@@ -3266,6 +3405,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
 
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
+
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
 
     override fun destroy() {
         // Only allow a single call to this method.
@@ -3338,6 +3482,7 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_books(
         it,
+        
         FfiConverterString.lower(`translationId`),_status)
 }
     }
@@ -3351,7 +3496,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_entities_for_verse(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`book`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`book`),
+        FfiConverterInt.lower(`chapter`),
+        FfiConverterInt.lower(`verse`),_status)
 }
     }
     )
@@ -3364,7 +3513,9 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_event(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`id`),_status)
 }
     }
     )
@@ -3377,7 +3528,9 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_group(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`id`),_status)
 }
     }
     )
@@ -3403,7 +3556,9 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_person(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`id`),_status)
 }
     }
     )
@@ -3416,7 +3571,9 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_place(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`id`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`id`),_status)
 }
     }
     )
@@ -3429,7 +3586,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_related(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),FfiConverterOptionalString.lower(`relation`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`kind`),
+        FfiConverterString.lower(`id`),
+        FfiConverterOptionalString.lower(`relation`),_status)
 }
     }
     )
@@ -3442,7 +3603,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_verse(
         it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),FfiConverterInt.lower(`verse`),_status)
+        
+        FfiConverterString.lower(`translationId`),
+        FfiConverterString.lower(`bookId`),
+        FfiConverterInt.lower(`chapter`),
+        FfiConverterInt.lower(`verse`),_status)
 }
     }
     )
@@ -3455,7 +3620,10 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_get_verse_refs(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),FfiConverterString.lower(`id`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`kind`),
+        FfiConverterString.lower(`id`),_status)
 }
     }
     )
@@ -3469,6 +3637,7 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_is_commentary_installed(
         it,
+        
         FfiConverterString.lower(`commentaryId`),_status)
 }
     }
@@ -3482,7 +3651,9 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_is_entity_set_installed(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kind`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`kind`),_status)
 }
     }
     )
@@ -3496,6 +3667,7 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_is_installed(
         it,
+        
         FfiConverterString.lower(`translationId`),_status)
 }
     }
@@ -3509,7 +3681,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_events(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterInt.lower(`offset`),
+        FfiConverterInt.lower(`limit`),
+        FfiConverterOptionalString.lower(`query`),_status)
 }
     }
     )
@@ -3522,7 +3698,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_groups(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterInt.lower(`offset`),
+        FfiConverterInt.lower(`limit`),
+        FfiConverterOptionalString.lower(`query`),_status)
 }
     }
     )
@@ -3535,7 +3715,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_people(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterInt.lower(`offset`),
+        FfiConverterInt.lower(`limit`),
+        FfiConverterOptionalString.lower(`query`),_status)
 }
     }
     )
@@ -3548,7 +3732,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_list_places(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterInt.lower(`offset`),FfiConverterInt.lower(`limit`),FfiConverterOptionalString.lower(`query`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterInt.lower(`offset`),
+        FfiConverterInt.lower(`limit`),
+        FfiConverterOptionalString.lower(`query`),_status)
 }
     }
     )
@@ -3561,7 +3749,10 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(
         it,
-        FfiConverterString.lower(`translationId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+        
+        FfiConverterString.lower(`translationId`),
+        FfiConverterString.lower(`bookId`),
+        FfiConverterInt.lower(`chapter`),_status)
 }
     }
     )
@@ -3575,7 +3766,28 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_read_commentary_chapter(
         it,
-        FfiConverterString.lower(`commentaryId`),FfiConverterString.lower(`bookId`),FfiConverterInt.lower(`chapter`),_status)
+        
+        FfiConverterString.lower(`commentaryId`),
+        FfiConverterString.lower(`bookId`),
+        FfiConverterInt.lower(`chapter`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `search`(`query`: kotlin.String, `translationId`: kotlin.String?, `limit`: kotlin.Int, `listener`: SearchProgressListener?): SearchResults {
+            return FfiConverterTypeSearchResults.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_search(
+        it,
+        
+        FfiConverterString.lower(`query`),
+        FfiConverterOptionalString.lower(`translationId`),
+        FfiConverterInt.lower(`limit`),
+        FfiConverterOptionalTypeSearchProgressListener.lower(`listener`),_status)
 }
     }
     )
@@ -3588,7 +3800,9 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_search_entities(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`query`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`query`),_status)
 }
     }
     )
@@ -3602,6 +3816,7 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_set_db_path(
         it,
+        
         FfiConverterString.lower(`path`),_status)
 }
     }
@@ -3837,6 +4052,11 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
 
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
+
     override fun destroy() {
         // Only allow a single call to this method.
         // TODO: maybe we should log a warning if called more than once?
@@ -3908,6 +4128,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_cancel_task(
         it,
+        
         FfiConverterString.lower(`taskId`),_status)
 }
     }
@@ -3920,7 +4141,11 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_get_shelf(
         it,
-        FfiConverterString.lower(`shelfId`),FfiConverterOptionalString.lower(`language`),FfiConverterUInt.lower(`offset`),FfiConverterUInt.lower(`limit`),_status)
+        
+        FfiConverterString.lower(`shelfId`),
+        FfiConverterOptionalString.lower(`language`),
+        FfiConverterUInt.lower(`offset`),
+        FfiConverterUInt.lower(`limit`),_status)
 }
     }
     )
@@ -3933,6 +4158,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_home_feed(
         it,
+        
         FfiConverterOptionalString.lower(`language`),_status)
 }
     }
@@ -3952,6 +4178,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_install_commentary(
         it,
+        
         FfiConverterString.lower(`commentaryId`),_status)
 }
     }
@@ -3966,7 +4193,9 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_install_entity_set(
         it,
-        FfiConverterString.lower(`datasetId`),FfiConverterString.lower(`kindStr`),_status)
+        
+        FfiConverterString.lower(`datasetId`),
+        FfiConverterString.lower(`kindStr`),_status)
 }
     }
     )
@@ -3980,6 +4209,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_install_translation(
         it,
+        
         FfiConverterString.lower(`translationId`),_status)
 }
     }
@@ -3993,7 +4223,9 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_item(
         it,
-        FfiConverterString.lower(`id`),FfiConverterString.lower(`kind`),_status)
+        
+        FfiConverterString.lower(`id`),
+        FfiConverterString.lower(`kind`),_status)
 }
     }
     )
@@ -4032,6 +4264,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_poll_task(
         it,
+        
         FfiConverterString.lower(`taskId`),_status)
 }
     }
@@ -4058,6 +4291,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_search(
         it,
+        
         FfiConverterString.lower(`query`),_status)
 }
     }
@@ -4071,7 +4305,9 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_shelf_total(
         it,
-        FfiConverterString.lower(`shelfId`),FfiConverterOptionalString.lower(`language`),_status)
+        
+        FfiConverterString.lower(`shelfId`),
+        FfiConverterOptionalString.lower(`language`),_status)
 }
     }
     )
@@ -4085,6 +4321,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_uninstall_commentary(
         it,
+        
         FfiConverterString.lower(`commentaryId`),_status)
 }
     }
@@ -4099,6 +4336,7 @@ open class FreeBibleStore: Disposable, AutoCloseable, FreeBibleStoreInterface
     uniffiRustCallWithError(FreeBibleException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_freebiblestore_uninstall_translation(
         it,
+        
         FfiConverterString.lower(`translationId`),_status)
 }
     }
@@ -4306,7 +4544,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_storeapiclient_new(
     
-        FfiConverterString.lower(`endpointUrl`),FfiConverterOptionalString.lower(`authToken`),_status)
+        
+        FfiConverterString.lower(`endpointUrl`),
+        FfiConverterOptionalString.lower(`authToken`),_status)
 }
     )
 
@@ -4315,6 +4555,11 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
 
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
+
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
 
     override fun destroy() {
         // Only allow a single call to this method.
@@ -4389,7 +4634,14 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_download_and_install_module(
                 uniffiHandle,
-                FfiConverterTypeRemoteAudioModuleInfo.lower(`module`),FfiConverterString.lower(`modulesRootPath`),FfiConverterTypeModuleLocation.lower(`location`),FfiConverterTypeAudioCollection.lower(`collection`),FfiConverterTypeAudioAlbum.lower(`album`),FfiConverterOptionalTypeAudioContributor.lower(`contributor`),FfiConverterTypeStoreDownloadProgressListener.lower(`progressListener`),
+                
+        FfiConverterTypeRemoteAudioModuleInfo.lower(`module`),
+        FfiConverterString.lower(`modulesRootPath`),
+        FfiConverterTypeModuleLocation.lower(`location`),
+        FfiConverterTypeAudioCollection.lower(`collection`),
+        FfiConverterTypeAudioAlbum.lower(`album`),
+        FfiConverterOptionalTypeAudioContributor.lower(`contributor`),
+        FfiConverterTypeStoreDownloadProgressListener.lower(`progressListener`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4410,7 +4662,8 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_album(
                 uniffiHandle,
-                FfiConverterString.lower(`id`),
+                
+        FfiConverterString.lower(`id`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4431,7 +4684,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4452,7 +4707,10 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_albums_by_collection(
                 uniffiHandle,
-                FfiConverterString.lower(`collectionId`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterString.lower(`collectionId`),
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4473,7 +4731,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_audio_modules(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4494,7 +4754,8 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collection(
                 uniffiHandle,
-                FfiConverterString.lower(`id`),
+                
+        FfiConverterString.lower(`id`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4515,7 +4776,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4536,7 +4799,10 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_by_language(
                 uniffiHandle,
-                FfiConverterString.lower(`code`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterString.lower(`code`),
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4557,7 +4823,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_collections_with_albums(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4578,7 +4846,8 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributor(
                 uniffiHandle,
-                FfiConverterString.lower(`id`),
+                
+        FfiConverterString.lower(`id`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4599,7 +4868,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4620,7 +4891,10 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_contributors_by_role(
                 uniffiHandle,
-                FfiConverterTypeContributorRole.lower(`role`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterTypeContributorRole.lower(`role`),
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4641,7 +4915,8 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_language(
                 uniffiHandle,
-                FfiConverterString.lower(`id`),
+                
+        FfiConverterString.lower(`id`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4662,7 +4937,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4683,7 +4960,9 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_languages_with_collections(
                 uniffiHandle,
-                FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),
+                
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4704,7 +4983,8 @@ open class StoreApiClient: Disposable, AutoCloseable, StoreApiClientInterface
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_xbible_engine_fn_method_storeapiclient_fetch_narrators_for_collection(
                 uniffiHandle,
-                FfiConverterString.lower(`collectionId`),
+                
+        FfiConverterString.lower(`collectionId`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_xbible_engine_rust_future_poll_rust_buffer(future, callback, continuation) },
@@ -4935,6 +5215,11 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
 
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
+
     override fun destroy() {
         // Only allow a single call to this method.
         // TODO: maybe we should log a warning if called more than once?
@@ -5007,6 +5292,7 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_album(
         it,
+        
         FfiConverterString.lower(`id`),_status)
 }
     }
@@ -5021,7 +5307,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5035,7 +5323,10 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_albums_by_collection(
         it,
-        FfiConverterString.lower(`collectionId`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterString.lower(`collectionId`),
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5049,6 +5340,7 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collection(
         it,
+        
         FfiConverterString.lower(`id`),_status)
 }
     }
@@ -5063,7 +5355,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5077,7 +5371,10 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_by_language(
         it,
-        FfiConverterString.lower(`code`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterString.lower(`code`),
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5091,7 +5388,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_collections_with_albums(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5105,6 +5404,7 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributor(
         it,
+        
         FfiConverterString.lower(`id`),_status)
 }
     }
@@ -5119,7 +5419,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5133,7 +5435,10 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_contributors_by_role(
         it,
-        FfiConverterTypeContributorRole.lower(`role`),FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterTypeContributorRole.lower(`role`),
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5147,6 +5452,7 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_language(
         it,
+        
         FfiConverterString.lower(`id`),_status)
 }
     }
@@ -5161,7 +5467,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5175,7 +5483,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_fetch_languages_with_collections(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5215,7 +5525,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_install_module(
         it,
-        FfiConverterString.lower(`moduleId`),FfiConverterTypeStoreDownloadProgressListener.lower(`progressListener`),_status)
+        
+        FfiConverterString.lower(`moduleId`),
+        FfiConverterTypeStoreDownloadProgressListener.lower(`progressListener`),_status)
 }
     }
     )
@@ -5228,7 +5540,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_is_module_installed(
         it,
-        FfiConverterString.lower(`moduleId`),FfiConverterInt.lower(`version`),_status)
+        
+        FfiConverterString.lower(`moduleId`),
+        FfiConverterInt.lower(`version`),_status)
 }
     }
     )
@@ -5242,7 +5556,9 @@ open class StoreApiService: Disposable, AutoCloseable, StoreApiServiceInterface
     uniffiRustCallWithError(StoreApiException) { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storeapiservice_load_audio_modules(
         it,
-        FfiConverterInt.lower(`first`),FfiConverterInt.lower(`skip`),_status)
+        
+        FfiConverterInt.lower(`first`),
+        FfiConverterInt.lower(`skip`),_status)
 }
     }
     )
@@ -5446,6 +5762,7 @@ open class StoreDownloadProgressListener: Disposable, AutoCloseable, StoreDownlo
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_constructor_storedownloadprogresslistener_new(
     
+        
         FfiConverterOptionalString.lower(`uniqueIdFilter`),_status)
 }
     )
@@ -5455,6 +5772,11 @@ open class StoreDownloadProgressListener: Disposable, AutoCloseable, StoreDownlo
 
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
+
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
 
     override fun destroy() {
         // Only allow a single call to this method.
@@ -5527,7 +5849,10 @@ open class StoreDownloadProgressListener: Disposable, AutoCloseable, StoreDownlo
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_xbible_engine_fn_method_storedownloadprogresslistener_on_progress(
         it,
-        FfiConverterString.lower(`uniqueId`),FfiConverterULong.lower(`bytesWritten`),FfiConverterOptionalULong.lower(`totalBytes`),_status)
+        
+        FfiConverterString.lower(`uniqueId`),
+        FfiConverterULong.lower(`bytesWritten`),
+        FfiConverterOptionalULong.lower(`totalBytes`),_status)
 }
     }
     
@@ -5712,6 +6037,11 @@ open class TimelineData: Disposable, AutoCloseable, TimelineDataInterface
 
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
+
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
 
     override fun destroy() {
         // Only allow a single call to this method.
@@ -5989,6 +6319,11 @@ open class XBibleEngine: Disposable, AutoCloseable, XBibleEngineInterface
 
     private val wasDestroyed = AtomicBoolean(false)
     private val callCounter = AtomicLong(1)
+
+    /**
+     * Whether the current object has been destroyed and its reference is gone in the Rust side.
+     */
+    val uniffiIsDestroyed: Boolean get() = wasDestroyed.get()
 
     override fun destroy() {
         // Only allow a single call to this method.
@@ -7932,6 +8267,50 @@ public object FfiConverterTypeGroupDetail: FfiConverterRustBuffer<GroupDetail> {
 
 
 
+data class HighlightSpan (
+    /**
+     * Byte offset into `SearchHit.text` where the match starts.
+     */
+    var `start`: kotlin.UInt
+    , 
+    /**
+     * Byte offset into `SearchHit.text` where the match ends (exclusive).
+     */
+    var `end`: kotlin.UInt
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeHighlightSpan: FfiConverterRustBuffer<HighlightSpan> {
+    override fun read(buf: ByteBuffer): HighlightSpan {
+        return HighlightSpan(
+            FfiConverterUInt.read(buf),
+            FfiConverterUInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: HighlightSpan) = (
+            FfiConverterUInt.allocationSize(value.`start`) +
+            FfiConverterUInt.allocationSize(value.`end`)
+    )
+
+    override fun write(value: HighlightSpan, buf: ByteBuffer) {
+            FfiConverterUInt.write(value.`start`, buf)
+            FfiConverterUInt.write(value.`end`, buf)
+    }
+}
+
+
+
 data class HygraphAudioResponse (
     var `audioModules`: List<RemoteAudioModuleInfo>
     
@@ -9327,6 +9706,183 @@ public object FfiConverterTypeRichTextValue: FfiConverterRustBuffer<RichTextValu
 
 
 
+data class SearchHit (
+    /**
+     * "verse" | "reference" | "lexicon"
+     */
+    var `kind`: kotlin.String
+    , 
+    var `translationId`: kotlin.String
+    , 
+    var `bookId`: kotlin.String
+    , 
+    var `bookName`: kotlin.String
+    , 
+    var `chapter`: kotlin.Int
+    , 
+    var `verse`: kotlin.Int
+    , 
+    var `text`: kotlin.String
+    , 
+    /**
+     * Lower is better for BM25; ignored for references and lexicon.
+     */
+    var `score`: kotlin.Double
+    , 
+    /**
+     * Byte ranges in `text` that matched the query. Empty for
+     * reference and lexicon hits — only text search highlights.
+     */
+    var `highlights`: List<HighlightSpan>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchHit: FfiConverterRustBuffer<SearchHit> {
+    override fun read(buf: ByteBuffer): SearchHit {
+        return SearchHit(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterSequenceTypeHighlightSpan.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchHit) = (
+            FfiConverterString.allocationSize(value.`kind`) +
+            FfiConverterString.allocationSize(value.`translationId`) +
+            FfiConverterString.allocationSize(value.`bookId`) +
+            FfiConverterString.allocationSize(value.`bookName`) +
+            FfiConverterInt.allocationSize(value.`chapter`) +
+            FfiConverterInt.allocationSize(value.`verse`) +
+            FfiConverterString.allocationSize(value.`text`) +
+            FfiConverterDouble.allocationSize(value.`score`) +
+            FfiConverterSequenceTypeHighlightSpan.allocationSize(value.`highlights`)
+    )
+
+    override fun write(value: SearchHit, buf: ByteBuffer) {
+            FfiConverterString.write(value.`kind`, buf)
+            FfiConverterString.write(value.`translationId`, buf)
+            FfiConverterString.write(value.`bookId`, buf)
+            FfiConverterString.write(value.`bookName`, buf)
+            FfiConverterInt.write(value.`chapter`, buf)
+            FfiConverterInt.write(value.`verse`, buf)
+            FfiConverterString.write(value.`text`, buf)
+            FfiConverterDouble.write(value.`score`, buf)
+            FfiConverterSequenceTypeHighlightSpan.write(value.`highlights`, buf)
+    }
+}
+
+
+
+data class SearchProgress (
+    var `phase`: SearchPhase
+    , 
+    var `message`: kotlin.String
+    , 
+    /**
+     * 0.0 → 1.0, best-effort
+     */
+    var `fraction`: kotlin.Double
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchProgress: FfiConverterRustBuffer<SearchProgress> {
+    override fun read(buf: ByteBuffer): SearchProgress {
+        return SearchProgress(
+            FfiConverterTypeSearchPhase.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterDouble.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchProgress) = (
+            FfiConverterTypeSearchPhase.allocationSize(value.`phase`) +
+            FfiConverterString.allocationSize(value.`message`) +
+            FfiConverterDouble.allocationSize(value.`fraction`)
+    )
+
+    override fun write(value: SearchProgress, buf: ByteBuffer) {
+            FfiConverterTypeSearchPhase.write(value.`phase`, buf)
+            FfiConverterString.write(value.`message`, buf)
+            FfiConverterDouble.write(value.`fraction`, buf)
+    }
+}
+
+
+
+data class SearchResults (
+    var `query`: kotlin.String
+    , 
+    var `hits`: List<SearchHit>
+    , 
+    var `totalHits`: kotlin.Int
+    , 
+    var `tookMs`: kotlin.Long
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchResults: FfiConverterRustBuffer<SearchResults> {
+    override fun read(buf: ByteBuffer): SearchResults {
+        return SearchResults(
+            FfiConverterString.read(buf),
+            FfiConverterSequenceTypeSearchHit.read(buf),
+            FfiConverterInt.read(buf),
+            FfiConverterLong.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchResults) = (
+            FfiConverterString.allocationSize(value.`query`) +
+            FfiConverterSequenceTypeSearchHit.allocationSize(value.`hits`) +
+            FfiConverterInt.allocationSize(value.`totalHits`) +
+            FfiConverterLong.allocationSize(value.`tookMs`)
+    )
+
+    override fun write(value: SearchResults, buf: ByteBuffer) {
+            FfiConverterString.write(value.`query`, buf)
+            FfiConverterSequenceTypeSearchHit.write(value.`hits`, buf)
+            FfiConverterInt.write(value.`totalHits`, buf)
+            FfiConverterLong.write(value.`tookMs`, buf)
+    }
+}
+
+
+
 data class StoreItem (
     var `id`: kotlin.String
     , 
@@ -9790,7 +10346,7 @@ public object FfiConverterTypeFreeBibleTaskState : FfiConverterRustBuffer<FreeBi
         }
     }
 
-    override fun allocationSize(value: FreeBibleTaskState) = when(value) {
+    override fun allocationSize(value: FreeBibleTaskState): ULong = when(value) {
         is FreeBibleTaskState.Queued -> {
             // Add the size for the Int that specifies the variant plus the size needed for all fields
             (
@@ -9897,7 +10453,7 @@ public object FfiConverterTypeModuleStatus : FfiConverterRustBuffer<ModuleStatus
         }
     }
 
-    override fun allocationSize(value: ModuleStatus) = when(value) {
+    override fun allocationSize(value: ModuleStatus): ULong = when(value) {
         is ModuleStatus.Idle -> {
             // Add the size for the Int that specifies the variant plus the size needed for all fields
             (
@@ -9969,6 +10525,43 @@ public object FfiConverterTypeRepeatMode: FfiConverterRustBuffer<RepeatMode> {
     override fun allocationSize(value: RepeatMode) = 4UL
 
     override fun write(value: RepeatMode, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+enum class SearchPhase {
+    
+    CLASSIFYING,
+    RESOLVING,
+    QUERYING,
+    RANKING,
+    DONE;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchPhase: FfiConverterRustBuffer<SearchPhase> {
+    override fun read(buf: ByteBuffer) = try {
+        SearchPhase.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: SearchPhase) = 4UL
+
+    override fun write(value: SearchPhase, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
     }
 }
@@ -10120,6 +10713,66 @@ public object FfiConverterTypeStoreApiError : FfiConverterRustBuffer<StoreApiExc
     }
 
 }
+
+
+
+
+
+public interface SearchProgressListener {
+    
+    fun `onProgress`(`progress`: SearchProgress)
+    
+    companion object
+}
+
+
+
+// Put the implementation in an object so we don't pollute the top-level namespace
+internal object uniffiCallbackInterfaceSearchProgressListener {
+    internal object `onProgress`: UniffiCallbackInterfaceSearchProgressListenerMethod0 {
+        override fun callback(`uniffiHandle`: Long,`progress`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
+            val uniffiObj = FfiConverterTypeSearchProgressListener.handleMap.get(uniffiHandle)
+            val makeCall = { ->
+                uniffiObj.`onProgress`(
+                    FfiConverterTypeSearchProgress.lift(`progress`),
+                )
+            }
+            val writeReturn = { _: Unit -> Unit }
+            uniffiTraitInterfaceCall(uniffiCallStatus, makeCall, writeReturn)
+        }
+    }
+
+    internal object uniffiFree: UniffiCallbackInterfaceFree {
+        override fun callback(handle: Long) {
+            FfiConverterTypeSearchProgressListener.handleMap.remove(handle)
+        }
+    }
+
+    internal object uniffiClone: UniffiCallbackInterfaceClone {
+        override fun callback(handle: Long): Long {
+            return FfiConverterTypeSearchProgressListener.handleMap.clone(handle)
+        }
+    }
+
+    internal var vtable = UniffiVTableCallbackInterfaceSearchProgressListener.UniffiByValue(
+        uniffiFree,
+        uniffiClone,
+        `onProgress`,
+    )
+
+    // Registers the foreign callback with the Rust side.
+    // This method is generated for each callback interface.
+    internal fun register(lib: UniffiLib) {
+        lib.uniffi_xbible_engine_fn_init_callback_vtable_searchprogresslistener(vtable)
+    }
+}
+
+/**
+ * The ffiConverter which transforms the Callbacks in to handles to pass to Rust.
+ *
+ * @suppress
+ */
+public object FfiConverterTypeSearchProgressListener: FfiConverterCallbackInterface<SearchProgressListener>()
 
 
 
@@ -10895,6 +11548,38 @@ public object FfiConverterOptionalTypeStoreItem: FfiConverterRustBuffer<StoreIte
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeSearchProgressListener: FfiConverterRustBuffer<SearchProgressListener?> {
+    override fun read(buf: ByteBuffer): SearchProgressListener? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeSearchProgressListener.read(buf)
+    }
+
+    override fun allocationSize(value: SearchProgressListener?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeSearchProgressListener.allocationSize(value)
+        }
+    }
+
+    override fun write(value: SearchProgressListener?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeSearchProgressListener.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.String>> {
     override fun read(buf: ByteBuffer): List<kotlin.String> {
         val len = buf.getInt()
@@ -11455,6 +12140,34 @@ public object FfiConverterSequenceTypeFreeBibleVerse: FfiConverterRustBuffer<Lis
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypeHighlightSpan: FfiConverterRustBuffer<List<HighlightSpan>> {
+    override fun read(buf: ByteBuffer): List<HighlightSpan> {
+        val len = buf.getInt()
+        return List<HighlightSpan>(len) {
+            FfiConverterTypeHighlightSpan.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<HighlightSpan>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeHighlightSpan.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<HighlightSpan>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeHighlightSpan.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeIdRef: FfiConverterRustBuffer<List<IdRef>> {
     override fun read(buf: ByteBuffer): List<IdRef> {
         val len = buf.getInt()
@@ -11669,6 +12382,34 @@ public object FfiConverterSequenceTypeRemoteAudioModuleInfo: FfiConverterRustBuf
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeRemoteAudioModuleInfo.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeSearchHit: FfiConverterRustBuffer<List<SearchHit>> {
+    override fun read(buf: ByteBuffer): List<SearchHit> {
+        val len = buf.getInt()
+        return List<SearchHit>(len) {
+            FfiConverterTypeSearchHit.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<SearchHit>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeSearchHit.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<SearchHit>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeSearchHit.write(it, buf)
         }
     }
 }

@@ -5,8 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,15 +23,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,30 +40,46 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.ReaderTab
-import uniffi.xbible_engine.ReaderChapter
+import uniffi.xbible_engine.SearchHit
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchView(
     tab: ReaderTab,
+    onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    onReferenceClick: (String) -> Unit,
-    onCopyVerse: (String, ReaderChapter) -> Unit,
-    onOpenInNewTab: (String) -> Unit,
-    onPreviewChapter: (String) -> Unit,
-    onLexiconLookup: (String) -> Unit,
+    onClearSearch: () -> Unit,
+    onCancelSearch: () -> Unit,
+    onHitClick: (SearchHit) -> Unit,
+    onHitOpenInNewTab: (SearchHit) -> Unit,
+    onHitCopy: (SearchHit) -> Unit,
 ) {
+    // Local state for the text field. We sync it from the tab on first
+    // composition and when the user clears the search, but we don't
+    // overwrite it on every keystroke (that causes cursor jumping).
     var query by remember(tab.id) { mutableStateOf(tab.searchQuery) }
+
+    // If the VM clears the search (e.g. a new tab is active), sync down.
+    LaunchedEffect(tab.searchQuery) {
+        if (tab.searchQuery.isEmpty() && query.isNotEmpty()) {
+            query = ""
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             value = query,
-            onValueChange = { query = it },
+            onValueChange = {
+                query = it
+                onQueryChange(it)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -74,7 +89,10 @@ fun SearchView(
             leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
             trailingIcon = if (query.isNotEmpty()) {
                 {
-                    IconButton(onClick = { query = "" }) {
+                    IconButton(onClick = {
+                        query = ""
+                        onClearSearch()
+                    }) {
                         Icon(Icons.Default.Close, contentDescription = "Clear")
                     }
                 }
@@ -87,194 +105,265 @@ fun SearchView(
                 focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
             ),
             singleLine = true,
-            keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
+            keyboardActions = KeyboardActions(onSearch = {
+                onSearch(query)
+            }),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         )
 
-        if (tab.isSearching) {
-            LinearProgressIndicator(
-                progress = { tab.searchLoadProgress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            )
-        }
+        // ── States ──────────────────────────────────────────────────
+        val results = tab.searchResults
 
-        if (tab.searchHits.isEmpty() && tab.searchQuery.isNotEmpty() && !tab.isSearching) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No results for \"${tab.searchQuery}\"")
+        when {
+            tab.searchError != null -> {
+                ErrorState(message = tab.searchError)
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(tab.searchHits, key = { it }) { hitKey ->
-                    SearchHitItem(
-                        hitKey = hitKey,
-                        chapter = tab.searchHitsContent[hitKey],
-                        query = tab.searchQuery,
-                        onReferenceClick = { onReferenceClick(hitKey) },
-                        onCopyVerse = { chapter -> onCopyVerse(hitKey, chapter) },
-                        onOpenInNewTab = { onOpenInNewTab(hitKey) },
-                        onPreviewChapter = { onPreviewChapter(hitKey) },
-                        onLexiconLookup = { onLexiconLookup(hitKey) },
-                    )
-                }
+
+            tab.searchQuery.isEmpty() -> {
+                EmptyState()
+            }
+
+            tab.isSearching && results == null -> {
+                LoadingState(progress = tab.searchProgress)
+            }
+
+            results != null && results.totalHits == 0 -> {
+                NoResultsState(query = tab.searchQuery)
+            }
+
+            results != null -> {
+                ResultsList(
+                    results = results,
+                    onHitClick = onHitClick,
+                    onHitOpenInNewTab = onHitOpenInNewTab,
+                    onHitCopy = onHitCopy,
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+// ── States ──────────────────────────────────────────────────────────
+
 @Composable
-fun SearchHitItem(
-    hitKey: String,
-    chapter: ReaderChapter?,
-    query: String,
-    onReferenceClick: () -> Unit,
-    onCopyVerse: (ReaderChapter) -> Unit,
+private fun EmptyState() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+            text = "Search text, a reference (JHN 3:16), or a Strong's number (H430).",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(32.dp),
+        )
+    }
+}
+
+@Composable
+private fun LoadingState(progress: Float) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.size(48.dp),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "${(progress * 100).toInt()}%",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun NoResultsState(query: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+            text = "No verses matched \"$query\".",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ErrorState(message: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(32.dp),
+        )
+    }
+}
+
+// ── Results List ────────────────────────────────────────────────────
+
+@Composable
+private fun ResultsList(
+    results: uniffi.xbible_engine.SearchResults,
+    onHitClick: (SearchHit) -> Unit,
+    onHitOpenInNewTab: (SearchHit) -> Unit,
+    onHitCopy: (SearchHit) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "${results.totalHits} result${if (results.totalHits == 1) "" else "s"}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = "${results.tookMs} ms",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        items(results.hits, key = { "${it.translationId}-${it.bookId}-${it.chapter}-${it.verse}" }) { hit ->
+            SearchHitItem(
+                hit = hit,
+                onClick = { onHitClick(hit) },
+                onOpenInNewTab = { onHitOpenInNewTab(hit) },
+                onCopy = { onHitCopy(hit) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchHitItem(
+    hit: SearchHit,
+    onClick: () -> Unit,
     onOpenInNewTab: () -> Unit,
-    onPreviewChapter: () -> Unit,
-    onLexiconLookup: () -> Unit,
+    onCopy: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = chapter != null) { onReferenceClick() }
-            .padding(16.dp),
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = hitKey,
+                text = "${hit.bookName} ${hit.chapter}:${hit.verse}",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = if (chapter != null) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.primary,
             )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (chapter != null) {
-            // Flatten the chapter into per-word pieces so we can highlight matches.
-            val pieces = collectWords(chapter)
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                pieces.forEach { piece ->
-                    val isMatch = query.split(" ")
-                        .any { q -> q.isNotEmpty() && piece.text.contains(q, ignoreCase = true) }
-
-                    Text(
-                        text = piece.text,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = if (isMatch) {
-                            Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                                    RoundedCornerShape(size = 8.dp),
-                                )
-                                .padding(horizontal = 4.dp)
-                        } else Modifier,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(onClick = onPreviewChapter) {
-                    Icon(
-                        Icons.Default.Visibility,
-                        contentDescription = "Preview Chapter",
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-                IconButton(onClick = onOpenInNewTab) {
-                    Icon(
-                        XBibleIcons.OpenInTab,
-                        contentDescription = "Open in New Tab",
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-                IconButton(onClick = { onCopyVerse(chapter) }) {
-                    Icon(
-                        XBibleIcons.Copy,
-                        contentDescription = "Copy Verse",
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-                IconButton(onClick = onLexiconLookup) {
-                    Icon(
-                        XBibleIcons.Lexicon,
-                        contentDescription = "Lexicon",
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            }
-        } else {
-            Box(
+            Text(
+                text = hit.translationId.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.12f),
                         RoundedCornerShape(4.dp),
-                    ),
+                    )
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
             )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
-        HorizontalDivider()
+
+        // The highlighted verse text
+        Text(
+            text = buildHighlightedText(hit),
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 4,
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(onClick = onOpenInNewTab) {
+                Icon(
+                    XBibleIcons.OpenInTab,
+                    contentDescription = "Open in New Tab",
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            IconButton(onClick = onCopy) {
+                Icon(
+                    XBibleIcons.Copy,
+                    contentDescription = "Copy Verse",
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+        )
     }
 }
 
+// ── Highlight Rendering ─────────────────────────────────────────────
+
 /**
- * Collect every renderable word from a chapter for the hit preview.
+ * Renders a SearchHit's text with its highlight spans applied as a
+ * tinted background.
  *
- * `ReaderChapter.blocks` alternates between headings, verse blocks,
- * poems, and line breaks. For the search preview we flatten everything
- * into a linear sequence of `Piece` so the `FlowRow` can wrap them.
+ * The spans are **byte** offsets in Rust's String. For ASCII and
+ * Latin-1 text (BSB, KJV, ach_abr), byte count equals character count,
+ * so we can slice the Kotlin String directly. For text with combining
+ * marks, the offsets would need a mapping layer in Rust — that is a
+ * search.rs change, not a UI one.
  */
-private data class WordPiece(val text: String, val isWordsOfJesus: Boolean)
-
-private fun collectWords(chapter: ReaderChapter): List<WordPiece> {
-    val out = mutableListOf<WordPiece>()
-
-    chapter.blocks.forEach { block ->
-        when (block.itemType) {
-            "verse" -> {
-                block.verses.forEach { verse ->
-                    if (verse.words.isNotEmpty()) {
-                        verse.words.forEach { w ->
-                            out += WordPiece(w.text, w.isWordsOfJesus)
-                        }
-                    } else {
-                        // Fallback: split plain text so highlight still works.
-                        verse.text.split(" ").forEach { tok ->
-                            if (tok.isNotBlank()) out += WordPiece(tok, false)
-                        }
-                    }
-                }
-            }
-            "heading", "hebrew_subtitle" -> {
-                block.text.split(" ").forEach { tok ->
-                    if (tok.isNotBlank()) out += WordPiece(tok, false)
-                }
-            }
-            else -> Unit // line_break / unknown — nothing to render
-        }
+@Composable
+private fun buildHighlightedText(hit: SearchHit) = buildAnnotatedString {
+    if (hit.highlights.isEmpty()) {
+        append(hit.text)
+        return@buildAnnotatedString
     }
 
-    return out
+    val text = hit.text
+    var lastByte = 0
+
+    for (span in hit.highlights) {
+        val startByte = span.start.toInt().coerceIn(0, text.length)
+        val endByte = span.end.toInt().coerceIn(0, text.length)
+
+        if (startByte >= endByte) continue
+
+        if (startByte > lastByte) {
+            append(text.substring(lastByte, startByte))
+        }
+
+        withStyle(
+            SpanStyle(
+                background = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        ) {
+            append(text.substring(startByte, endByte))
+        }
+
+        lastByte = endByte
+    }
+
+    if (lastByte < text.length) {
+        append(text.substring(lastByte))
+    }
 }

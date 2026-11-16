@@ -169,6 +169,7 @@ fun TabThumbnail(
                     .fillMaxSize()
                     .padding(8.dp),
             ) {
+                // ── Header: translation badge + close ────────────
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -205,16 +206,9 @@ fun TabThumbnail(
                     }
                 }
 
+                // ── Subtitle: reference or search query ─────────
                 Text(
-                    text = if (tab.type == ReaderTabType.SEARCH) {
-                        stringResource(R.string.search_label, tab.searchQuery)
-                    } else {
-                        if (tab.bookName.isNotBlank()) {
-                            "${tab.bookName} ${tab.chapter}"
-                        } else {
-                            stringResource(R.string.no_reference)
-                        }
-                    },
+                    text = subtitleFor(tab),
                     style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -222,6 +216,7 @@ fun TabThumbnail(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // ── Preview area ────────────────────────────────
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -232,12 +227,9 @@ fun TabThumbnail(
                 ) {
                     Column {
                         if (tab.type == ReaderTabType.SEARCH) {
-                            // Search hits are now exposed as raw keys
-                            // (e.g. "GEN 1:1"). The content map holds
-                            // the loaded ReaderChapter per key.
-                            tab.searchHits.take(5).forEach { key ->
+                            searchPreviewLines(tab).forEach { line ->
                                 Text(
-                                    text = key,
+                                    text = line,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontSize = 8.sp,
                                     maxLines = 1,
@@ -262,13 +254,60 @@ fun TabThumbnail(
     }
 }
 
+// ── Subtitle helper ────────────────────────────────────────────────
+
+@Composable
+private fun subtitleFor(tab: ReaderTab): String {
+    return when (tab.type) {
+        ReaderTabType.SEARCH -> {
+            if (tab.searchQuery.isBlank()) {
+                stringResource(R.string.search_label, "")
+            } else {
+                stringResource(R.string.search_label, tab.searchQuery)
+            }
+        }
+        ReaderTabType.READ -> {
+            if (tab.isCommentary) {
+                if (tab.bookName.isNotBlank()) {
+                    "${tab.commentaryName} · ${tab.bookName} ${tab.chapter}"
+                } else {
+                    tab.commentaryName.ifBlank { stringResource(R.string.no_reference) }
+                }
+            } else {
+                if (tab.bookName.isNotBlank()) {
+                    "${tab.bookName} ${tab.chapter}"
+                } else {
+                    stringResource(R.string.no_reference)
+                }
+            }
+        }
+    }
+}
+
+// ── Preview helpers ────────────────────────────────────────────────
+
 /**
- * Produce up to 5 one-line previews from a [ReaderTab]'s chapter
- * for the thumbnail.
+ * Produce up to 3 one-line previews from the search hits.
  *
- * `ReaderChapter.blocks` is a flat list of [ReaderBlock]s. Verse-shaped
- * blocks have `itemType == "verse"` and carry their inline text via
- * `block.verses[*].text`; fall back to `block.text` for other block types.
+ * Each hit is a `SearchHit` carrying `bookName`, `chapter`, `verse`,
+ * and `text`. We render "John 3:16 — For God so loved…" so the user
+ * sees both the reference and the first few words of the verse.
+ */
+private fun searchPreviewLines(tab: ReaderTab): List<String> {
+    val hits = tab.searchResults?.hits ?: return emptyList()
+    return hits.take(3).map { hit ->
+        val ref = "${hit.bookName} ${hit.chapter}:${hit.verse}"
+        val text = hit.text.replace(Regex("\\s+"), " ").trim()
+        "$ref — $text"
+    }
+}
+
+/**
+ * Produce up to 5 one-line previews from a [ReaderTab]'s chapter.
+ *
+ * `ReaderChapter.blocks` is a flat list of `ReaderBlock`s. Verse-shaped
+ * blocks have `itemType == "verse"` and carry inline text via
+ * `block.verses[*].text`; fall back to `block.text` for other blocks.
  */
 private fun chapterPreviewLines(tab: ReaderTab): List<String> {
     val chapter = tab.chapterData ?: return emptyList()
@@ -282,7 +321,6 @@ private fun chapterPreviewLines(tab: ReaderTab): List<String> {
             ?: block.text
             ?: ""
         if (verseText.isNotBlank()) {
-            // Collapse whitespace so it fits on one line
             lines += verseText.replace(Regex("\\s+"), " ").trim()
         }
     }

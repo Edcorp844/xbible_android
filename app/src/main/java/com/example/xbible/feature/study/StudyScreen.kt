@@ -539,25 +539,14 @@ fun StudyScreen(
                                         currentTab?.type == ReaderTabType.SEARCH -> {
                                             SearchView(
                                                 tab = currentTab,
+                                                onQueryChange = readerViewModel::updateSearchQuery,
                                                 onSearch = readerViewModel::performSearch,
-                                                onReferenceClick = { hitKey ->
-                                                    readerViewModel.openSearchHit(hitKey)
-                                                },
-                                                onCopyVerse = { ref, chapter ->
-                                                    val text = chapter.blocks
-                                                        .flatMap { b -> b.verses }
-                                                        .joinToString(" ") { v -> v.text }
-                                                    clipboardManager.setText(AnnotatedString("$ref: $text"))
-                                                },
-                                                onOpenInNewTab = { hitKey ->
-                                                    readerViewModel.openSearchHitInNewTab(hitKey)
-                                                },
-                                                onPreviewChapter = { ref ->
-                                                    readerViewModel.openSearchHit(ref)
-                                                },
-                                                onLexiconLookup = { ref ->
-                                                    readerViewModel.openSearchHit(ref)
-                                                    showLexicon = true
+                                                onClearSearch = readerViewModel::clearSearch,
+                                                onCancelSearch = readerViewModel::cancelSearch,
+                                                onHitClick = { hit -> readerViewModel.openSearchHit(hit) },
+                                                onHitOpenInNewTab = { hit -> readerViewModel.openSearchHitInNewTab(hit) },
+                                                onHitCopy = { hit ->
+                                                    clipboardManager.setText(AnnotatedString(hit.text))
                                                 },
                                             )
                                         }
