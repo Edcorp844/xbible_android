@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -27,7 +28,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -36,6 +39,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -44,6 +48,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,11 +56,13 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -94,11 +101,16 @@ import com.example.xbible.R
 import com.example.xbible.core.ui.components.HighlightStyle
 import com.example.xbible.core.ui.components.PageView
 import com.example.xbible.core.ui.layout.LocalLayoutInfo
+import com.example.xbible.feature.study.extensions.Canon
+import com.example.xbible.feature.study.extensions.Section
+import com.example.xbible.feature.study.extensions.labelRes
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.ReaderTabType
 import com.example.xbible.viewmodel.ReaderViewModel
+import com.example.xbible.viewmodel.SearchType
 import com.example.xbible.viewmodel.StudyTool
 import uniffi.xbible_engine.ReaderWord
+import uniffi.xbible_engine.SearchMode
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -134,7 +146,10 @@ fun StudyScreen(
     val currentBooks by readerViewModel.currentBooksFlow.collectAsState()
     val highlights by readerViewModel.highlights.collectAsState()
 
-    // Chapter-wide entities (In This Chapter footer) — populated on chapter load.
+    // Canon / section migration state
+    val selectedCanon by readerViewModel.selectedCanon.collectAsState()
+    val sectionUpdateRequired by readerViewModel.sectionUpdateRequired.collectAsState()
+
     val chapterEntities by readerViewModel.chapterEntities.collectAsState()
 
     // ── Local UI state ──────────────────────────────────────────
@@ -149,7 +164,6 @@ fun StudyScreen(
     var showMoreMenu by remember { mutableStateOf(false) }
     var showCommentaryPicker by remember { mutableStateOf(false) }
 
-    // Verse Actions State
     var selectedVerseNumber by remember { mutableStateOf<Int?>(null) }
     var selectedVerseText by remember { mutableStateOf("") }
     var showVerseActions by remember { mutableStateOf(false) }
@@ -208,7 +222,6 @@ fun StudyScreen(
     val currentTab = tabs.getOrNull(activeTabIndex)
     val isCommentaryTab = currentTab?.isCommentary == true
     val currentBlocks = chapterData?.blocks.orEmpty()
-    val currentCommentaryBlocks = commentaryData?.blocks.orEmpty()
     val hasNext = currentTab?.hasNextChapter == true
     val hasPrev = currentTab?.hasPrevChapter == true
 
@@ -245,7 +258,6 @@ fun StudyScreen(
 
     LaunchedEffect(Unit) { readerViewModel.refreshEngine() }
 
-    // Resizable lexicon pane
     var lexiconPaneWidth by remember { mutableStateOf(400.dp) }
     val density = LocalDensity.current
 
@@ -267,10 +279,10 @@ fun StudyScreen(
             rememberedId != null -> {
                 readerViewModel.loadStudyCommentary(rememberedId, rememberedName)
             }
+
             fallback != null -> {
                 readerViewModel.loadStudyCommentary(fallback.id, fallback.name)
             }
-            // else: nothing installed → panel will show the install empty state
         }
     }
 
@@ -304,6 +316,7 @@ fun StudyScreen(
                                     isCommentaryTab -> commentaryName.ifEmpty {
                                         stringResource(R.string.commentary)
                                     }
+
                                     else -> currentTranslation?.shortName
                                         ?: stringResource(R.string.select_bible)
                                 },
@@ -320,7 +333,8 @@ fun StudyScreen(
                             checked = isSelected,
                             onCheckedChange = {
                                 if (isCompact) {
-                                    if (isSearchTab) showSearchSettings = it else showReferencePicker = it
+                                    if (isSearchTab) showSearchSettings =
+                                        it else showReferencePicker = it
                                     showLexicon = false
                                     showModuleSelection = false
                                 } else {
@@ -339,6 +353,7 @@ fun StudyScreen(
                                 isCommentaryTab -> commentaryData?.let {
                                     "${it.bookName} ${it.chapterNumber}"
                                 }
+
                                 else -> chapterData?.let {
                                     "${it.bookName} ${it.chapterNumber}"
                                 }
@@ -373,7 +388,10 @@ fun StudyScreen(
                 }
                 Box {
                     IconButton(onClick = { showMoreMenu = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.more))
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.more)
+                        )
                     }
                     DropdownMenu(
                         expanded = showMoreMenu,
@@ -537,19 +555,64 @@ fun StudyScreen(
                                 ) {
                                     when {
                                         currentTab?.type == ReaderTabType.SEARCH -> {
+                                            // Books the engine will actually search,
+                                            // already canon-filtered by the Rust side.
+                                            val searchableBooks = currentBooks
+
+                                            // Only surface sections that exist in this
+                                            // translation, in canonical order.
+                                            // Only surface sections that exist in this translation, in canonical order.
+                                            // SearchView takes a Set<Section>; LinkedHashSet preserves Section.entries order.
+                                            val availableSections: Set<Section> =
+                                                remember(searchableBooks) {
+                                                    val present = searchableBooks
+                                                        .map { Section.fromWire(it.section) }
+                                                        .toSet()
+                                                    Section.entries.filterTo(LinkedHashSet()) { it in present }
+                                                }
+
+                                            // Engine-facing mode derived from the UI
+                                            // enum. The ViewModel maps back at the FFI
+                                            // boundary, so this round-trip is safe.
+                                            val searchMode: SearchMode =
+                                                currentTab.searchType.toEngineSearchMode()
+
                                             SearchView(
                                                 tab = currentTab,
                                                 onQueryChange = readerViewModel::updateSearchQuery,
                                                 onSearch = readerViewModel::performSearch,
                                                 onClearSearch = readerViewModel::clearSearch,
                                                 onCancelSearch = readerViewModel::cancelSearch,
-                                                onHitClick = { hit -> readerViewModel.openSearchHit(hit) },
-                                                onHitOpenInNewTab = { hit -> readerViewModel.openSearchHitInNewTab(hit) },
+                                                onHitClick = { hit ->
+                                                    readerViewModel.openSearchHit(hit)
+                                                },
+                                                onHitOpenInNewTab = { hit ->
+                                                    readerViewModel.openSearchHitInNewTab(hit)
+                                                },
                                                 onHitCopy = { hit ->
                                                     clipboardManager.setText(AnnotatedString(hit.text))
                                                 },
+                                                onSearchModeChange = { mode ->
+                                                    readerViewModel.updateSearchType(
+                                                        mode.toUiSearchType()
+                                                    )
+                                                },
+                                                onSectionToggle = { section ->
+                                                    readerViewModel.toggleSection(section)
+                                                },
+                                                onSelectAllSections = {
+                                                    readerViewModel.setSections(Section.All)
+                                                },
+                                                onSelectNoSections = {
+                                                    // Coerced to Section.All by
+                                                    // setSections; UI also refuses
+                                                    // to uncheck the last one.
+                                                    readerViewModel.setSections(emptySet())
+                                                },
+                                                availableSections = availableSections,
                                             )
                                         }
+
                                         isCommentaryTab -> {
                                             when {
                                                 isLoading && commentaryData == null -> {
@@ -558,6 +621,7 @@ fun StudyScreen(
                                                         contentAlignment = Alignment.Center,
                                                     ) { CircularProgressIndicator() }
                                                 }
+
                                                 commentaryData == null -> {
                                                     Box(
                                                         Modifier.fillMaxSize(),
@@ -566,6 +630,7 @@ fun StudyScreen(
                                                         Text(stringResource(R.string.no_content_loaded))
                                                     }
                                                 }
+
                                                 else -> {
                                                     CommentaryReaderView(
                                                         chapter = commentaryData!!,
@@ -584,6 +649,7 @@ fun StudyScreen(
                                                 }
                                             }
                                         }
+
                                         else -> {
                                             when {
                                                 installedTranslations.isEmpty() -> {
@@ -599,12 +665,14 @@ fun StudyScreen(
                                                         }
                                                     }
                                                 }
+
                                                 isLoading -> {
                                                     Box(
                                                         Modifier.fillMaxSize(),
                                                         contentAlignment = Alignment.Center,
                                                     ) { CircularProgressIndicator() }
                                                 }
+
                                                 chapterData == null || currentBlocks.isEmpty() -> {
                                                     Box(
                                                         Modifier.fillMaxSize(),
@@ -613,6 +681,7 @@ fun StudyScreen(
                                                         Text(stringResource(R.string.no_content_loaded))
                                                     }
                                                 }
+
                                                 else -> {
                                                     PageView(
                                                         chapter = chapterData!!,
@@ -621,7 +690,7 @@ fun StudyScreen(
                                                         state = listState,
                                                         onWordClick = { word -> },
                                                         onStrongsClick = { strongs -> },
-                                                        onVerseTap = { /* nothing, or brief flash */ },
+                                                        onVerseTap = { },
                                                         onVerseLongPress = { verse ->
                                                             val verseObj = chapterData?.blocks
                                                                 ?.flatMap { it.verses }
@@ -629,7 +698,9 @@ fun StudyScreen(
                                                             selectedVerseNumber = verse
                                                             selectedVerseText = verseObj?.text ?: ""
                                                             showVerseActions = true
-                                                            readerViewModel.showEntitiesForVerse(verse)
+                                                            readerViewModel.showEntitiesForVerse(
+                                                                verse
+                                                            )
                                                         },
                                                         chapterEntities = chapterEntities,
                                                         onEntityTap = { },
@@ -652,7 +723,10 @@ fun StudyScreen(
                                                 state = rememberDraggableState { delta ->
                                                     val deltaDp = with(density) { delta.toDp() }
                                                     lexiconPaneWidth = (lexiconPaneWidth - deltaDp)
-                                                        .coerceIn(minPaneWidth, innerMaxWidth * 0.7f)
+                                                        .coerceIn(
+                                                            minPaneWidth,
+                                                            innerMaxWidth * 0.7f
+                                                        )
                                                 },
                                                 orientation = Orientation.Horizontal,
                                             ),
@@ -686,7 +760,8 @@ fun StudyScreen(
             supportingPane = {
                 if (isBibleDrawerVisible) {
                     AnimatedPane(
-                        modifier = Modifier.preferredHeight(1f)
+                        modifier = Modifier
+                            .preferredHeight(1f)
                             .width(
                                 when {
                                     layoutInfo.isExpandedWidth -> 480.dp
@@ -740,14 +815,30 @@ fun StudyScreen(
                                                 showModuleSelection = false
                                             }
                                         }
+
                                         showSearchSettings -> {
                                             currentTab?.let { tab ->
-                                                SearchSettingsContent(tab.searchType) { type ->
-                                                    readerViewModel.updateSearchType(type)
-                                                    showSearchSettings = false
-                                                }
+                                                SearchSettingsContent(
+                                                    searchType = tab.searchType,
+                                                    selectedSections = tab.selectedSections,
+                                                    canon = selectedCanon,
+                                                    sectionUpdateRequired = sectionUpdateRequired,
+                                                    onSelectType = { type ->
+                                                        readerViewModel.updateSearchType(type)
+                                                    },
+                                                    onToggleSection = { section ->
+                                                        readerViewModel.toggleSection(section)
+                                                    },
+                                                    onSelectCanon = { newCanon ->
+                                                        readerViewModel.setCanon(newCanon)
+                                                    },
+                                                    onRebuildSections = {
+                                                        readerViewModel.rebuildSections()
+                                                    },
+                                                )
                                             }
                                         }
+
                                         showReferencePicker -> {
                                             val bookId = if (isCommentaryTab) {
                                                 commentaryData?.bookId
@@ -770,7 +861,8 @@ fun StudyScreen(
                                                     if (isCommentaryTab) {
                                                         commentaryData?.let {
                                                             readerViewModel.openCommentaryChapter(
-                                                                commentaryId = currentTab?.commentaryId ?: return@ReferencePickerContent,
+                                                                commentaryId = currentTab?.commentaryId
+                                                                    ?: return@ReferencePickerContent,
                                                                 commentaryName = currentTab.commentaryName,
                                                                 bookId = it.bookId,
                                                                 chapter = ch,
@@ -778,13 +870,17 @@ fun StudyScreen(
                                                         }
                                                     } else {
                                                         chapterData?.let {
-                                                            readerViewModel.openChapter(it.bookId, ch)
+                                                            readerViewModel.openChapter(
+                                                                it.bookId,
+                                                                ch
+                                                            )
                                                         }
                                                     }
                                                     showReferencePicker = false
                                                 },
                                             )
                                         }
+
                                         showFontSettings -> {
                                             FontSettingsContent(
                                                 config = wordConfig,
@@ -794,12 +890,17 @@ fun StudyScreen(
                                                 onResetConfig = { readerViewModel.resetWordConfig() },
                                             )
                                         }
+
                                         showParallelMode -> {
                                             ParallelModeContent(
                                                 translations = installedTranslations,
                                                 current = currentTranslation,
                                                 parallel = parallelTranslation,
-                                                onParallelSelected = { readerViewModel.selectParallelTranslation(it) },
+                                                onParallelSelected = {
+                                                    readerViewModel.selectParallelTranslation(
+                                                        it
+                                                    )
+                                                },
                                             )
                                         }
                                     }
@@ -831,7 +932,8 @@ fun StudyScreen(
                 sheetState = referenceSheetState,
             ) {
                 val bookId = if (isCommentaryTab) commentaryData?.bookId else chapterData?.bookId
-                val chapterNumber = if (isCommentaryTab) commentaryData?.chapterNumber else chapterData?.chapterNumber
+                val chapterNumber =
+                    if (isCommentaryTab) commentaryData?.chapterNumber else chapterData?.chapterNumber
                 ReferencePickerContent(
                     books = currentBooks,
                     currentBookId = bookId,
@@ -841,7 +943,8 @@ fun StudyScreen(
                         if (isCommentaryTab) {
                             commentaryData?.let {
                                 readerViewModel.openCommentaryChapter(
-                                    commentaryId = currentTab?.commentaryId ?: return@ReferencePickerContent,
+                                    commentaryId = currentTab?.commentaryId
+                                        ?: return@ReferencePickerContent,
                                     commentaryName = currentTab.commentaryName,
                                     bookId = it.bookId,
                                     chapter = ch,
@@ -861,10 +964,24 @@ fun StudyScreen(
                 sheetState = searchSettingsSheetState,
             ) {
                 currentTab?.let { tab ->
-                    SearchSettingsContent(tab.searchType) { type ->
-                        readerViewModel.updateSearchType(type)
-                        showSearchSettings = false
-                    }
+                    SearchSettingsContent(
+                        searchType = tab.searchType,
+                        selectedSections = tab.selectedSections,
+                        canon = selectedCanon,
+                        sectionUpdateRequired = sectionUpdateRequired,
+                        onSelectType = { type ->
+                            readerViewModel.updateSearchType(type)
+                        },
+                        onToggleSection = { section ->
+                            readerViewModel.toggleSection(section)
+                        },
+                        onSelectCanon = { newCanon ->
+                            readerViewModel.setCanon(newCanon)
+                        },
+                        onRebuildSections = {
+                            readerViewModel.rebuildSections()
+                        },
+                    )
                 }
             }
         }
@@ -906,10 +1023,15 @@ fun StudyScreen(
 
         // ── VERSE ACTIONS SHEET ─────────────────────────────────
         if (showVerseActions) {
-            val targetBookName = chapterData?.bookName ?: commentaryData?.bookName ?: currentTab?.bookName ?: ""
-            val targetChapterNum = chapterData?.chapterNumber ?: commentaryData?.chapterNumber ?: currentTab?.chapter ?: 1
-            val targetBookId = chapterData?.bookId ?: commentaryData?.bookId ?: currentTab?.bookId ?: ""
-            val activeHighlight = selectedVerseNumber?.let { highlights["$targetBookId:$targetChapterNum:$it"] }
+            val targetBookName =
+                chapterData?.bookName ?: commentaryData?.bookName ?: currentTab?.bookName ?: ""
+            val targetChapterNum =
+                chapterData?.chapterNumber ?: commentaryData?.chapterNumber ?: currentTab?.chapter
+                ?: 1
+            val targetBookId =
+                chapterData?.bookId ?: commentaryData?.bookId ?: currentTab?.bookId ?: ""
+            val activeHighlight =
+                selectedVerseNumber?.let { highlights["$targetBookId:$targetChapterNum:$it"] }
 
             ModalBottomSheet(
                 onDismissRequest = { closeVerseActions() },
@@ -936,7 +1058,13 @@ fun StudyScreen(
                     onHighlight = { color, style ->
                         if (targetBookId.isNotBlank()) {
                             selectedVerseNumber?.let { vNum ->
-                                readerViewModel.setHighlight(targetBookId, targetChapterNum, vNum, color, style)
+                                readerViewModel.setHighlight(
+                                    targetBookId,
+                                    targetChapterNum,
+                                    vNum,
+                                    color,
+                                    style
+                                )
                             }
                         }
                         closeVerseActions()
@@ -944,7 +1072,11 @@ fun StudyScreen(
                     onClearHighlight = {
                         if (targetBookId.isNotBlank()) {
                             selectedVerseNumber?.let { vNum ->
-                                readerViewModel.removeHighlight(targetBookId, targetChapterNum, vNum)
+                                readerViewModel.removeHighlight(
+                                    targetBookId,
+                                    targetChapterNum,
+                                    vNum
+                                )
                             }
                         }
                         closeVerseActions()
@@ -1036,4 +1168,192 @@ fun StudyScreen(
             onDismiss = { showTabsPreview = false },
         )
     }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Search settings pane
+// ─────────────────────────────────────────────────────────────────
+//
+// Owns three controls, top to bottom:
+//   1. Mode picker      — SearchType → engine SearchMode at the FFI boundary.
+//   2. Canon picker     — per-translation canonical family; changing it
+//                          re-filters the book list on the Rust side.
+//   3. Section filter   — per-tab scope for search. Toggling a checkbox
+//                          calls viewModel.toggleSection, which re-runs
+//                          the active search if a query is present.
+//
+// Plus a "Rebuild sections" row that appears only when the current
+// translation was installed before migration v8 and still has "unknown"
+// section keys.
+
+@Composable
+private fun SearchSettingsContent(
+    searchType: SearchType,
+    selectedSections: Set<Section>,
+    canon: Canon,
+    sectionUpdateRequired: Boolean,
+    onSelectType: (SearchType) -> Unit,
+    onToggleSection: (Section) -> Unit,
+    onSelectCanon: (Canon) -> Unit,
+    onRebuildSections: () -> Unit,
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.search),
+            style = MaterialTheme.typography.titleLarge,
+        )
+
+        SettingsSection(title = stringResource(R.string.search_mode)) {
+            SearchType.entries.forEach { type ->
+                SettingsRadioRow(
+                    label = stringResource(type.labelRes()),
+                    selected = type == searchType,
+                    onClick = { onSelectType(type) },
+                )
+            }
+        }
+
+        SettingsSection(title = stringResource(R.string.canon)) {
+            Canon.entries.forEach { c ->
+                SettingsRadioRow(
+                    label = stringResource(c.labelRes),
+                    selected = c == canon,
+                    onClick = { onSelectCanon(c) },
+                )
+            }
+        }
+
+        SettingsSection(title = stringResource(R.string.search_sections)) {
+            Section.entries.forEach { section ->
+                val isLastChecked =
+                    section in selectedSections && selectedSections.size == 1
+                SettingsCheckboxRow(
+                    label = stringResource(section.labelRes),
+                    checked = section in selectedSections,
+                    enabled = !isLastChecked,
+                    onToggle = { onToggleSection(section) },
+                )
+            }
+        }
+
+        if (sectionUpdateRequired) {
+            HorizontalDivider()
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.section_update_required_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                TextButton(onClick = onRebuildSections) {
+                    Text(stringResource(R.string.rebuild_sections))
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun SettingsSection(
+    title: String,
+    content: @Composable () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        content()
+    }
+}
+
+@Composable
+private fun SettingsRadioRow(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+private fun SettingsCheckboxRow(
+    label: String,
+    checked: Boolean,
+    enabled: Boolean,
+    onToggle: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(enabled = enabled, onClick = onToggle)
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { onToggle() },
+            enabled = enabled,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
+    }
+}
+
+// ── SearchType ↔ SearchMode ────────────────────────────────────────
+//
+// The ViewModel keeps SearchType as the UI-facing enum on ReaderTab and
+// maps to SearchMode at the FFI boundary. SearchView's inline mode picker
+// works in SearchMode, so these two helpers bridge at the call site.
+//
+// If SearchView.kt actually takes SearchType (not SearchMode) for
+// onSearchModeChange, delete both helpers and pass
+// currentTab.searchType / readerViewModel::updateSearchType directly.
+
+private fun SearchType.toEngineSearchMode(): SearchMode = when (this) {
+    SearchType.MULTI_WORD -> SearchMode.MULTI_WORD
+    SearchType.PHRASE -> SearchMode.PHRASE
+    SearchType.REGULAR_EXPRESSION -> SearchMode.REGEX
+}
+
+private fun SearchMode.toUiSearchType(): SearchType = when (this) {
+    SearchMode.MULTI_WORD -> SearchType.MULTI_WORD
+    SearchMode.PHRASE -> SearchType.PHRASE
+    SearchMode.REGEX -> SearchType.REGULAR_EXPRESSION
+}
+
+private fun SearchType.labelRes(): Int = when (this) {
+    SearchType.MULTI_WORD -> R.string.search_mode_multi_word
+    SearchType.PHRASE -> R.string.search_mode_phrase
+    SearchType.REGULAR_EXPRESSION -> R.string.search_mode_regex
 }

@@ -43,6 +43,20 @@
     <string name="select_parallel_bible">Select Parallel Bible</string>
     <string name="none">None</string>
 
+    <!-- Search settings pane -->
+    <string name="search_mode">Search mode</string>
+    <string name="canon">Canon</string>
+    <string name="search_sections">Search in sections</string>
+    <string name="section_update_required_message">This translation was installed before section data was available. Rebuild sections to enable section filters — no re-download needed.</string>
+    <string name="rebuild_sections">Rebuild sections</string>
+
+    <!-- Inline search filter (SearchView) -->
+    <string name="sections">Sections</string>
+    <string name="select_all">Select all</string>
+    <string name="select_none">Clear</string>
+    <string name="filter_sections">Filter by section</string>
+    <string name="no_sections_available">No sections available for this translation</string>
+
     <!-- Store Screen -->
     <string name="store_title">Store</string>
     <string name="scroll_to_search">Scroll to Search</string>
@@ -107,6 +121,26 @@
     <string name="commentaries_desc">Select or install a commentary module from the Store to read study notes, theological essays, and explanations for the active scripture chapter.</string>
     <string name="open_in_new_tab">New tab</string>
 
+    <!-- Search modes -->
+    <string name="search_mode_multi_word">Multi word</string>
+    <string name="search_mode_phrase">Phrase</string>
+    <string name="search_mode_regex">Regex</string>
+
+    <!-- Canonical families (shown in the canon picker) -->
+    <string name="canon_protestant">Protestant</string>
+    <string name="canon_catholic">Catholic</string>
+    <string name="canon_orthodox">Orthodox</string>
+    <string name="canon_ethiopian">Ethiopian</string>
+    <string name="canon_all">All books</string>
+
+    <!-- Canonical sections (shown in the book picker / filter picker) -->
+    <string name="section_ot">Old Testament</string>
+    <string name="section_nt">New Testament</string>
+    <string name="section_deutero">Deuterocanonicals</string>
+    <string name="section_orthodox_extra">Orthodox additions</string>
+    <string name="section_ethiopian_extra">Ethiopian additions</string>
+    <string name="section_unknown">Other</string>
+
     <!-- Study Selection -->
     <string name="select_bible_version">Select Bible Version</string>
     <string name="search_type_label">Search Type</string>
@@ -158,4 +192,6 @@
     <string name="word_spacing">Word Spacing</string>
     <string name="verse_layout">Verse Layout</string>
     <string name="verse_per_line">Verse per line</string>
+
+
 </resources>

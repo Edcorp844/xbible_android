@@ -13,6 +13,8 @@ import com.example.xbible.core.ui.components.VerseHighlight
 import com.example.xbible.core.ui.components.VerseLayout
 import com.example.xbible.core.ui.components.WordConfig
 import com.example.xbible.data.BibleRepository
+import com.example.xbible.feature.study.extensions.Canon
+import com.example.xbible.feature.study.extensions.Section
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,7 +33,9 @@ import uniffi.xbible_engine.InstalledTranslation
 import uniffi.xbible_engine.ReaderBlock
 import uniffi.xbible_engine.ReaderChapter
 import uniffi.xbible_engine.ReaderWord
+import uniffi.xbible_engine.SearchFilter
 import uniffi.xbible_engine.SearchHit
+import uniffi.xbible_engine.SearchMode
 import uniffi.xbible_engine.SearchResults
 import uniffi.xbible_engine.StoreItem
 import java.util.UUID
@@ -85,6 +89,18 @@ data class ReaderTab(
     val isSearching: Boolean = false,
     val searchProgress: Float = 0f,
     val searchError: String? = null,
+
+    // ── Search scope ───────────────────────────────────────────
+    /**
+     * Canonical sections this tab searches. Defaults to [Section.All]
+     * (every section the translation might contain). When this equals
+     * [Section.All], [ReaderViewModel.performSearch] passes an empty
+     * `book_ids` list to the Rust filter — which means "all books" and
+     * skips the SQL `IN (...)` clause. For a proper subset, the explicit
+     * list of matching book ids is sent. The UI must not allow the user
+     * to uncheck the last section; see [ReaderViewModel.toggleSection].
+     */
+    val selectedSections: Set<Section> = Section.All,
 ) {
     val isCommentary: Boolean get() = commentaryId != null && translation == null
 
@@ -131,6 +147,25 @@ class ReaderViewModel @Inject constructor(
     private val _parallelTranslation = MutableStateFlow<InstalledTranslation?>(null)
     val parallelTranslation: StateFlow<InstalledTranslation?> =
         _parallelTranslation.asStateFlow()
+
+    // ── Canon / section migration ──────────────────────────────────
+
+    /**
+     * The canonical family the current translation is showing. Lives on the
+     * ViewModel (not on [ReaderTab]) because the Rust side stores it as a
+     * column on `translations` — changing it affects every tab that reads
+     * that translation, and re-filters the books list everywhere.
+     */
+    private val _selectedCanon = MutableStateFlow(Canon.Protestant)
+    val selectedCanon: StateFlow<Canon> = _selectedCanon.asStateFlow()
+
+    /**
+     * `true` when the current translation was installed before migration v8
+     * and its books still carry `"unknown"` for [FreeBibleBook.section].
+     * The UI should offer [rebuildSections] to fix this without re-downloading.
+     */
+    private val _sectionUpdateRequired = MutableStateFlow(false)
+    val sectionUpdateRequired: StateFlow<Boolean> = _sectionUpdateRequired.asStateFlow()
 
     // ── Installed commentaries ─────────────────────────────────────
 
@@ -227,8 +262,10 @@ class ReaderViewModel @Inject constructor(
     private var studyCommentaryJob: Job? = null
 
     private val prefs = application.getSharedPreferences("word_config", Context.MODE_PRIVATE)
-    private val tabPrefs = application.getSharedPreferences("reader_tabs_state", Context.MODE_PRIVATE)
-    private val highlightsPrefs = application.getSharedPreferences("bible_highlights", Context.MODE_PRIVATE)
+    private val tabPrefs =
+        application.getSharedPreferences("reader_tabs_state", Context.MODE_PRIVATE)
+    private val highlightsPrefs =
+        application.getSharedPreferences("bible_highlights", Context.MODE_PRIVATE)
 
     // ── Highlights ──────────────────────────────────────────────────
 
@@ -252,7 +289,8 @@ class ReaderViewModel @Inject constructor(
                         val color = HighlightColor.valueOf(parts[0])
                         val style = HighlightStyle.valueOf(parts[1])
                         map[key] = VerseHighlight(color, style)
-                    } catch (_: Exception) {}
+                    } catch (_: Exception) {
+                    }
                 }
             }
         }
@@ -277,7 +315,8 @@ class ReaderViewModel @Inject constructor(
         } catch (_: Exception) {
             AddedWordStyle.Brackets
         }
-        val verseLayoutName = prefs.getString("verseLayout", VerseLayout.Paragraph.name) ?: VerseLayout.Paragraph.name
+        val verseLayoutName =
+            prefs.getString("verseLayout", VerseLayout.Paragraph.name) ?: VerseLayout.Paragraph.name
         val verseLayout = try {
             VerseLayout.valueOf(verseLayoutName)
         } catch (_: Exception) {
@@ -356,6 +395,14 @@ class ReaderViewModel @Inject constructor(
             }
             _installedTranslations.value = translations
 
+            // Seed canon + section migration flag from the translation
+            // the user is about to be looking at.
+            val seedTranslation = translations.firstOrNull()
+            if (seedTranslation != null) {
+                _selectedCanon.value = Canon.fromWire(seedTranslation.selectedCanon)
+                refreshSectionUpdateFlag(seedTranslation.id)
+            }
+
             val restored = tryRestoreTabs(translations)
             if (restored != null) {
                 _tabs.value = restored
@@ -412,6 +459,8 @@ class ReaderViewModel @Inject constructor(
             val searchType = runCatching { SearchType.valueOf(searchTypeStr) }
                 .getOrElse { SearchType.MULTI_WORD }
 
+            val selectedSections = restoreSections(tabPrefs, i)
+
             restored += ReaderTab(
                 type = type,
                 translation = if (commentaryId == null) translation else null,
@@ -421,9 +470,27 @@ class ReaderViewModel @Inject constructor(
                 chapter = chapter,
                 searchQuery = searchQuery,
                 searchType = searchType,
+                selectedSections = selectedSections,
             )
         }
         return restored.ifEmpty { null }
+    }
+
+    private fun restoreSections(
+        prefs: android.content.SharedPreferences,
+        tabIndex: Int,
+    ): Set<Section> {
+        val raw = prefs.getString("tab_${tabIndex}_selected_sections", null)
+            ?: return Section.All
+        val parsed = raw
+            .split(",")
+            .filter { it.isNotBlank() }
+            .map { Section.fromWire(it) }
+            .toSet()
+        // Section.fromWire never returns null (falls back to Unknown).
+        // An empty saved string is treated as "all" rather than "nothing" —
+        // safer for forward-compat and matches the "at least one" UI rule.
+        return parsed.ifEmpty { Section.All }
     }
 
     private fun saveTabsState() {
@@ -440,9 +507,95 @@ class ReaderViewModel @Inject constructor(
                 putInt("tab_${i}_chapter", t.chapter)
                 putString("tab_${i}_search_query", t.searchQuery)
                 putString("tab_${i}_search_type", t.searchType.name)
+                putString(
+                    "tab_${i}_selected_sections",
+                    t.selectedSections.joinToString(",") { it.wire },
+                )
             }
             apply()
         }
+    }
+
+    // ── Canon / section migration ───────────────────────────────────
+
+    /**
+     * Writes the canon choice to the translation row and refreshes the
+     * books list so section-derived filters (search scope, book picker
+     * groups) see the new shape.
+     */
+    fun setCanon(canon: Canon) {
+        val translation = _currentTranslation.value ?: run {
+            _errorMessage.value = "No translation loaded to change canon"
+            return
+        }
+        if (_selectedCanon.value == canon) return
+
+        _selectedCanon.value = canon
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    repository.setSelectedCanon(translation.id, canon.wire)
+                }
+                // The selected_canon column changed, so a fresh
+                // InstalledTranslation row exists on the Rust side.
+                val refreshed = withContext(Dispatchers.IO) {
+                    repository.getFreeBibleInstalledTranslations()
+                }
+                _installedTranslations.value = refreshed
+                val updatedTranslation = refreshed.find { it.id == translation.id }
+                if (updatedTranslation != null) {
+                    _currentTranslation.value = updatedTranslation
+                    updateCurrentTabInList { it.copy(translation = updatedTranslation) }
+                }
+                reloadBooksForCurrentTranslation()
+            } catch (e: Throwable) {
+                _errorMessage.value = "Failed to change canon: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Repairs pre-v8 installs: walks the translation's books, derives the
+     * section key from the book id, and writes it back. Does not re-download.
+     */
+    fun rebuildSections() {
+        val translation = _currentTranslation.value ?: run {
+            _errorMessage.value = "No translation loaded to rebuild sections"
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val fixed = withContext(Dispatchers.IO) {
+                    repository.rebuildSections(translation.id)
+                }
+                _sectionUpdateRequired.value = false
+                reloadBooksForCurrentTranslation()
+                if (fixed == 0) {
+                    Log.w("ReaderSections", "rebuildSections fixed 0 books for ${translation.id}")
+                }
+            } catch (e: Throwable) {
+                _errorMessage.value = "Failed to rebuild sections: ${e.message}"
+            }
+        }
+    }
+
+    private suspend fun refreshSectionUpdateFlag(translationId: String) {
+        _sectionUpdateRequired.value = try {
+            withContext(Dispatchers.IO) {
+                repository.needsSectionUpdate(translationId)
+            }
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
+    private suspend fun reloadBooksForCurrentTranslation() {
+        val translation = _currentTranslation.value ?: return
+        val books = withContext(Dispatchers.IO) {
+            repository.getFreeBibleBooks(translation.id)
+        }
+        _currentBooks.value = books
+        updateCurrentTabInList { it.copy(books = books) }
     }
 
     // ── Chapter loading (translation) ──────────────────────────────
@@ -535,6 +688,9 @@ class ReaderViewModel @Inject constructor(
 
     fun selectTranslation(translation: InstalledTranslation) {
         viewModelScope.launch {
+            _selectedCanon.value = Canon.fromWire(translation.selectedCanon)
+            refreshSectionUpdateFlag(translation.id)
+
             val books = withContext(Dispatchers.IO) {
                 repository.getFreeBibleBooks(translation.id)
             }
@@ -934,6 +1090,7 @@ class ReaderViewModel @Inject constructor(
                     chapter = tab.chapter,
                 )
             }
+
             tab.translation != null -> {
                 viewModelScope.launch {
                     val books = withContext(Dispatchers.IO) {
@@ -978,7 +1135,14 @@ class ReaderViewModel @Inject constructor(
     }
 
     /**
-     * Runs a search against the active tab's translation using the Rust FTS5 engine.
+     * Runs a search against the active tab's translation using the Rust FTS5
+     * engine, scoped to the tab's [ReaderTab.selectedSections].
+     *
+     * When [ReaderTab.selectedSections] == [Section.All], the book_id filter is
+     * sent as an empty list — the Rust side drops the SQL `IN (...)` clause and
+     * searches every book, which is the fast path for the common case. For a
+     * proper subset, the matching book ids are resolved from the current books
+     * list (which is already canon-filtered by the Rust engine).
      */
     fun performSearch(query: String) {
         val tabIdx = _activeTabIndex.value
@@ -993,6 +1157,9 @@ class ReaderViewModel @Inject constructor(
 
         searchJob?.cancel()
         val translationId = tab.translation.id
+
+        val bookIds = resolveBookIdsForSearch(tab)
+        val searchMode = tab.searchType.toSearchMode()
 
         // Reset state for the new search
         _tabs.update { tabs ->
@@ -1010,9 +1177,6 @@ class ReaderViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             try {
                 // Debounce so we don't spam the engine on every keystroke.
-                // The UI calls updateSearchQuery on every keystroke, and the
-                // Compose side can call performSearch on submit or on a timer.
-                // Here, we add a small delay if this is called directly.
                 delay(300)
 
                 val results = withContext(Dispatchers.IO) {
@@ -1020,6 +1184,10 @@ class ReaderViewModel @Inject constructor(
                         query = trimmed,
                         translationId = translationId,
                         limit = 200,
+                        filter = SearchFilter(
+                            bookIds = bookIds,
+                            mode = searchMode,
+                        ),
                         onProgress = { progress ->
                             _tabs.update { tabs ->
                                 tabs.mapIndexed { i, t ->
@@ -1061,6 +1229,28 @@ class ReaderViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Translates the tab's [ReaderTab.selectedSections] into the explicit
+     * `book_ids` list the Rust filter expects.
+     *
+     * - [Section.All] → empty list ("no filter", Rust drops the IN clause).
+     * - Any other set → book ids whose `section` is in the set.
+     *
+     * An *empty* set (user unchecked everything) also becomes an empty list,
+     * which the Rust side reads as "all books". The UI prevents reaching this
+     * state by refusing to uncheck the last section in [toggleSection].
+     */
+    private fun resolveBookIdsForSearch(tab: ReaderTab): List<String> {
+        val sections = tab.selectedSections
+        if (sections == Section.All) return emptyList()
+        if (sections.isEmpty()) return emptyList()
+
+        val books = tab.books.ifEmpty { _currentBooks.value }
+        return books
+            .filter { Section.fromWire(it.section) in sections }
+            .map { it.id }
+    }
+
     fun updateSearchType(searchType: SearchType) {
         val idx = _activeTabIndex.value
         val tab = _tabs.value.getOrNull(idx) ?: return
@@ -1069,6 +1259,57 @@ class ReaderViewModel @Inject constructor(
         _tabs.update { tabs ->
             tabs.mapIndexed { i, t ->
                 if (i == idx) t.copy(searchType = searchType) else t
+            }
+        }
+        saveTabsState()
+        if (tab.searchQuery.isNotBlank()) performSearch(tab.searchQuery)
+    }
+
+    /**
+     * Toggles a section in the active search tab's scope. Refuses to remove
+     * the last section — an empty selection would otherwise be interpreted by
+     * the Rust filter as "all books", which is the opposite of what the user
+     * intended. The UI's checkbox group should also enforce this, but we guard
+     * here so programmatic callers can't hit it either.
+     */
+    fun toggleSection(section: Section) {
+        val idx = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(idx) ?: return
+        if (tab.type != ReaderTabType.SEARCH) return
+
+        val current = tab.selectedSections
+        val next = when {
+            section in current -> {
+                if (current.size <= 1) return // refuse: keep at least one
+                current - section
+            }
+
+            else -> current + section
+        }
+
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == idx) t.copy(selectedSections = next) else t
+            }
+        }
+        saveTabsState()
+        if (tab.searchQuery.isNotBlank()) performSearch(tab.searchQuery)
+    }
+
+    /**
+     * Replaces the active tab's section scope wholesale. Used by "All" /
+     * "None" shortcut affordances. An empty set is coerced to [Section.All]
+     * rather than passed through — see [toggleSection] for why.
+     */
+    fun setSections(sections: Set<Section>) {
+        val idx = _activeTabIndex.value
+        val tab = _tabs.value.getOrNull(idx) ?: return
+        if (tab.type != ReaderTabType.SEARCH) return
+
+        val next = sections.ifEmpty { Section.All }
+        _tabs.update { tabs ->
+            tabs.mapIndexed { i, t ->
+                if (i == idx) t.copy(selectedSections = next) else t
             }
         }
         saveTabsState()
@@ -1280,5 +1521,26 @@ class ReaderViewModel @Inject constructor(
                 repository.getFreeBibleBooks(translation.id)
             }
         }
+    }
+
+    // ── SearchType ↔ SearchMode ─────────────────────────────────────
+
+    /**
+     * Maps the UI-facing [SearchType] to the engine's [SearchMode].
+     *
+     * NOTE: UniFFI generates the enum case style from `uniffi.toml`. If your
+     * generated `SearchMode` uses PascalCase (`MultiWord`, `Phrase`, `Regex`)
+     * instead of SCREAMING_SNAKE, change the three right-hand sides below.
+     * Verify by opening `uniffi/xbible_engine/xbible_engine.kt` and searching
+     * for `enum class SearchMode`.
+     *
+     * The mapping direction is fixed regardless of case style: the UI's
+     * `REGULAR_EXPRESSION` maps to the engine's `Regex`, since the UI enum
+     * predates the Rust rename.
+     */
+    private fun SearchType.toSearchMode(): SearchMode = when (this) {
+        SearchType.MULTI_WORD -> SearchMode.MULTI_WORD
+        SearchType.PHRASE -> SearchMode.PHRASE
+        SearchType.REGULAR_EXPRESSION -> SearchMode.REGEX
     }
 }

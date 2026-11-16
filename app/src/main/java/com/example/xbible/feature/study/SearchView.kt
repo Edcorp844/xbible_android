@@ -21,9 +21,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,15 +42,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.example.xbible.feature.study.extensions.Section
+import com.example.xbible.feature.study.extensions.labelRes
 import com.example.xbible.ui.icons.XBibleIcons
 import com.example.xbible.viewmodel.ReaderTab
 import uniffi.xbible_engine.SearchHit
+import uniffi.xbible_engine.SearchMode
 
 @Composable
 fun SearchView(
@@ -60,13 +66,14 @@ fun SearchView(
     onHitClick: (SearchHit) -> Unit,
     onHitOpenInNewTab: (SearchHit) -> Unit,
     onHitCopy: (SearchHit) -> Unit,
+    onSearchModeChange: (uniffi.xbible_engine.SearchMode) -> Unit,
+    onSectionToggle: (Section) -> Unit,
+    onSelectAllSections: () -> Unit,
+    onSelectNoSections: () -> Unit,
+    availableSections: Set<Section>,
 ) {
-    // Local state for the text field. We sync it from the tab on first
-    // composition and when the user clears the search, but we don't
-    // overwrite it on every keystroke (that causes cursor jumping).
     var query by remember(tab.id) { mutableStateOf(tab.searchQuery) }
 
-    // If the VM clears the search (e.g. a new tab is active), sync down.
     LaunchedEffect(tab.searchQuery) {
         if (tab.searchQuery.isEmpty() && query.isNotEmpty()) {
             query = ""
@@ -74,6 +81,7 @@ fun SearchView(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // ── Search field ───────────────────────────────────────────
         OutlinedTextField(
             value = query,
             onValueChange = {
@@ -111,7 +119,41 @@ fun SearchView(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         )
 
-        // ── States ──────────────────────────────────────────────────
+        // ── Mode picker ────────────────────────────────────────────
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SearchMode.entries.forEach { mode ->
+                FilterChip(
+                    selected = tab.searchType == mode.toSearchType(),
+                    onClick = { onSearchModeChange(mode) },
+                    label = { Text(stringResource(mode.labelRes)) },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // ── Section filter ─────────────────────────────────────────
+        if (availableSections.isNotEmpty()) {
+            SectionFilterRow(
+                availableSections = availableSections,
+                selectedSections = tab.selectedSections,
+                onToggle = onSectionToggle,
+                onSelectAll = onSelectAllSections,
+                onSelectNone = onSelectNoSections,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+        )
+
+        // ── Results ────────────────────────────────────────────────
         val results = tab.searchResults
 
         when {
@@ -142,6 +184,96 @@ fun SearchView(
         }
     }
 }
+
+// ── Section filter row ──────────────────────────────────────────────
+
+@Composable
+private fun SectionFilterRow(
+    availableSections: Set<Section>,
+    selectedSections: Set<Section>,
+    onToggle: (Section) -> Unit,
+    onSelectAll: () -> Unit,
+    onSelectNone: () -> Unit,
+) {
+    // The order is fixed so the chips don't jump around when the
+    // user toggles. Unknown is last because it's the bucket for
+    // books the app has not yet categorized.
+    val ordered = listOf(
+        Section.Ot,
+        Section.Nt,
+        Section.Deutero,
+        Section.OrthodoxExtra,
+        Section.EthiopianExtra,
+        Section.Unknown,
+    ).filter { it in availableSections }
+
+    val allSelected = ordered.isNotEmpty() && selectedSections.containsAll(ordered)
+    val noneSelected = selectedSections.isEmpty()
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FilterChip(
+            selected = allSelected,
+            onClick = {
+                if (allSelected) onSelectNone() else onSelectAll()
+            },
+            label = {
+                Text(
+                    if (allSelected) "All" else "All",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            },
+        )
+
+        // Only show the per-section chips when "All" is not selected,
+        // so the row doesn't scroll on a phone. If the user has
+        // selected a partial set, the specific chips are visible
+        // below.
+        if (!allSelected) {
+            ordered.forEach { section ->
+                FilterChip(
+                    selected = section in selectedSections,
+                    onClick = { onToggle(section) },
+                    label = {
+                        Text(
+                            stringResource(section.labelRes),
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    },
+                )
+            }
+        } else {
+            // When all are selected, show a compact hint instead of
+            // every section chip. The full list is one tap away.
+            AssistChip(
+                onClick = { /* nothing — "All" is the action */ },
+                label = {
+                    Text(
+                        "${ordered.size} sections",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
+            )
+        }
+    }
+}
+
+// ── Mapping SearchMode ↔ SearchType ────────────────────────────────
+
+private fun uniffi.xbible_engine.SearchMode.toSearchType(): com.example.xbible.viewmodel.SearchType =
+    when (this) {
+        uniffi.xbible_engine.SearchMode.MULTI_WORD -> com.example.xbible.viewmodel.SearchType.MULTI_WORD
+        uniffi.xbible_engine.SearchMode.PHRASE -> com.example.xbible.viewmodel.SearchType.PHRASE
+        uniffi.xbible_engine.SearchMode.REGEX -> com.example.xbible.viewmodel.SearchType.REGULAR_EXPRESSION
+    }
 
 // ── States ──────────────────────────────────────────────────────────
 
@@ -198,7 +330,7 @@ private fun ErrorState(message: String) {
     }
 }
 
-// ── Results List ────────────────────────────────────────────────────
+// ── Results list ────────────────────────────────────────────────────
 
 @Composable
 private fun ResultsList(
@@ -230,7 +362,9 @@ private fun ResultsList(
             }
         }
 
-        items(results.hits, key = { "${it.translationId}-${it.bookId}-${it.chapter}-${it.verse}" }) { hit ->
+        items(
+            results.hits,
+            key = { "${it.translationId}-${it.bookId}-${it.chapter}-${it.verse}" }) { hit ->
             SearchHitItem(
                 hit = hit,
                 onClick = { onHitClick(hit) },
@@ -280,7 +414,6 @@ private fun SearchHitItem(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // The highlighted verse text
         Text(
             text = buildHighlightedText(hit),
             style = MaterialTheme.typography.bodyMedium,
@@ -319,18 +452,8 @@ private fun SearchHitItem(
     }
 }
 
-// ── Highlight Rendering ─────────────────────────────────────────────
+// ── Highlight rendering ─────────────────────────────────────────────
 
-/**
- * Renders a SearchHit's text with its highlight spans applied as a
- * tinted background.
- *
- * The spans are **byte** offsets in Rust's String. For ASCII and
- * Latin-1 text (BSB, KJV, ach_abr), byte count equals character count,
- * so we can slice the Kotlin String directly. For text with combining
- * marks, the offsets would need a mapping layer in Rust — that is a
- * search.rs change, not a UI one.
- */
 @Composable
 private fun buildHighlightedText(hit: SearchHit) = buildAnnotatedString {
     if (hit.highlights.isEmpty()) {

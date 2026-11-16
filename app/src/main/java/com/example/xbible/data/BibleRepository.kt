@@ -28,14 +28,15 @@ import uniffi.xbible_engine.PlaceDetail
 import uniffi.xbible_engine.PlaybackState
 import uniffi.xbible_engine.ReaderChapter
 import uniffi.xbible_engine.RepeatMode
+import uniffi.xbible_engine.SearchFilter
+import uniffi.xbible_engine.SearchProgress
+import uniffi.xbible_engine.SearchProgressListener
+import uniffi.xbible_engine.SearchResults
 import uniffi.xbible_engine.StoreItem
 import uniffi.xbible_engine.StoreShelf
 import uniffi.xbible_engine.TimelineData
 import uniffi.xbible_engine.VerseRange
 import uniffi.xbible_engine.XBibleEngine
-import uniffi.xbible_engine.SearchResults
-import uniffi.xbible_engine.SearchProgressListener
-import uniffi.xbible_engine.SearchProgress
 import java.io.File
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -52,9 +53,6 @@ private const val TAG = "BibleRepo"
  * The Rust engine is **not internally synchronized**. Every call into it
  * must happen on a single thread. All public methods here are `suspend` and
  * dispatch onto [engineDispatcher] — a dedicated single-thread executor.
- * Never bypass this: calling a `FreeBibleReader` / `FreeBibleStore` method
- * from a Compose thread while another call is in flight on the engine thread
- * is a data race, even though UniFFI won't stop you.
  */
 @Singleton
 class BibleRepository @Inject constructor(private val application: Application) {
@@ -78,11 +76,16 @@ class BibleRepository @Inject constructor(private val application: Application) 
     // Engine handles
     // ══════════════════════════════════════════════════════════════════
 
-    @Volatile private var engine: XBibleEngine? = null
-    @Volatile private var audioEngine: AudioEngine? = null
-    @Volatile private var freeBible: FreeBibleEngine? = null
-    @Volatile private var freeBibleStore: FreeBibleStore? = null
-    @Volatile private var freeBibleReader: FreeBibleReader? = null
+    @Volatile
+    private var engine: XBibleEngine? = null
+    @Volatile
+    private var audioEngine: AudioEngine? = null
+    @Volatile
+    private var freeBible: FreeBibleEngine? = null
+    @Volatile
+    private var freeBibleStore: FreeBibleStore? = null
+    @Volatile
+    private var freeBibleReader: FreeBibleReader? = null
 
     // ══════════════════════════════════════════════════════════════════
     // Lifecycle
@@ -177,11 +180,20 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     suspend fun audioTogglePlayback() = onEngine { audioEngine?.togglePlayback(); Unit }
     suspend fun audioStop() = onEngine { audioEngine?.stop(); Unit }
-    suspend fun audioSeekToTime(targetMs: Long) = onEngine { audioEngine?.seekToTime(targetMs); Unit }
-    suspend fun audioSeekToChapter(chapterId: String) = onEngine { audioEngine?.seekToChapter(chapterId); Unit }
-    suspend fun audioSkipForward(seconds: Long) = onEngine { audioEngine?.skipForward(seconds); Unit }
-    suspend fun audioSkipBackward(seconds: Long) = onEngine { audioEngine?.skipBackward(seconds); Unit }
-    suspend fun audioSetRepeatMode(mode: RepeatMode) = onEngine { audioEngine?.setRepeatMode(mode); Unit }
+    suspend fun audioSeekToTime(targetMs: Long) =
+        onEngine { audioEngine?.seekToTime(targetMs); Unit }
+
+    suspend fun audioSeekToChapter(chapterId: String) =
+        onEngine { audioEngine?.seekToChapter(chapterId); Unit }
+
+    suspend fun audioSkipForward(seconds: Long) =
+        onEngine { audioEngine?.skipForward(seconds); Unit }
+
+    suspend fun audioSkipBackward(seconds: Long) =
+        onEngine { audioEngine?.skipBackward(seconds); Unit }
+
+    suspend fun audioSetRepeatMode(mode: RepeatMode) =
+        onEngine { audioEngine?.setRepeatMode(mode); Unit }
 
     // ══════════════════════════════════════════════════════════════════
     // FreeBible — catalog
@@ -275,6 +287,43 @@ class BibleRepository @Inject constructor(private val application: Application) 
 
     suspend fun cancelFreeBibleTask(taskId: String) = onEngine {
         freeBibleStore?.cancelTask(taskId); Unit
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // FreeBible — canon selection
+    // ══════════════════════════════════════════════════════════════════
+
+    /**
+     * Set which canonical family a translation shows.
+     *
+     * Valid canon keys are `"protestant"`, `"catholic"`, `"orthodox"`,
+     * `"ethiopian"`, `"all"`. Anything else throws from the Rust side.
+     *
+     * The change is reflected in the next [getFreeBibleBooks] call —
+     * books whose `book_metadata.section` is not visible under the
+     * chosen canon disappear from the list, but are not deleted.
+     */
+    suspend fun setSelectedCanon(translationId: String, canon: String) = onEngine {
+        freeBibleReader?.setSelectedCanon(translationId, canon); Unit
+    }
+
+    /**
+     * True if this translation was installed before `book_metadata.section`
+     * existed (v8 migration). The UI should show an "Update Required"
+     * banner and offer [rebuildSections].
+     */
+    suspend fun needsSectionUpdate(translationId: String): Boolean = onEngine {
+        freeBibleReader?.needsSectionUpdate(translationId) ?: false
+    }
+
+    /**
+     * Fill in `book_metadata.section` for every book of a translation
+     * using the current section lookup. Returns the number of books
+     * updated. No-op for books the lookup does not know — they stay
+     * tagged `"unknown"` and the UI shows them under "Other".
+     */
+    suspend fun rebuildSections(translationId: String): Int = onEngine {
+        freeBibleReader?.rebuildSections(translationId) ?: 0
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -434,17 +483,23 @@ class BibleRepository @Inject constructor(private val application: Application) 
     // ══════════════════════════════════════════════════════════════════
 
     /**
-     * Performs a search using the Rust FTS5 engine.
+     * Performs a search using the Rust FTS5 / regex engine.
      *
      * @param query The user's raw query (e.g., "shepherd", "JHN 3:16", "H430").
-     * @param translationId Optional translation ID to limit the search to. If null, searches all installed translations.
+     * @param translationId Optional translation ID to limit the search to.
      * @param limit Maximum number of hits to return.
-     * @param onProgress Optional callback for search progress (phase and fraction).
+     * @param filter Book filter and search mode. `SearchFilter()` with empty
+     *   `bookIds` and `mode = MultiWord` searches everything.
+     * @param onProgress Optional callback for search progress.
      */
     suspend fun searchBible(
         query: String,
         translationId: String? = null,
         limit: Int = 200,
+        filter: SearchFilter = SearchFilter(
+            bookIds = emptyList(),
+            mode = uniffi.xbible_engine.SearchMode.MULTI_WORD
+        ),
         onProgress: (SearchProgress) -> Unit = {}
     ): SearchResults = onEngine {
         val reader = freeBibleReader ?: return@onEngine SearchResults(query, emptyList(), 0, 0)
@@ -459,6 +514,7 @@ class BibleRepository @Inject constructor(private val application: Application) 
             query = query,
             translationId = translationId,
             limit = limit,
+            filter = filter,
             listener = listener
         )
     }

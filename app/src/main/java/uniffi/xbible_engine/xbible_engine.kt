@@ -856,15 +856,21 @@ internal object IntegrityCheckingUniffiLib {
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_list_places(
     ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblereader_needs_section_update(
+    ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblereader_rebuild_sections(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_search(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_search_entities(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path(
+    ): Int
+    external fun uniffi_xbible_engine_checksum_method_freebiblereader_set_selected_canon(
     ): Int
     external fun uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task(
     ): Int
@@ -1141,15 +1147,21 @@ internal object UniffiLib {
     ): RustBuffer.ByValue
     external fun uniffi_xbible_engine_fn_method_freebiblereader_list_places(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`offset`: Int,`limit`: Int,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_needs_section_update(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Byte
     external fun uniffi_xbible_engine_fn_method_freebiblereader_read_chapter(`ptr`: Long,`translationId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_xbible_engine_fn_method_freebiblereader_read_commentary_chapter(`ptr`: Long,`commentaryId`: RustBuffer.ByValue,`bookId`: RustBuffer.ByValue,`chapter`: Int,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    external fun uniffi_xbible_engine_fn_method_freebiblereader_search(`ptr`: Long,`query`: RustBuffer.ByValue,`translationId`: RustBuffer.ByValue,`limit`: Int,`listener`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_rebuild_sections(`ptr`: Long,`translationId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Int
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_search(`ptr`: Long,`query`: RustBuffer.ByValue,`translationId`: RustBuffer.ByValue,`limit`: Int,`filter`: RustBuffer.ByValue,`listener`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_xbible_engine_fn_method_freebiblereader_search_entities(`ptr`: Long,`datasetId`: RustBuffer.ByValue,`query`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_xbible_engine_fn_method_freebiblereader_set_db_path(`ptr`: Long,`path`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    external fun uniffi_xbible_engine_fn_method_freebiblereader_set_selected_canon(`ptr`: Long,`translationId`: RustBuffer.ByValue,`canon`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     external fun uniffi_xbible_engine_fn_clone_freebiblestore(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): Long
@@ -1497,7 +1509,7 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_xbible_engine_checksum_method_freebibleengine_store() and 0xFFFF) != 64489) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_books() and 0xFFFF) != 60131) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_books() and 0xFFFF) != 42926) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_get_entities_for_verse() and 0xFFFF) != 36837) {
@@ -1548,19 +1560,28 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_list_places() and 0xFFFF) != 28571) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_needs_section_update() and 0xFFFF) != 40440) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_chapter() and 0xFFFF) != 46274) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_read_commentary_chapter() and 0xFFFF) != 15495) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_search() and 0xFFFF) != 4220) {
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_rebuild_sections() and 0xFFFF) != 35756) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_search() and 0xFFFF) != 45361) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_search_entities() and 0xFFFF) != 25724) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_set_db_path() and 0xFFFF) != 43137) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_xbible_engine_checksum_method_freebiblereader_set_selected_canon() and 0xFFFF) != 33703) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_xbible_engine_checksum_method_freebiblestore_cancel_task() and 0xFFFF) != 55388) {
@@ -3320,6 +3341,10 @@ public object FfiConverterTypeFreeBibleEngine: FfiConverter<FreeBibleEngine, Lon
 
 public interface FreeBibleReaderInterface {
     
+    /**
+     * Books visible under the translation's `selected_canon`, with
+     * the canonical section attached.
+     */
     fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook>
     
     fun `getEntitiesForVerse`(`datasetId`: kotlin.String, `book`: kotlin.String, `chapter`: kotlin.Int, `verse`: kotlin.Int): List<EntityRef>
@@ -3354,15 +3379,35 @@ public interface FreeBibleReaderInterface {
     
     fun `listPlaces`(`datasetId`: kotlin.String, `offset`: kotlin.Int, `limit`: kotlin.Int, `query`: kotlin.String?): List<EntitySummary>
     
+    /**
+     * True if the translation was installed before v8, so its books
+     * have no section data. The UI shows an "Update Required" banner
+     * when this is true and offers `rebuild_sections`.
+     */
+    fun `needsSectionUpdate`(`translationId`: kotlin.String): kotlin.Boolean
+    
     fun `readChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): ReaderChapter?
     
     fun `readCommentaryChapter`(`commentaryId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): CommentaryChapter?
     
-    fun `search`(`query`: kotlin.String, `translationId`: kotlin.String?, `limit`: kotlin.Int, `listener`: SearchProgressListener?): SearchResults
+    /**
+     * Fill in `book_metadata.section` for every book of a translation
+     * using the current `section_for_book_id` lookup. No-op for books
+     * the lookup still does not know.
+     */
+    fun `rebuildSections`(`translationId`: kotlin.String): kotlin.Int
+    
+    fun `search`(`query`: kotlin.String, `translationId`: kotlin.String?, `limit`: kotlin.Int, `filter`: SearchFilter, `listener`: SearchProgressListener?): SearchResults
     
     fun `searchEntities`(`datasetId`: kotlin.String, `query`: kotlin.String): List<EntitySummary>
     
     fun `setDbPath`(`path`: kotlin.String)
+    
+    /**
+     * Set which canonical family this translation shows. Does not
+     * touch any book content — only `translations.selected_canon`.
+     */
+    fun `setSelectedCanon`(`translationId`: kotlin.String, `canon`: kotlin.String)
     
     companion object
 }
@@ -3476,7 +3521,11 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
         }
     }
 
-    override fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
+    
+    /**
+     * Books visible under the translation's `selected_canon`, with
+     * the canonical section attached.
+     */override fun `getBooks`(`translationId`: kotlin.String): List<FreeBibleBook> {
             return FfiConverterSequenceTypeFreeBibleBook.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
@@ -3743,6 +3792,26 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     }
     
 
+    
+    /**
+     * True if the translation was installed before v8, so its books
+     * have no section data. The UI shows an "Update Required" banner
+     * when this is true and offers `rebuild_sections`.
+     */
+    @Throws(FreeBibleException::class)override fun `needsSectionUpdate`(`translationId`: kotlin.String): kotlin.Boolean {
+            return FfiConverterBoolean.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_needs_section_update(
+        it,
+        
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
     override fun `readChapter`(`translationId`: kotlin.String, `bookId`: kotlin.String, `chapter`: kotlin.Int): ReaderChapter? {
             return FfiConverterOptionalTypeReaderChapter.lift(
     callWithHandle {
@@ -3777,7 +3846,27 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
     
 
     
-    @Throws(FreeBibleException::class)override fun `search`(`query`: kotlin.String, `translationId`: kotlin.String?, `limit`: kotlin.Int, `listener`: SearchProgressListener?): SearchResults {
+    /**
+     * Fill in `book_metadata.section` for every book of a translation
+     * using the current `section_for_book_id` lookup. No-op for books
+     * the lookup still does not know.
+     */
+    @Throws(FreeBibleException::class)override fun `rebuildSections`(`translationId`: kotlin.String): kotlin.Int {
+            return FfiConverterInt.lift(
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_rebuild_sections(
+        it,
+        
+        FfiConverterString.lower(`translationId`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(FreeBibleException::class)override fun `search`(`query`: kotlin.String, `translationId`: kotlin.String?, `limit`: kotlin.Int, `filter`: SearchFilter, `listener`: SearchProgressListener?): SearchResults {
             return FfiConverterTypeSearchResults.lift(
     callWithHandle {
     uniffiRustCallWithError(FreeBibleException) { _status ->
@@ -3787,6 +3876,7 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
         FfiConverterString.lower(`query`),
         FfiConverterOptionalString.lower(`translationId`),
         FfiConverterInt.lower(`limit`),
+        FfiConverterTypeSearchFilter.lower(`filter`),
         FfiConverterOptionalTypeSearchProgressListener.lower(`listener`),_status)
 }
     }
@@ -3818,6 +3908,25 @@ open class FreeBibleReader: Disposable, AutoCloseable, FreeBibleReaderInterface
         it,
         
         FfiConverterString.lower(`path`),_status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Set which canonical family this translation shows. Does not
+     * touch any book content — only `translations.selected_canon`.
+     */
+    @Throws(FreeBibleException::class)override fun `setSelectedCanon`(`translationId`: kotlin.String, `canon`: kotlin.String)
+        = 
+    callWithHandle {
+    uniffiRustCallWithError(FreeBibleException) { _status ->
+    UniffiLib.uniffi_xbible_engine_fn_method_freebiblereader_set_selected_canon(
+        it,
+        
+        FfiConverterString.lower(`translationId`),
+        FfiConverterString.lower(`canon`),_status)
 }
     }
     
@@ -7383,6 +7492,18 @@ data class FreeBibleBook (
     var `audioLinksJson`: kotlin.String?
     , 
     var `rawJson`: kotlin.String?
+    , 
+    /**
+     * Canonical section key: "ot" | "nt" | "deutero" |
+     * "orthodox_extra" | "ethiopian_extra" | "unknown".
+     *
+     * Populated by `install::persist_book` from
+     * `install::section_for_book_id`. A pre-v8 install has
+     * `"unknown"` for every book until `rebuild_sections` runs.
+     * The reader's `get_books` filters by this field via the
+     * translation's `selected_canon`.
+     */
+    var `section`: kotlin.String
     
 ){
     
@@ -7407,6 +7528,7 @@ public object FfiConverterTypeFreeBibleBook: FfiConverterRustBuffer<FreeBibleBoo
             FfiConverterOptionalInt.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
         )
     }
 
@@ -7418,7 +7540,8 @@ public object FfiConverterTypeFreeBibleBook: FfiConverterRustBuffer<FreeBibleBoo
             FfiConverterOptionalString.allocationSize(value.`title`) +
             FfiConverterOptionalInt.allocationSize(value.`bookOrder`) +
             FfiConverterOptionalString.allocationSize(value.`audioLinksJson`) +
-            FfiConverterOptionalString.allocationSize(value.`rawJson`)
+            FfiConverterOptionalString.allocationSize(value.`rawJson`) +
+            FfiConverterString.allocationSize(value.`section`)
     )
 
     override fun write(value: FreeBibleBook, buf: ByteBuffer) {
@@ -7430,6 +7553,7 @@ public object FfiConverterTypeFreeBibleBook: FfiConverterRustBuffer<FreeBibleBoo
             FfiConverterOptionalInt.write(value.`bookOrder`, buf)
             FfiConverterOptionalString.write(value.`audioLinksJson`, buf)
             FfiConverterOptionalString.write(value.`rawJson`, buf)
+            FfiConverterString.write(value.`section`, buf)
     }
 }
 
@@ -8267,15 +8391,12 @@ public object FfiConverterTypeGroupDetail: FfiConverterRustBuffer<GroupDetail> {
 
 
 
+/**
+ * A byte range into `SearchHit.text` that matched the query.
+ */
 data class HighlightSpan (
-    /**
-     * Byte offset into `SearchHit.text` where the match starts.
-     */
     var `start`: kotlin.UInt
     , 
-    /**
-     * Byte offset into `SearchHit.text` where the match ends (exclusive).
-     */
     var `end`: kotlin.UInt
     
 ){
@@ -8530,6 +8651,13 @@ data class InstalledTranslation (
     var `chapterCount`: kotlin.Int
     , 
     var `verseCount`: kotlin.Int
+    , 
+    /**
+     * The canonical family this translation is currently showing.
+     * One of: "protestant", "catholic", "orthodox", "ethiopian",
+     * "all". See `set_selected_canon`.
+     */
+    var `selectedCanon`: kotlin.String
     
 ){
     
@@ -8556,6 +8684,7 @@ public object FfiConverterTypeInstalledTranslation: FfiConverterRustBuffer<Insta
             FfiConverterInt.read(buf),
             FfiConverterInt.read(buf),
             FfiConverterInt.read(buf),
+            FfiConverterString.read(buf),
         )
     }
 
@@ -8569,7 +8698,8 @@ public object FfiConverterTypeInstalledTranslation: FfiConverterRustBuffer<Insta
             FfiConverterString.allocationSize(value.`textDirection`) +
             FfiConverterInt.allocationSize(value.`bookCount`) +
             FfiConverterInt.allocationSize(value.`chapterCount`) +
-            FfiConverterInt.allocationSize(value.`verseCount`)
+            FfiConverterInt.allocationSize(value.`verseCount`) +
+            FfiConverterString.allocationSize(value.`selectedCanon`)
     )
 
     override fun write(value: InstalledTranslation, buf: ByteBuffer) {
@@ -8583,6 +8713,7 @@ public object FfiConverterTypeInstalledTranslation: FfiConverterRustBuffer<Insta
             FfiConverterInt.write(value.`bookCount`, buf)
             FfiConverterInt.write(value.`chapterCount`, buf)
             FfiConverterInt.write(value.`verseCount`, buf)
+            FfiConverterString.write(value.`selectedCanon`, buf)
     }
 }
 
@@ -9706,10 +9837,64 @@ public object FfiConverterTypeRichTextValue: FfiConverterRustBuffer<RichTextValu
 
 
 
-data class SearchHit (
+/**
+ * Constraints on a search.
+ *
+ * `SearchFilter::default()` means "search every book, multi-word
+ * mode". An explicit `book_ids` list constrains the search to those
+ * books. The engine does not know what a canon is — the UI computes
+ * the list from `book_metadata.section` before calling `search`.
+ */
+data class SearchFilter (
     /**
-     * "verse" | "reference" | "lexicon"
+     * Only search within these book IDs (`"PSA"`, `"JHN"`, …).
+     * Empty means all books.
      */
+    var `bookIds`: List<kotlin.String>
+    , 
+    /**
+     * How to interpret the text query. Applies only to text search;
+     * references and Strong's lookups ignore it.
+     */
+    var `mode`: SearchMode
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchFilter: FfiConverterRustBuffer<SearchFilter> {
+    override fun read(buf: ByteBuffer): SearchFilter {
+        return SearchFilter(
+            FfiConverterSequenceString.read(buf),
+            FfiConverterTypeSearchMode.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SearchFilter) = (
+            FfiConverterSequenceString.allocationSize(value.`bookIds`) +
+            FfiConverterTypeSearchMode.allocationSize(value.`mode`)
+    )
+
+    override fun write(value: SearchFilter, buf: ByteBuffer) {
+            FfiConverterSequenceString.write(value.`bookIds`, buf)
+            FfiConverterTypeSearchMode.write(value.`mode`, buf)
+    }
+}
+
+
+
+/**
+ * One result of a search.
+ */
+data class SearchHit (
     var `kind`: kotlin.String
     , 
     var `translationId`: kotlin.String
@@ -9724,15 +9909,8 @@ data class SearchHit (
     , 
     var `text`: kotlin.String
     , 
-    /**
-     * Lower is better for BM25; ignored for references and lexicon.
-     */
     var `score`: kotlin.Double
     , 
-    /**
-     * Byte ranges in `text` that matched the query. Empty for
-     * reference and lexicon hits — only text search highlights.
-     */
     var `highlights`: List<HighlightSpan>
     
 ){
@@ -9789,14 +9967,14 @@ public object FfiConverterTypeSearchHit: FfiConverterRustBuffer<SearchHit> {
 
 
 
+/**
+ * A progress event emitted by [`search`].
+ */
 data class SearchProgress (
     var `phase`: SearchPhase
     , 
     var `message`: kotlin.String
     , 
-    /**
-     * 0.0 → 1.0, best-effort
-     */
     var `fraction`: kotlin.Double
     
 ){
@@ -9835,6 +10013,9 @@ public object FfiConverterTypeSearchProgress: FfiConverterRustBuffer<SearchProgr
 
 
 
+/**
+ * The complete result of a search, including timing.
+ */
 data class SearchResults (
     var `query`: kotlin.String
     , 
@@ -10533,6 +10714,47 @@ public object FfiConverterTypeRepeatMode: FfiConverterRustBuffer<RepeatMode> {
 
 
 
+/**
+ * How a text query is interpreted.
+ */
+
+enum class SearchMode {
+    
+    MULTI_WORD,
+    PHRASE,
+    REGEX;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchMode: FfiConverterRustBuffer<SearchMode> {
+    override fun read(buf: ByteBuffer) = try {
+        SearchMode.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: SearchMode) = 4UL
+
+    override fun write(value: SearchMode, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
+ * One step of the search pipeline.
+ */
 
 enum class SearchPhase {
     
